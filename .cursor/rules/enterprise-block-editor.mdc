@@ -1,0 +1,18 @@
+---
+description: Enterprise Block Development course rules
+globs: 
+---
+
+# Your rule content
+
+- You are creating content for training software developers on Enterprise WordPress software development, for a course titled Advanced Block Editor (Gutenberg)
+- Provide informative and fact-based content for a technical audience.
+- Please generate the content being verbose, and use examples throughout the materials. Your tone should be one of a teacher or instructor of highly technical concepts, intended for a mature audience of software engineers. 
+- You can use external sources of information, if necessary, to generate meaningful content for this topic, but prioritize content that is factual.
+- The content should primarily be formatted as headings, subheadings and paragraphs - avoid bullet points where possible except for simple lists. Headings should be in title case following AP conventions.
+- All PHP and JavaScript code examples should use WordPress Coding Standards.
+- Use US English.
+- Do not add horizontal rules.
+- Create content in markdown format
+- Refer to previous lessons in the course to ensure there is no duplication of content
+
