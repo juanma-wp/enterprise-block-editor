@@ -98,7 +98,7 @@ The rest of the files are the source code for the block:
 - `save.js`: Determines how the block is saved and rendered on the frontend.  
 - `style.scss`: Styles for the block on the frontend.
 
-You will notice that create-block scaffolds the block’s source code inside a sub-directory inside the `src` directory, in this case, `my-custom-block`. This allows you to build multiple blocks in the same plugin. The compiled files in the build directory match this directory structure. 
+You will notice that create-block scaffolds the block's source code inside a sub-directory inside the `src` directory, in this case, `my-custom-block`. This allows you to build multiple blocks in the same plugin. The compiled files in the build directory match this directory structure. 
 
 The main PHP file, `my-custom-block.php`, is responsible for registering the block with WordPress and enqueuing the necessary scripts and styles. Here's a basic example:
 
@@ -299,6 +299,16 @@ wp-env start
 
 This will create a new WordPress installation, accessible at [http://localhost:8888](http://localhost:8888), with your current directory mapped as a plugin.
 
+### Studio by WordPress.com
+
+While wp-env provides a robust local development environment, Studio by WordPress.com is another option to consider, particularly suited for developers who prefer not to install Docker. Studio is a fast, free way to develop with WordPress, while keeping your local development process smooth and simple.
+
+To get started with Studio visit [developer.wordpress.com/studio](https://developer.wordpress.com/studio/) and download the version for your operating system.
+
+Once installed, open the app and follow the on screen instructions to create a new local development site.
+
+### Code Editor
+
 For your code editor, Visual Studio Code (VS Code) is a popular choice among WordPress developers. It offers excellent support for JavaScript and PHP development, and has a rich ecosystem of extensions. Some recommended extensions for WordPress development include:
 
 - ESLint  
@@ -308,7 +318,11 @@ For your code editor, Visual Studio Code (VS Code) is a popular choice among Wor
 
 Remember, block development is an iterative process. As you develop your block, make use of the `npm run start` command to see your changes in real-time in the block editor. This workflow allows for rapid development and testing, ensuring that your custom blocks meet both your needs and those of your users.
 
-Further reading
+## Further Reading
 
-[https://learn.wordpress.org/tutorial/using-the-create-block-tool/](https://learn.wordpress.org/tutorial/using-the-create-block-tool/)   
-[ess/](https://neliosoftware.com/blog/resources-to-learn-the-technologies-behind-gutenberg-for-wordpress/) \[11\] [https://learn.wordpress.org/courses/](https://learn.wordpress.org/courses/) \[12\] [https://learn.wordpress.org/tutorial/intro-to-publishing-with-the-block-editor/](https://learn.wordpress.org/tutorial/intro-to-publishing-with-the-block-editor/) \[13\] [https://nexacu.com/insights-blog/comprehensive-wordpress-course-for-developers-nexacu/](https://nexacu.com/insights-blog/comprehensive-wordpress-course-for-developers-nexacu/) \[14\] [https://jetpack.com/resources/wordpress-block-editor/](https://jetpack.com/resources/wordpress-block-editor/) \[15\] [https://deliciousbrains.com/wordpress-gutenberg/](https://deliciousbrains.com/wordpress-gutenberg/) \[16\] [https://toolset.com/course/wordpress-design-course/](https://toolset.com/course/wordpress-design-course/) \[17\] [https://learn.wordpress.org/lesson/advanced-layouts-with-the-block-editor/](https://learn.wordpress.org/lesson/advanced-layouts-with-the-block-editor/) \[18\] [https://www.udemy.com/topic/wordpress-gutenberg-editor/](https://www.udemy.com/topic/wordpress-gutenberg-editor/) \[19\] [https://wordpress.com/learn/courses/](https://wordpress.com/learn/courses/) \[20\] [https://arraytics.com/complete-guide-to-wordpress-gutenberg-block-editor/](https://arraytics.com/complete-guide-to-wordpress-gutenberg-block-editor/) \[21\] [https://wordpress.org/plugins/gutentor/](https://wordpress.org/plugins/gutentor/) \[22\] [https://developer.wordpress.org/advanced-administration/resources/](https://developer.wordpress.org/advanced-administration/resources/) \[23\] [https://github.com/WordPress/developer-blog-content/issues/204](https://github.com/WordPress/developer-blog-content/issues/204) \[24\] [https://developer.wordpress.org/plugins/plugin-basics/best-practices/](https://developer.wordpress.org/plugins/plugin-basics/best-practices/) \[25\] [https://www.npmjs.com/package/@wordpress/scripts](https://www.npmjs.com/package/@wordpress/scripts) \[26\] [https://developer.wordpress.org/block-editor/getting-started/devenv/](https://developer.wordpress.org/block-editor/getting-started/devenv/) \[27\] [https://developer.wordpress.org/block-editor/getting-started/devenv/get-started-with-wp-scripts/](https://developer.wordpress.org/block-editor/getting-started/devenv/get-started-with-wp-scripts/)  
+- [Using the Create Block Tool](https://learn.wordpress.org/tutorial/using-the-create-block-tool/)
+- [Intro to Publishing with the Block Editor](https://learn.wordpress.org/tutorial/intro-to-publishing-with-the-block-editor/)
+- [Advanced Layouts with the Block Editor](https://learn.wordpress.org/lesson/advanced-layouts-with-the-block-editor/)
+- [WordPress Plugin Development Best Practices](https://developer.wordpress.org/plugins/plugin-basics/best-practices/)
+- [Setting Up Your Development Environment](https://developer.wordpress.org/block-editor/getting-started/devenv/)
+- [Get Started with wp-scripts](https://developer.wordpress.org/block-editor/getting-started/devenv/get-started-with-wp-scripts/)
