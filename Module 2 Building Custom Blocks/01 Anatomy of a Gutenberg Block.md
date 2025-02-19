@@ -283,6 +283,3 @@ supports: {
 ```
 
 In this example, we're disabling HTML editing and enabling alignment options.
-
-Citations:   
-[https://developer.wordpress.org/block-editor/](https://developer.wordpress.org/block-editor/) [https://learn.wordpress.org/tutorial/content-creation-in-wordpress-using-gutenberg/](https://learn.wordpress.org/tutorial/content-creation-in-wordpress-using-gutenberg/) [https://wordpress.org/plugins/gutenberg/](https://wordpress.org/plugins/gutenberg/)

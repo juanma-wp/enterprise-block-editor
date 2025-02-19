@@ -64,43 +64,29 @@ Hot reloading is a powerful feature that allows you to see changes in your block
 
 To enable hot reloading with wp-scripts, you'll need to make a few modifications to your development environment.
 
-You'll need to set up a local WordPress environment to support hot reloading. One way to do this is by using the @wordpress/env (aka wp-env) package, which provides a no configuration local WordPress development environment for developing WordPress block plugins.
+You'll need to set up a local WordPress environment to support hot reloading. wp-env or Studio by WordPress.com, supports hot reloading by default, which is why these tools are recommended for block development.
 
-To start, install @wordpress/env as a development dependency in your block plugin by running the following command from the terminal:
-
-```
-npm install @wordpress/env --save-dev
-```
-
-Then, update your `package.json` to include the `wp-env` script:
+You will also need to enable the `SCRIPT_DEBUG` [constant](https://developer.wordpress.org/advanced-administration/debug/debug-wordpress/#script_debug) in your local WordPress installations `wp-config.php` file. This constant forces WordPress to use the “dev” versions of core CSS and JavaScript files rather than the minified versions that are normally loaded.
 
 ```
-"scripts": {
-    "wp-env": "wp-env"
-},
+define( 'SCRIPT_DEBUG', true );
 ```
 
-Now, you can start wp-env with the following command:
+Finally, you need to add a new script to your block plugin's `package.json` file. This new script contains the same command as the `start` script but with the `--hot` flag.
 
 ```
-npm run wp-env start
+"hot-reload": "wp-scripts start --hot"
 ```
 
-This will start the local WordPress environment and your block editor will be available at `http://localhost:8888`.
-
-Next, you need to edit the `start` script in your `package.json` to enable hot reloading.
-
-```
-"start": "wp-scripts start --hot"
-```
+Adding a separate script to your `package.json` file allows you to keep the default `start` script for development without hot reloading.
 
 With this setup in place, you can run your development server with hot reloading:
 
 ```
-npm run start
+npm run hot-reload
 ```
 
-As you make changes to your block's source files, you'll see the changes reflected immediately in the block editor without needing to refresh the page.
+With this running, as you make changes to your block's source files, you'll see the changes reflected immediately in the block editor without needing to refresh the page.
 
 ## Debugging Block JavaScript Code
 

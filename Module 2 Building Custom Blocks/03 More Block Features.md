@@ -1,198 +1,114 @@
-# More Block Features
+# Block Features
 
-## Dynamic Blocks with PHP Integration
+## Dynamic Blocks
 
-Dynamic blocks allow developers to create blocks whose content is generated on the server-side using PHP. This approach is particularly useful for blocks that need to display frequently updated information or data that requires complex processing.
+Dynamic blocks allow developers to create blocks where the front end content is generated on the server-side using PHP. This approach is particularly useful for blocks that need to display frequently updated information or rendering data that requires complex processing.
 
-To create a dynamic block, we need to register the block on the PHP side and provide a callback function that will render the block's content. Let's create a simple example of a dynamic block that displays the current date and time.
+To create a dynamic block, you need to provide a one of two methods to render the block's content. 
 
-First, we'll register our block in PHP:
+1. You can either define a PHP file in the `render` property of the block.json file.
+2. You can also define a render_callback function when you register the block in PHP.
 
+Let's look at an example of both approaches.
+
+### Using the render property in block.json
+
+The first step is to add the `render` property to the block.json file, and set it to the path of the PHP file that will render the block.
+
+```json
+	"editorScript": "file:./index.js",
+	"editorStyle": "file:./index.css",
+	"style": "file:./style-index.css",
+	"viewScript": "file:./view.js",
+	"render": "file:./index.php"
 ```
-function register_dynamic_date_block() {
-    register_block_type( 'my-plugin/dynamic-date', array(
-        'render_callback' => 'render_dynamic_date_block',
-        'attributes'      => array(
-            'format' => array(
-                'type'    => 'string',
-                'default' => 'F j, Y H:i:s',
-            ),
-        ),
-    ) );
-}
+
+You can add the render property anywhere to the block.json file, but it's common to add it to the bottom of the file, after scripts and styles.
+
+Next, you need to create the PHP file that will render the block. This file will be responsible for generating the HTML content that will be displayed in the block.
+
+Here's an example of a simple PHP file that will render the block:
+
+```php
+$format = isset( $attributes['format'] ) ? $attributes['format'] : 'F j, Y H:i:s';
+echo '<p class="dynamic-date">' . date( $format ) . '</p>';
+```
+
+### Using the render_callback argument
+
+The other option is to pass a callback function to the render_callback argument when you register the block with register_block_type in PHP.  
+
+```php
 add_action( 'init', 'register_dynamic_date_block' );
-```
 
-In this code, we're registering a block called 'my-plugin/dynamic-date' and specifying a render callback function. We're also defining an attribute 'format' that will allow us to customize the date format.
+function register_dynamic_date_block() {
+    register_block_type( 
+        'my-plugin/dynamic-date', array(
+            'render_callback' => 'render_dynamic_date_block'
+        ) 
+    );
+}
 
-Next, let's implement the render callback function:
-
-```
 function render_dynamic_date_block( $attributes ) {
     $format = isset( $attributes['format'] ) ? $attributes['format'] : 'F j, Y H:i:s';
     return '<p class="dynamic-date">' . date( $format ) . '</p>';
 }
 ```
 
-This function takes the block attributes as an argument, retrieves the 'format' attribute (or uses a default if not set), and returns an HTML string with the current date formatted accordingly.
+### Data passed to a dynamic block
 
-On the JavaScript side, we need to create an edit function that will render in the editor:
+In both cases, the following data is available to the dynamic block code:
 
-```javascript
-import { useBlockProps } from '@wordpress/block-editor';
-import { __ } from '@wordpress/i18n';
-import ServerSideRender from '@wordpress/server-side-render';
+- `$attributes`: The array of attributes for the block.
+- `$content`: The markup of the block as stored in the database, if any.
+- `$block`: The instance of the WP_Block class that represents the rendered block (metadata of the block).
 
-export default function Edit( { attributes, setAttributes } ) {
-    const blockProps = useBlockProps();
 
-    return (
-        <div { ...blockProps }>
-            <ServerSideRender
-                block="my-plugin/dynamic-date"
-                attributes={ attributes }
-            />
-        </div>
-    );
-}
-```
+### The block's save function when rendering a dynamic block
 
-In this edit function, we're using the ServerSideRender component to display the server-rendered content in the editor.
+When rendering a dynamic block, the block's save functionality is no longer needed. Therefore you can simply remove the all this functionality:
 
-By using dynamic blocks, we can leverage the full power of PHP to generate block content while still providing a seamless editing experience in the Block Editor.
+- Remove the save property from the registerBlockType call in the index.js file when you register the block.
+- Remove the importing of the save function from the index.js file.
+- Delete the save.js file
 
-## Handling Complex Attributes
+## Internationalization
 
-As blocks become more sophisticated, they often require more complex attributes. These can include nested blocks, media fields, or other structured data. Let's explore how to handle these types of attributes.
+Internationalization, often abbreviated as i18n, is the process of preparing your block for translation into different languages. Whenever you use text strings in your block, you need to provide a way for them to be translated. Fortunately WordPress already provides tools to make this process easier, as long as you use the correct functions.
 
-### Nested Blocks
-
-Nested blocks allow you to create a block that contains other blocks. This is achieved using the InnerBlocks component. Here's an example of a custom container block that can contain other blocks:
-
-```javascript
-import { useBlockProps, InnerBlocks } from '@wordpress/block-editor';
-
-export default function Edit() {
-    const blockProps = useBlockProps();
-
-    return (
-        <div { ...blockProps }>
-            <InnerBlocks />
-        </div>
-    );
-}
-```
-
-In this example, the InnerBlocks component allows the user to insert any other block inside our custom container block.
-
-We can also restrict the types of blocks that can be inserted:
-
-```javascript
-const ALLOWED_BLOCKS = [ 'core/paragraph', 'core/image' ];
-
-export default function Edit() {
-    const blockProps = useBlockProps();
-
-    return (
-        <div { ...blockProps }>
-            <InnerBlocks allowedBlocks={ ALLOWED_BLOCKS } />
-        </div>
-    );
-}
-```
-
-This will only allow paragraph and image blocks to be inserted into our container.
-
-### Media Fields
-
-To handle media fields, we can use the MediaUpload component provided by WordPress. Here's an example of a block with an image attribute:
-
-```javascript
-import { useBlockProps, MediaUpload, MediaUploadCheck } from '@wordpress/block-editor';
-import { Button } from '@wordpress/components';
-import { __ } from '@wordpress/i18n';
-
-export default function Edit( { attributes, setAttributes } ) {
-    const blockProps = useBlockProps();
-    const { imageId, imageUrl } = attributes;
-
-    const onSelectImage = ( media ) => {
-        setAttributes( {
-            imageId: media.id,
-            imageUrl: media.url,
-        } );
-    };
-
-    return (
-        <div { ...blockProps }>
-            <MediaUploadCheck>
-                <MediaUpload
-                    onSelect={ onSelectImage }
-                    allowedTypes={ [ 'image' ] }
-                    value={ imageId }
-                    render={ ( { open } ) => (
-                        <Button onClick={ open }>
-                            { ! imageId ? __( 'Choose an image', 'my-plugin' ) : __( 'Replace image', 'my-plugin' ) }
-                        </Button>
-                    ) }
-                />
-            </MediaUploadCheck>
-            { imageUrl && <img src={ imageUrl } alt="" /> }
-        </div>
-    );
-}
-```
-
-In this example, we're using the MediaUpload component to allow the user to select an image from the media library. We're storing both the image ID and URL as attributes of the block.
-
-## Internationalization (i18n) for Blocks
-
-Internationalization, often abbreviated as i18n, is the process of designing and preparing your block for translation into different languages. WordPress provides tools to make this process easier.
-
-To internationalize your block, you'll need to use the \_\_ function (for single strings) or \_n function (for strings with plurals) from the @wordpress/i18n package. Here's an example:
+To internationalize your block, you can use the relevant functions from the @wordpress/i18n [package](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-i18n/). In the Edit component of the block scaffolded by create-block, you'll see that the strings are wrapped in the __() function:
 
 ```javascript
 import { __ } from '@wordpress/i18n';
 
 export default function Edit() {
-    return (
-        <div>
-            <h2>{ __( 'My Block Title', 'my-plugin' ) }</h2>
-            <p>{ __( 'This is the content of my block.', 'my-plugin' ) }</p>
-        </div>
-    );
+	return (
+		<div { ...useBlockProps() }>
+			<h2>{ __( 'My Custom Inner Blocks', 'my-custom-block' ) }</h2>
+			<InnerBlocks />
+		</div>
+	);
 }
 ```
 
-In this example, we're wrapping our strings with the \_\_ function, which marks them for translation. The second argument to \_\_ is the text domain, which should match the text domain of your plugin or theme.
-
-For plurals, you can use the \_n function:
+For plurals, you can use the _n() function:
 
 ```javascript
 import { _n } from '@wordpress/i18n';
 
-export default function Edit( { attributes } ) {
-    const { count } = attributes;
+export default function Edit( props ) {
+    const { count } = props.attributes;
     return (
         <div>
             { _n(
                 'You have %d item.',
                 'You have %d items.',
                 count,
-                'my-plugin'
+                'my-custom-block'
             ) }
         </div>
     );
 }
 ```
 
-The \_n function takes four arguments: the singular form, the plural form, the count, and the text domain.
-
-To extract these strings for translation, you'll need to use a tool like wp-cli or the @wordpress/scripts package. These tools will generate a .pot file containing all of your translatable strings, which can then be translated into different languages.
-
-Remember to also internationalize any strings in your PHP code using similar functions like \_\_() and \_n().
-
-By following these internationalization practices, you ensure that your blocks can be easily translated, making them accessible to a global audience.
-
-In conclusion, mastering dynamic blocks, complex attributes, and internationalization will greatly enhance your ability to create sophisticated and widely usable blocks for the WordPress Block Editor. These advanced features allow you to create blocks that are not only powerful and flexible but also accessible to users around the world.
-
+These functions, as well as the rest of the functions in the @wordpress/i18n package, both require a text domain as a second argument, similar to how you would [internationalize strings in your PHP code](https://developer.wordpress.org/plugins/internationalization/how-to-internationalize-your-plugin/).
