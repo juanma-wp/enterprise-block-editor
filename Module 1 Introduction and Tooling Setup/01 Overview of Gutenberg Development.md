@@ -2,9 +2,9 @@
 
 ## What is Gutenberg?
 
-Gutenberg is the project name for a new WordPress site building and publishing paradigm that aims to revolutionize the entire publishing experience. Its core product is the Block Editor, a block-based editor that has transformed the WordPress content creation experience since its introduction in December 2018\. As a software developer working on Enterprise WordPress projects, it's important to understand that Gutenberg is not just the new editor but a complete paradigm shift in how WordPress handles content creation and site-building.
+Gutenberg is the project name for a new WordPress site building and publishing paradigm that aims to revolutionize the entire publishing experience. Its core product is the Block Editor, a block-based editor that has transformed the WordPress content creation experience since its introduction in December 2018. As a software developer working on Enterprise WordPress projects, it's important to understand that Gutenberg is not just the new editor but a complete paradigm shift in how WordPress handles content creation and site-building.
 
-At its core, Gutenberg introduces the concept of blocks, which are standalone, isolated, and dynamic user interface components\[3\]. These blocks represent individual content elements, such as paragraphs, images, headings, or more complex structures like columns and galleries. This modular approach to content creation allows for greater flexibility and control over page layouts, moving beyond the limitations of the traditional WordPress editor.
+At its core, Gutenberg introduces the concept of blocks, which are standalone, isolated, and dynamic user interface components. These blocks represent individual content elements, such as paragraphs, images, headings, or more complex structures like columns and galleries. This modular approach to content creation allows for greater flexibility and control over page layouts, moving beyond the limitations of the traditional WordPress editor.
 
 From a technical perspective, Gutenberg uses modern web technologies, primarily JavaScript and React. This marks a significant departure from the PHP-centric development that has long been associated with WordPress. As an Enterprise WordPress developer, you must familiarize yourself with these technologies to effectively work with and extend the Block Editor.
 
@@ -43,13 +43,31 @@ registerBlockType('my-plugin/custom-block', {
 
 This example demonstrates a block's basic structure, including its registration, edit interface, and save function. As you delve deeper into block development, you'll encounter more complex scenarios and APIs that allow for sophisticated block behaviors and interactions.
 
+## The Gutenberg plugin
+
+The [Gutenberg plugin](https://wordpress.org/plugins/gutenberg/) serves as the development and testing ground for new features before they are merged into WordPress core. While the Block Editor is now part of WordPress core since version 5.0, the Gutenberg plugin continues to be actively developed, offering a glimpse into the future of WordPress.
+
+Installing the Gutenberg plugin on your development environment allows you to:
+- Test upcoming features before they reach WordPress core
+- Access experimental APIs and components
+- Contribute to Gutenberg development
+- Stay ahead of WordPress core changes
+
+For Enterprise WordPress developers, working with the Gutenberg plugin is essential for:
+- Forward compatibility testing of themes and plugins
+- Early adoption of new features in client projects
+- Understanding upcoming changes that might affect existing implementations
+- Testing custom blocks against future WordPress versions
+
+The plugin is available in the WordPress plugin repository and is updated every two weeks, making it a vital tool in your WordPress development workflow.
+
 ## The Block Editor vs. the Site Editor
 
-As we progress in our understanding of blocks, it's essential to distinguish between two key components: the Block Editor and the Site Editor. While both are part of the Gutenberg project, they serve different purposes and offer distinct capabilities\[11\].
+As we progress in our understanding of blocks, it's essential to distinguish between two key components: the Block Editor and the Site Editor. While both are part of the Gutenberg project, they serve different purposes and offer distinct capabilities.
 
 The Block Editor, which we've primarily discussed so far, is focused on content creation for individual posts and pages. It allows users to construct and manipulate content using blocks, providing a flexible and intuitive interface for crafting rich, media-heavy content. As a developer, you'll often work with the Block Editor when creating custom blocks or extending existing functionality for content creation. Sometimes you will see the Block Editor referred to as the Post Editor or the Page Editor, depending on the context it's being used in. 
 
-On the other hand, the Site Editor represents a more recent and ambitious evolution of the project. Introduced as part of an initiative called Full Site Editing (FSE), the Site Editor extends the block paradigm to the entire website structure\[2\]. With the Site Editor, users can modify not just content but also global elements like headers, footers, and sidebars and even create custom page templates – all using the familiar block interface.
+On the other hand, the Site Editor represents a more recent and ambitious evolution of the project. Introduced as part of an initiative called Full Site Editing (FSE), the Site Editor extends the block paradigm to the entire website structure. With the Site Editor, users can modify not just content but also global elements like headers, footers, and sidebars and even create custom page templates – all using the familiar block interface.
 
 From a development perspective, the Site Editor introduces new challenges and opportunities. You'll need to consider how your custom blocks and plugins interact with site-wide editing capabilities. For instance, you might need to create block patterns or custom block templates that can be used across the entire site.
 
@@ -81,5 +99,7 @@ In the following lessons, we'll dive deeper into the intricacies of Gutenberg de
 
 ## Further Reading  
 
-[https://developer.wordpress.org/block-editor/](https://developer.wordpress.org/block-editor/) [https://learn.wordpress.org/lesson/what-is-the-difference-between-the-block-editor-and-site-editor/](https://learn.wordpress.org/lesson/what-is-the-difference-between-the-block-editor-and-site-editor/) [https://wordpress.org/gutenberg/](https://wordpress.org/gutenberg/)  
-[https://learn.wordpress.org/tutorial/understanding-the-page-editor-vs-site-editor/](https://learn.wordpress.org/tutorial/understanding-the-page-editor-vs-site-editor/)   
+- [Block Editor Handbook](https://developer.wordpress.org/block-editor/)
+- [What is the difference between the Block Editor and Site Editor?](https://learn.wordpress.org/lesson/what-is-the-difference-between-the-block-editor-and-site-editor/)
+- [Gutenberg - The WordPress Block Editor](https://wordpress.org/gutenberg/)
+- [Understanding the Page Editor vs Site Editor](https://learn.wordpress.org/tutorial/understanding-the-page-editor-vs-site-editor/)   

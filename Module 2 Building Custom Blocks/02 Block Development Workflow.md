@@ -64,30 +64,34 @@ Hot reloading is a powerful feature that allows you to see changes in your block
 
 To enable hot reloading with wp-scripts, you'll need to make a few modifications to your development environment.
 
-Ensure that you're using the latest version of wp-scripts, as hot reloading support has been improved in recent versions. If you used create-block to create your project, you should already have the latest version of wp-scripts installed.
+You'll need to set up a local WordPress environment to support hot reloading. One way to do this is by using the @wordpress/env (aka wp-env) package, which provides a no configuration local WordPress development environment for developing WordPress block plugins.
 
-ou'll need to set up your local WordPress environment to support hot reloading. One way to do this is by using the @wordpress/env package, which provides a local WordPress development environment with Docker.
-
-Install @wordpress/env as a development dependency:
+To start, install @wordpress/env as a development dependency in your block plugin by running the following command from the terminal:
 
 ```
 npm install @wordpress/env --save-dev
 ```
 
-Then, add the following script to your package.json:
+Then, update your `package.json` to include the `wp-env` script:
 
 ```
-{
-  "scripts": {
-    "env": "wp-env"
-  }
-}
+"scripts": {
+    "wp-env": "wp-env"
+},
 ```
 
-Now, you can start your local WordPress environment with:
+Now, you can start wp-env with the following command:
 
 ```
-npm run env start
+npm run wp-env start
+```
+
+This will start the local WordPress environment and your block editor will be available at `http://localhost:8888`.
+
+Next, you need to edit the `start` script in your `package.json` to enable hot reloading.
+
+```
+"start": "wp-scripts start --hot"
 ```
 
 With this setup in place, you can run your development server with hot reloading:
@@ -149,29 +153,3 @@ registerBlockType( 'my-plugin/my-block', {
 ```
 
 In this example, we're logging information at key points in the block's lifecycle, which can help us understand when and how our block is being rendered and updated.
-
-### Using wp.data for State Debugging
-
-The wp.data API provides a powerful way to inspect and debug the state of your blocks and the WordPress editor. You can use the select function to retrieve data from various stores. Here's an example:
-
-```javascript
-const { select } = wp.data;
-
-// Get all blocks in the current post
-const blocks = select( 'core/block-editor' ).getBlocks();
-console.log( 'Current blocks:', blocks );
-
-// Get the attributes of a specific block
-const blockAttributes = select( 'core/block-editor' ).getBlockAttributes( 'block-client-id' );
-console.log( 'Block attributes:', blockAttributes );
-```
-
-This approach allows you to inspect the current state of your blocks and the editor, which can be invaluable when debugging complex interactions or state management issues.
-
-## Conclusion
-
-Mastering the block development workflow is essential for creating high-quality, efficient WordPress blocks. By leveraging wp-scripts for build processes, implementing hot reloading for rapid development, and employing effective debugging techniques, you can significantly streamline your development process and create more robust blocks.
-
-Remember that practice and experimentation are key to becoming proficient with these tools and techniques. As you continue to develop blocks, you'll discover additional strategies and workflows that work best for your specific needs and coding style.
-
-With the knowledge gained from this lesson, you're now equipped to tackle more complex block development projects and contribute meaningfully to the WordPress ecosystem. Happy coding\!
