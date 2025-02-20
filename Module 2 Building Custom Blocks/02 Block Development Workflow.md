@@ -131,15 +131,17 @@ export default function Edit( { attributes } ) {
 
 This will log information about the different variables at key points in the block's lifecycle, which can help you understand the data flow when your block is rendered in the editor.
 
-### Using the breakpoints and step through debugging
+### Using breakpoints and step through debugging
 
 Another powerful debugging technique is setting breakpoints in your code. Breakpoints pause the execution of your code at a specific line, allowing you to inspect variables and step through your code line by line. To set breakpoints in your block's JavaScript code:
 
 1. Navigate to the Sources tab in your browser's developer tools.
 2. Find your block's JavaScript file in the file tree.
-3. Set breakpoints by clicking on the line numbers where you want to pause execution.
+3. Set breakpoints by clicking on the line numbers in the `src` files where you want to pause execution.
 4. Refresh the page to trigger the debugger.
 
 When the code execution hits your breakpoint, it will pause. You can then step through your code, inspect variables, and identify issues.
+
+Debugging this way is possible due to the work that `wp-scripts` does to generate source maps for your block's JavaScript code. Source maps map the minified JavaScript code back to the original source code, and make it easier to debug code in the browser's developer tools.
 
 If you combine the `wp-scripts` development server with hot reloading and use the browser developer tools efficiently, you'll have a powerful setup for efficient block development and debugging.
