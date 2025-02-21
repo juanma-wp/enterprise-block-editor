@@ -36,19 +36,48 @@ Generally editor styles are used to if the block has additional elements that ar
 
 ## CSS Selectors
 
-When styling custom blocks, it's crucial to use appropriate CSS selectors to target specific elements within your block. WordPress provides several classes and attributes that you can leverage for styling purposes.
+When styling custom blocks, it's useful to know which block CSS selectors are available. 
 
 ### Block-Specific Classes
 
-Every block in WordPress is wrapped in a div with a class that follows the pattern `wp-block-{namespace}-{blockname}`. For example, if you've created a custom block called "my-custom-block" in the namespace "my-plugin", the wrapper div would have the class `wp-block-my-plugin-my-custom-block`.
+When using `useBlockProps` on the block's container element, it automatically adds a class to the block's wrapper div. This class follows the pattern `wp-block-{namespace}-{blockname}`.
 
-You can target this class in your CSS to apply styles to your entire block:
+For example, if you've scaffolded a custom block called `my-custom-block` with create-block, the default namespace is `create-block`, and so the the wrapper element would have the class `wp-block-create-block-my-custom-block`.
+
+You can therefor target this class in your CSS to apply styles to your entire block:
 
 ```
-.wp-block-my-plugin-my-custom-block {
-    background-color: #f0f0f0;
-    padding: 20px;
-    border-radius: 5px;
+.wp-block-create-block-my-custom-block {
+	background-color: #21759b;
+	color: #fff;
+	padding: 2px;
+}
+```
+
+### Adding classes to useBlockProps
+
+You can also add custom classes to the block's container element by passing them to the `className` prop of `useBlockProps`. This allows you greater control over the styling of your block:
+
+```jsx
+import { useBlockProps } from '@wordpress/block-editor';
+
+export default function Edit() {
+    const blockProps = useBlockProps({ className: 'custom-block-container' });
+
+    return (
+        <div { ...blockProps }>
+            <h2>Block Title</h2>
+            <p>Block content goes here.</p>
+        </div>
+    );
+}
+```
+
+Then, in your CSS, you can target this custom class:
+
+```css
+.wp-block-create-block-my-custom-block .custom-block-container {
+    // Custom styles for this block
 }
 ```
 
@@ -160,4 +189,8 @@ Always test your blocks across various devices and screen sizes to ensure they b
 
 By mastering these techniques for styling blocks, adding CSS selectors, and managing responsive design, you'll be well-equipped to create blocks that look great and function seamlessly across all devices, both in the editor and on the frontend of WordPress sites.
 
-Citations: \[1\] [https://webdevstudios.com/2023/12/19/wordpress-styling-techniques/](https://webdevstudios.com/2023/12/19/wordpress-styling-techniques/) \[2\] [https://www.boxuk.com/insight/wordpress-block-editor-gutenberg-for-enterprise-content-creators/](https://www.boxuk.com/insight/wordpress-block-editor-gutenberg-for-enterprise-content-creators/) \[3\] [https://gutenbergmarket.com/news/a-comprehensive-guide-to-building-wordpress-block-themes](https://gutenbergmarket.com/news/a-comprehensive-guide-to-building-wordpress-block-themes) \[4\] [https://wpvip.com/how-the-wordpress-gutenberg-block-editor-empowers-enterprise-content-creators/](https://wpvip.com/how-the-wordpress-gutenberg-block-editor-empowers-enterprise-content-creators/) \[5\] [https://www.aslamdoctor.com/exploring-wordpress-styling-techniques/](https://www.aslamdoctor.com/exploring-wordpress-styling-techniques/) \[6\] [https://learn.wordpress.org/tutorial/content-creation-in-wordpress-using-gutenberg/](https://learn.wordpress.org/tutorial/content-creation-in-wordpress-using-gutenberg/) \[7\] [https://learn.wordpress.org/tutorial/styling-your-wordpress-block/](https://learn.wordpress.org/tutorial/styling-your-wordpress-block/) \[8\] [https://learn.wordpress.org/tutorial/intro-to-publishing-with-the-block-editor/](https://learn.wordpress.org/tutorial/intro-to-publishing-with-the-block-editor/) \[9\] [https://css-tricks.com/getting-the-wordpress-block-editor-to-look-like-the-front-end-design/](https://css-tricks.com/getting-the-wordpress-block-editor-to-look-like-the-front-end-design/)  
+# Further reading 
+
+- [https://wpvip.com/how-the-wordpress-gutenberg-block-editor-empowers-enterprise-content-creators/](https://wpvip.com/how-the-wordpress-gutenberg-block-editor-empowers-enterprise-content-creators/) 
+- [https://learn.wordpress.org/tutorial/content-creation-in-wordpress-using-gutenberg/](https://learn.wordpress.org/tutorial/content-creation-in-wordpress-using-gutenberg/) 
+- [https://learn.wordpress.org/tutorial/styling-your-wordpress-block/](https://learn.wordpress.org/tutorial/styling-your-wordpress-block/) 
