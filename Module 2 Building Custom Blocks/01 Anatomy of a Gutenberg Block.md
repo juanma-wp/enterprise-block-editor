@@ -57,17 +57,20 @@ Registering the block this way will automatically detect and use the `block.json
 
 Let's break down the key properties in this file:
 
-* `name`: A unique identifier for the block, typically prefixed with your plugin or theme name.  
-* `title`: The human-readable name of the block, displayed in the block inserter.  
+* `$schema`: The URL of the schema that defines the structure of the `block.json` file.
+* `apiVersion`: The version of the block API that the block uses.
+* `name`: A unique identifier for the block, typically prefixed with your plugin or theme name.
+* `version`: The version number of the block.
+* `title`: The human-readable name of the block, displayed in the block inserter.
+* `category`: The category in which the block will appear in the block inserter (e.g., "common", "formatting", "layout", "widgets", "embed").
+* `icon`: The icon to display for the block in the block inserter. This can be a Dashicon or a custom SVG.
 * `description`: A brief description of the block's purpose.  
-* `category`: The category in which the block will appear in the block inserter (e.g., "common", "formatting", "layout", "widgets", "embed").  
-* `icon`: The icon to display for the block in the block inserter. This can be a Dashicon or a custom SVG.  
-* `keywords`: An array of keywords that users can search for to find the block.  
-* `attributes`: An object that defines the data the block will store, such as text, images, or settings.  
 * `supports`: An object that defines the features the block supports, such as HTML editing or alignment options.  
 * `textdomain`: The text domain for the block, used for localization.  
 * `editorScript`: The path to the JavaScript file that contains the block's editor functionality.  
+* `editorStyle`: The path to the CSS file that contains the block's editor styles.
 * `style`: The path to the CSS file that contains the block's styles.
+* `viewScript`: The path to a JavaScript file that can contain additional front end functionality.
 
 You’ll notice that the `editorScript` is pointing to the `index.js` file in the build directory. This file generated during the build process contains the minified and optimized version of the code in the `src` directory.
 

@@ -2,49 +2,39 @@
 
 In the world of WordPress block development, creating visually appealing and functional blocks is crucial. This lesson will delve into the intricacies of styling blocks, covering editor styles, frontend styles, CSS selectors, and responsive design techniques. By the end of this lesson, you'll have a comprehensive understanding of how to create blocks that look great both in the editor and on the frontend.
 
-## Editor Styles vs. Frontend Styles
+## Block style vs Editor style
 
-When developing blocks for WordPress, it's essential to understand the distinction between editor styles and frontend styles. These two aspects of block styling serve different purposes and require different approaches.
+In the Anatomy of a Block lesson, you learned that create-block configures two files for you: `style.scss` and `editor.scss`. These files are [Syntactically Awesome Style Sheets](https://sass-lang.com/) (or Sass) and are used to define the styles for your block. 
+
+During the build process, these files are compiled into CSS and enqueued in the appropriate places.
+
+### Block Styles
+
+The block styles in `style.scss` are applied to blocks when they are rendered on the front end of the website. These styles determine how the block will appear to visitors of your site. 
+
+```sass
+.wp-block-create-block-my-custom-block {
+  background-color: #21759b;
+  color: #fff;
+  padding: 2px;
+}
+```
+
+Because these styles are applied to the block, they are also enqueued in the editor, so that that block looks the same when using it in the editor as it does on the front end.
 
 ### Editor Styles
 
-Editor styles are applied to blocks within the WordPress block editor (Gutenberg). These styles are crucial for providing a visual representation of how the block will appear on the frontend while still in the editing interface. To add editor styles, you'll need to enqueue a separate stylesheet specifically for the block editor.
+On the other hand the editor styles in `editor.scss` are only applied to the block when it's displayed in the editor. This allows you to style the block differently in the editor than it appears on the front end. 
 
-Here's an example of how to enqueue editor styles:
-
-```
-function enqueue_block_editor_assets() {
-    wp_enqueue_style(
-        'my-block-editor-styles',
-        get_template_directory_uri() . '/assets/css/editor-styles.css',
-        array(),
-        filemtime( get_template_directory() . '/assets/css/editor-styles.css' )
-    );
+```sass
+.wp-block-create-block-my-custom-block {
+  border: 1px dotted #f00;
 }
-add_action( 'enqueue_block_editor_assets', 'enqueue_block_editor_assets' );
 ```
 
-In this example, we're using the `enqueue_block_editor_assets` hook to load our editor-specific stylesheet. This ensures that the styles are only applied within the block editor and not on the frontend of the site.
+Generally editor styles are used to if the block has additional elements that are only visible in the editor, for example, performing some tasks that filter the data to be displayed in the final block that's saved to the database.
 
-### Frontend Styles
-
-Frontend styles, on the other hand, are applied to blocks when they are rendered on the public-facing side of the website. These styles determine how the block will appear to visitors of your site. To add frontend styles, you'll typically enqueue a stylesheet in the traditional WordPress way:
-
-```
-function enqueue_frontend_block_styles() {
-    wp_enqueue_style(
-        'my-block-frontend-styles',
-        get_template_directory_uri() . '/assets/css/frontend-styles.css',
-        array(),
-        filemtime( get_template_directory() . '/assets/css/frontend-styles.css' )
-    );
-}
-add_action( 'wp_enqueue_scripts', 'enqueue_frontend_block_styles' );
-```
-
-This function uses the `wp_enqueue_scripts` hook to load the frontend styles for your blocks.
-
-## Adding CSS Selectors
+## CSS Selectors
 
 When styling custom blocks, it's crucial to use appropriate CSS selectors to target specific elements within your block. WordPress provides several classes and attributes that you can leverage for styling purposes.
 
