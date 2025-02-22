@@ -133,25 +133,13 @@ export default function Edit({ attributes }) {
 }
 ```
 
-## Managing Responsive Design in Blocks
+## Design considerations for block developers
 
-Ensuring that your blocks are responsive is crucial for providing a consistent user experience across different devices. Here are some methodologies to achieve responsive design in your blocks:
+The design of a WordPress site the responsibility of the specific theme being used. This means that as a block developer, you generally only need to consider design elements if you are defining a specific set of dimensions for the block. 
 
-### Using CSS Media Queries
+If you allow your block to use the built-in layout supports for things like fonts, alignment, pagination, padding etc, you probably won't need to worry about making your block responsive.
 
-CSS media queries are a powerful tool for applying different styles based on the viewport size. You can use them in your block's stylesheet to adjust the layout and styling for different screen sizes:
-
-```
-.wp-block-my-plugin-my-custom-block {
-    padding: 20px;
-}
-
-@media (max-width: 768px) {
-    .wp-block-my-plugin-my-custom-block {
-        padding: 10px;
-    }
-}
-```
+If you do need to define specific design styles for your block, it's a good idea to follow modern web design best practices like fluid typography and flexible layouts.
 
 ### Fluid Typography
 
@@ -185,12 +173,13 @@ This creates a flexible layout where child elements will wrap to the next line o
 
 ### Testing Responsive Behavior
 
-Always test your blocks across various devices and screen sizes to ensure they behave as expected. Use browser developer tools to simulate different viewport sizes and identify any issues with your responsive design.
+Always test your blocks across various devices and screen sizes to ensure they behave as expected. 
 
-By mastering these techniques for styling blocks, adding CSS selectors, and managing responsive design, you'll be well-equipped to create blocks that look great and function seamlessly across all devices, both in the editor and on the frontend of WordPress sites.
+Most modern browsers have a responsive design mode built into the developer tools. This can be used to simulate different viewport sizes and identify any issues with your block's design.
 
 # Further reading 
 
-- [https://wpvip.com/how-the-wordpress-gutenberg-block-editor-empowers-enterprise-content-creators/](https://wpvip.com/how-the-wordpress-gutenberg-block-editor-empowers-enterprise-content-creators/) 
-- [https://learn.wordpress.org/tutorial/content-creation-in-wordpress-using-gutenberg/](https://learn.wordpress.org/tutorial/content-creation-in-wordpress-using-gutenberg/) 
-- [https://learn.wordpress.org/tutorial/styling-your-wordpress-block/](https://learn.wordpress.org/tutorial/styling-your-wordpress-block/) 
+- [How the WordPress Gutenberg Block Editor Empowers Enterprise Content Creators](https://wpvip.com/how-the-wordpress-gutenberg-block-editor-empowers-enterprise-content-creators/)
+- [Content Creation in WordPress Using Gutenberg](https://learn.wordpress.org/tutorial/content-creation-in-wordpress-using-gutenberg/)
+- [Styling Your WordPress Block](https://learn.wordpress.org/tutorial/styling-your-wordpress-block/)
+- [Intrinsic Design, Theming, and Rethinking How to Design with WordPress](https://developer.wordpress.org/news/2023/02/intrinsic-design-theming-and-rethinking-how-to-design-with-wordpress/)
