@@ -1,18 +1,18 @@
 # Styling Blocks
 
-In the world of WordPress block development, creating visually appealing and functional blocks is crucial. This lesson will delve into the intricacies of styling blocks, covering editor styles, frontend styles, CSS selectors, and responsive design techniques. By the end of this lesson, you'll have a comprehensive understanding of how to create blocks that look great both in the editor and on the frontend.
+In the world of WordPress block development, creating visually appealing and functional blocks is crucial. This lesson will delve into the intricacies of styling blocks, covering editor styles, frontend styles, CSS selectors, and responsive design techniques. By the end of this lesson, you'll have a comprehensive understanding of how to create blocks that look great both in the editor and on the front end.
 
-## Block style vs Editor style
+## Block style vs. Editor style
 
-In the Anatomy of a Block lesson, you learned that create-block configures two files for you: `style.scss` and `editor.scss`. These files are [Syntactically Awesome Style Sheets](https://sass-lang.com/) (or Sass) and are used to define the styles for your block. 
+In the Anatomy of a Block lesson, you learned that create-block configures two files for you: `style.scss` and `editor.scss`. These files are [Syntactically Awesome Style Sheets](https://sass-lang.com/) (or Sass) and are used to define the styles for your block.
 
 During the build process, these files are compiled into CSS and enqueued in the appropriate places.
 
 ### Block Styles
 
-The block styles in `style.scss` are applied to blocks when they are rendered on the front end of the website. These styles determine how the block will appear to visitors of your site. 
+The block styles in `style.scss` are applied to blocks when they are rendered on the front end of the website. These styles determine how the block will appear to visitors of your site.
 
-```sass
+```
 .wp-block-create-block-my-custom-block {
   background-color: #21759b;
   color: #fff;
@@ -20,31 +20,31 @@ The block styles in `style.scss` are applied to blocks when they are rendered on
 }
 ```
 
-Because these styles are applied to the block, they are also enqueued in the editor, so that that block looks the same when using it in the editor as it does on the front end.
+Because these styles are applied to the block, they are also enqueued in the editor so that that block looks the same when using it in the editor as it does on the front end.
 
 ### Editor Styles
 
-On the other hand the editor styles in `editor.scss` are only applied to the block when it's displayed in the editor. This allows you to style the block differently in the editor than it appears on the front end. 
+On the other hand, the editor styles in `editor.scss` are only applied to the block when it's displayed in the editor. This allows you to style the block differently in the editor than it appears on the front end.
 
-```sass
+```
 .wp-block-create-block-my-custom-block {
   border: 1px dotted #f00;
 }
 ```
 
-Generally editor styles are used to if the block has additional elements that are only visible in the editor, for example, performing some tasks that filter the data to be displayed in the final block that's saved to the database.
+Generally, editor styles are used if the block has additional elements that are only visible in the editor, for example, performing some tasks that filter the data to be displayed in the final block that's saved to the database.
 
 ## CSS Selectors
 
-When styling custom blocks, it's useful to know which block CSS selectors are available. 
+When styling custom blocks, it's useful to know which block CSS selectors are available.
 
 ### Block-Specific Classes
 
 When using `useBlockProps` on the block's container element, it automatically adds a class to the block's wrapper div. This class follows the pattern `wp-block-{namespace}-{blockname}`.
 
-For example, if you've scaffolded a custom block called `my-custom-block` with create-block, the default namespace is `create-block`, and so the the wrapper element would have the class `wp-block-create-block-my-custom-block`.
+For example, if you've scaffolded a custom block called `my-custom-block` with create-block, the default namespace is `create-block`, and so the wrapper element would have the class `wp-block-create-block-my-custom-block`.
 
-You can therefor target this class in your CSS to apply styles to your entire block:
+You can, therefore target this class in your CSS to apply styles to your entire block:
 
 ```
 .wp-block-create-block-my-custom-block {
@@ -58,7 +58,7 @@ You can therefor target this class in your CSS to apply styles to your entire bl
 
 You can also add custom classes to the block's container element by passing them to the `className` prop of `useBlockProps`. This allows you greater control over the styling of your block:
 
-```jsx
+```
 import { useBlockProps } from '@wordpress/block-editor';
 
 export default function Edit() {
@@ -75,7 +75,7 @@ export default function Edit() {
 
 Then, in your CSS, you can target this custom class:
 
-```css
+```
 .wp-block-create-block-my-custom-block .custom-block-container {
     // Custom styles for this block
 }
@@ -135,15 +135,15 @@ export default function Edit({ attributes }) {
 
 ## Design considerations for block developers
 
-The design of a WordPress site the responsibility of the specific theme being used. This means that as a block developer, you generally only need to consider design elements if you are defining a specific set of dimensions for the block. 
+The design of a WordPress site the responsibility of the specific theme being used. This means that as a block developer, you generally only need to consider design elements if you are defining a specific set of dimensions for the block.
 
-If you allow your block to use the built-in layout supports for things like fonts, alignment, pagination, padding etc, you probably won't need to worry about making your block responsive.
+If you allow your block to use the built-in layout supports for things like fonts, alignment, pagination, padding, etc, you probably won't need to worry about making your block responsive.
 
 If you do need to define specific design styles for your block, it's a good idea to follow modern web design best practices like fluid typography and flexible layouts.
 
 ### Fluid Typography
 
-Implement fluid typography to ensure that your text scales smoothly across different screen sizes. You can use CSS `clamp()` function to set a minimum, preferred, and maximum font size:
+Implement fluid typography to ensure that your text scales smoothly across different screen sizes. You can use the CSS `clamp()` function to set a minimum, preferred, and maximum font size:
 
 ```
 .wp-block-my-plugin-my-custom-block h2 {
@@ -173,11 +173,11 @@ This creates a flexible layout where child elements will wrap to the next line o
 
 ### Testing Responsive Behavior
 
-Always test your blocks across various devices and screen sizes to ensure they behave as expected. 
+Always test your blocks across various devices and screen sizes to ensure they behave as expected.
 
 Most modern browsers have a responsive design mode built into the developer tools. This can be used to simulate different viewport sizes and identify any issues with your block's design.
 
-# Further reading 
+# Further reading
 
 - [How the WordPress Gutenberg Block Editor Empowers Enterprise Content Creators](https://wpvip.com/how-the-wordpress-gutenberg-block-editor-empowers-enterprise-content-creators/)
 - [Content Creation in WordPress Using Gutenberg](https://learn.wordpress.org/tutorial/content-creation-in-wordpress-using-gutenberg/)
