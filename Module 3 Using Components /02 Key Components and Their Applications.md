@@ -2,21 +2,28 @@
 
 In this lesson, we'll explore essential components from the @wordpress/components package, which are crucial for creating rich, interactive user interfaces in the WordPress Block Editor. These components provide standardized UI elements that maintain consistency across the WordPress ecosystem while offering powerful functionality for block development.
 
+## Storybook
+
+Storybook is a tool for developing UI components in isolation, allowing developers to build and test components independently of the application. It provides a sandbox environment to showcase components, test different states, and document their behavior.
+
+WordPress uses Storybook to showcase UI elements for the Block Editor including all components in the components package. By exploring Storybook stories, developers can understand how components work, view their props, and see them in action.
+
+To access the WordPress Storybook, visit [https://wordpress.github.io/gutenberg/](https://wordpress.github.io/gutenberg/). To jump directly to the components section, go to [https://wordpress.github.io/gutenberg/?path=/docs/components-introduction--docs](https://wordpress.github.io/gutenberg/?path=/docs/components-introduction--docs).
+
 ## Button Component
 
 The Button component is a fundamental building block for creating interactive elements in your custom blocks. It allows users to trigger actions or navigate through your interface.
 
 ```javascript
 import { Button } from '@wordpress/components';
-
-function MyCustomBlock() {
-    return (
-         console.log('Button clicked!')}
-        >
-            Click Me
-        
-    );
-}
+const Mybutton = () => (
+    <Button
+        variant="primary"
+        onClick={ handleClick }
+    >
+        Click here
+    </Button>
+);
 ```
 
 The Button component accepts various props to customize its appearance and behavior, such as 'variant' for styling and 'onClick' for handling user interactions.
@@ -28,58 +35,66 @@ Further Reading: For more details on the Button component, including all availab
 BaseControl is a wrapper component that enhances form controls by providing a consistent layout for labels and help text.
 
 ```javascript
-import { BaseControl, TextControl } from '@wordpress/components';
+import { BaseControl, useBaseControlProps } from '@wordpress/components';
 
-function MyFormField() {
+const MyCustomTextareaControl = ({ children, ...baseProps }) => (
+    const { baseControlProps, controlProps } = useBaseControlProps( baseProps );
     return (
-        
-             setName(value)}
-            />
-        
+        <BaseControl { ...baseControlProps } __nextHasNoMarginBottom>
+            <textarea { ...controlProps }>
+                { children }
+            </textarea>
+        </BaseControl>
     );
-}
+);
 ```
 
 BaseControl ensures that your form fields have a uniform appearance and proper accessibility attributes.
 
 Further Reading: To explore the full capabilities of the BaseControl component, check out the [BaseControl component documentation](https://developer.wordpress.org/block-editor/reference-guides/components/base-control/).
 
-## PanelBody and PanelRow Components
+## Panel, PanelBody and PanelRow Components
 
-These components are used to structure settings panels in the block inspector. PanelBody creates collapsible sections, while PanelRow organizes content within those sections.
+These components are used to structure settings panels in the block inspector. `Panel` creates a container with a header,   `PanelBody` creates collapsible sections, while PanelRow organizes content within those sections.
 
 ```javascript
-import { PanelBody, PanelRow, TextControl } from '@wordpress/components';
+import { Panel, PanelBody, PanelRow } from '@wordpress/components';
+import { more } from '@wordpress/icons';
 
-function MyBlockInspector() {
-    return (
-        
-            
-                 setTitle(value)}
-                />
-            
-        
-    );
-}
+const MyPanel = () => (
+    <Panel header="My Panel">
+        <PanelBody title="My Block Settings" icon={ more } initialOpen={ true }>
+            <PanelRow>My Panel Inputs and Labels</PanelRow>
+        </PanelBody>
+    </Panel>
+);
 ```
 
 This structure helps organize block settings in a user-friendly, collapsible interface.
 
-Further Reading: For a comprehensive guide on using PanelBody and PanelRow components, refer to the [PanelBody component documentation](https://developer.wordpress.org/block-editor/reference-guides/components/panel/) and [PanelRow component documentation](https://developer.wordpress.org/block-editor/reference-guides/components/panel/).
+Further Reading: For a comprehensive guide on using Panel, PanelBody and PanelRow components, refer to the [Panel component documentation](https://developer.wordpress.org/block-editor/reference-guides/components/panel/).
 
 ## TextControl Component
 
 TextControl is used for capturing user input in text fields. It's a versatile component for various types of text-based data entry.
 
 ```javascript
+import { useState } from 'react';
 import { TextControl } from '@wordpress/components';
 
-function MyTextInput() {
+const MyTextControl = () => {
+    const [ className, setClassName ] = useState( '' );
+
     return (
-         setCustomText(value)}
+        <TextControl
+            __nextHasNoMarginBottom
+            __next40pxDefaultSize
+            label="Additional CSS Class"
+            value={ className }
+            onChange={ ( value ) => setClassName( value ) }
         />
     );
-}
+};
 ```
 
 TextControl handles both single-line and multi-line text inputs, making it suitable for a wide range of use cases.
@@ -91,14 +106,27 @@ Further Reading: To learn more about the TextControl component and its various p
 SelectControl creates dropdown menus for option selection, allowing users to choose from a predefined list of options.
 
 ```javascript
+import { useState } from 'react';
 import { SelectControl } from '@wordpress/components';
 
-function MySelectMenu() {
+const MySelectControl = () => {
+    const [ size, setSize ] = useState( '50%' );
+
     return (
-         setSelectedColor(value)}
+        <SelectControl
+            label="Size"
+            value={ size }
+            options={ [
+                { label: 'Big', value: '100%' },
+                { label: 'Medium', value: '50%' },
+                { label: 'Small', value: '25%' },
+            ] }
+            onChange={ ( newSize ) => setSize( newSize ) }
+            __next40pxDefaultSize
+            __nextHasNoMarginBottom
         />
     );
-}
+};
 ```
 
 This component is particularly useful when you need to provide users with a list of choices.
@@ -110,14 +138,28 @@ Further Reading: For a detailed explanation of the SelectControl component and i
 ToggleControl is used for managing boolean states with a simple on/off switch.
 
 ```javascript
+import { useState } from 'react';
 import { ToggleControl } from '@wordpress/components';
 
-function MyToggleSwitch() {
+const MyToggleControl = () => {
+    const [ hasFixedBackground, setHasFixedBackground ] = useState( false );
+
     return (
-         setIsFeatureEnabled(value)}
+        <ToggleControl
+            __nextHasNoMarginBottom
+            label="Fixed Background"
+            help={
+                hasFixedBackground
+                    ? 'Has fixed background.'
+                    : 'No fixed background.'
+            }
+            checked={ hasFixedBackground }
+            onChange={ (newValue) => {
+                setHasFixedBackground( newValue );
+            } }
         />
     );
-}
+};
 ```
 
 ToggleControl is ideal for settings that can be either enabled or disabled.
@@ -128,22 +170,49 @@ Further Reading: To dive deeper into the ToggleControl component and its impleme
 
 These components are used for building form inputs that allow users to select one or multiple options.
 
-```javascript
-import { CheckboxControl, RadioControl } from '@wordpress/components';
+CheckboxControl is used for multiple selections
 
-function MyFormControls() {
+```javascript
+import { useState } from 'react';
+import { CheckboxControl } from '@wordpress/components';
+
+const MyCheckboxControl = () => {
+    const [ isChecked, setChecked ] = useState( true );
     return (
-        <>
-             setIsSubscribed(value)}
-            />
-             setSelectedPlan(value)}
-            />
-        
+        <CheckboxControl
+            __nextHasNoMarginBottom
+            label="Is author"
+            help="Is the user a author or not?"
+            checked={ isChecked }
+            onChange={ setChecked }
+        />
     );
-}
+};
 ```
 
-CheckboxControl is used for multiple selections, while RadioControl is for single-option selections.
+RadioControl is for single-option selections.
+
+```javascript
+import { RadioControl } from '@wordpress/components';
+import { useState } from 'react';
+
+const MyRadioControl = () => {
+    const [ option, setOption ] = useState( 'a' );
+
+    return (
+        <RadioControl
+            label="User type"
+            help="The type of the current user"
+            selected={ option }
+            options={ [
+                { label: 'Author', value: 'a' },
+                { label: 'Editor', value: 'e' },
+            ] }
+            onChange={ ( value ) => setOption( value ) }
+        />
+    );
+};
+```
 
 Further Reading: For more information on these form control components, visit the [CheckboxControl component documentation](https://developer.wordpress.org/block-editor/reference-guides/components/checkbox-control/) and [RadioControl component documentation](https://developer.wordpress.org/block-editor/reference-guides/components/radio-control/).
 

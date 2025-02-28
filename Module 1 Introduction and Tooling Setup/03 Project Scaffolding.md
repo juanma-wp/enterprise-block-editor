@@ -22,7 +22,15 @@ npx @wordpress/create-block@latest my-custom-block
 
 This command generates a new plugin directory named `my-custom-block` containing a fully functional block plugin. The process includes setting up the essential PHP, JavaScript, and CSS files for the new block and configuring the build process using `@wordpress/scripts`.
 
-The `@wordpress/create-block` package also provides a range of options to customize the block scaffold. You can explore these options by taking a look at the official [documentation](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-create-block/). 
+The `@wordpress/create-block` package also provides a range of options to customize the block scaffold. 
+
+For example, you can specify the block's namespace, title, category, and description:
+
+```
+npx @wordpress/create-block@latest --namespace vip-blocks --title "My Custom VIP Block" --category widgets --description "Example VIP block scaffolded with Create Block tool." my-custom-block
+```
+
+You can explore all the available options by taking a look at the official [documentation](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-create-block/). 
 
 ## Directory and File Structure Best Practices
 

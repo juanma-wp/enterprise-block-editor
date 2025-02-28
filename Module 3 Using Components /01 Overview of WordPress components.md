@@ -39,21 +39,19 @@ To illustrate the practical application of a prebuilt component, let's examine h
 To start, use create-block to scaffold a new block. 
 
 ```shell
-npx @wordpress/create-block vip-learn/custom-rich-text
+npx @wordpress/create-block --namespace vip-learn custom-rich-text
 ```
 
 Open the block's block.json file, and add an attribute:
 
 ```json
-{
-    "attributes": {
-        "content": {
-            "type": "string",
-            "source": "html",
-            "selector": "p"
-        }
+"attributes": {
+    "content": {
+        "type": "string",
+        "source": "html",
+        "selector": "p"
     }
-}
+},
 ```
 
 This is the attribute that will store the block's content from the RichText component.
@@ -64,22 +62,38 @@ Next, open the block's Edit component file (edit.js) and import the RichText com
 import { useBlockProps, RichText } from '@wordpress/block-editor';
 ```
 
-Then use the RichText component within the Edit component to create an editable text area:
+Then update the Edit component to use the RichText component and the block attributes to create an editable text area in the editor:
 
 ```javascript
-
 export default function Edit( { attributes, setAttributes } ) {
-    const onChangeContent = ( newContent ) => {
-        setAttributes( { content: newContent } );
+    const onChangeContent = ( content ) => {
+        setAttributes( { content } );
     };
-	return (
-		
-	);
+    return (
+        <RichText
+            { ...useBlockProps()}
+            value={ attributes.content }
+            onChange={ onChangeContent }
+        />
+    );
 }
 ```
 
+In this example, the `attributes` prop and `setAttributes` function are destructured in the `Edit` component. The `RichText` component is used to create an editable text area in the block. The `RichText` component has an `onChange` event handler that calls the `onChangeContent` function to update the block's content attribute using the `setAttributes` function whenever the text is modified.
 
-In this example, the RichText component is used to create an editable text area within the block. It handles rich text formatting, keyboard interactions, and content updates, significantly simplifying the development process.
+You will also need to update the `save` function to render the `RichText` component with the content stored in the block's attributes:
+
+```javascript
+import { useBlockProps, RichText } from '@wordpress/block-editor';
+export default function save( { attributes } ) {
+	return (
+		<RichText.Content
+			{ ...useBlockProps.save() }
+			value={ attributes.content }
+		/>
+	);
+}
+```
 
 ## Resources for Further Learning
 
