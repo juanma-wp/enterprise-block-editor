@@ -1,8 +1,10 @@
 ## 3.2 Key Components and Their Applications
 
-In this lesson, we'll explore essential components from the @wordpress/components package, which are useful for creating rich, interactive user interfaces in the WordPress Block Editor. 
+In this lesson, we'll explore some useful components from the @wordpress/components package, which are useful for creating rich, interactive user interfaces in the WordPress Block Editor. 
 
 These components provide standardized UI elements that maintain consistency across the WordPress ecosystem while offering powerful functionality for block development.
+
+This lesson only covers some of the more commonly used components. For a complete list, refer to the [Component Reference](https://developer.wordpress.org/block-editor/reference-guides/components/) in the WordPress Block Editor Handbook.
 
 ## WordPress Storybook
 
@@ -168,44 +170,48 @@ CheckboxControl is used for multiple selections
 
 ```javascript
 import { useState } from 'react';
+import { useBlockProps } from '@wordpress/block-editor';
 import { CheckboxControl } from '@wordpress/components';
 
-const MyCheckboxControl = () => {
+export default function Edit() {
     const [ isChecked, setChecked ] = useState( true );
     return (
-        <CheckboxControl
-            __nextHasNoMarginBottom
-            label="Is author"
-            help="Is the user a author or not?"
-            checked={ isChecked }
-            onChange={ setChecked }
-        />
+        <div { ...useBlockProps() }>
+            <CheckboxControl
+                label="Is author"
+                help="Is the user a author or not?"
+                checked={ isChecked }
+                onChange={ setChecked }
+            />
+        </div>
     );
-};
+}
 ```
 
 RadioControl is for single-option selections.
 
 ```javascript
-import { RadioControl } from '@wordpress/components';
 import { useState } from 'react';
+import { useBlockProps } from '@wordpress/block-editor';
+import { RadioControl } from '@wordpress/components';
 
-const MyRadioControl = () => {
+export default function Edit() {
     const [ option, setOption ] = useState( 'a' );
-
     return (
-        <RadioControl
-            label="User type"
-            help="The type of the current user"
-            selected={ option }
-            options={ [
-                { label: 'Author', value: 'a' },
-                { label: 'Editor', value: 'e' },
-            ] }
-            onChange={ ( value ) => setOption( value ) }
-        />
+        <div { ...useBlockProps() }>
+            <RadioControl
+                label="User type"
+                help="The type of the current user"
+                selected={ option }
+                options={ [
+                    { label: 'Author', value: 'a' },
+                    { label: 'Editor', value: 'e' },
+                ] }
+                onChange={ ( value ) => setOption( value ) }
+            />
+        </div>
     );
-};
+}
 ```
 
 For more information on these form control components, visit the [CheckboxControl component documentation](https://developer.wordpress.org/block-editor/reference-guides/components/checkbox-control/) and [RadioControl component documentation](https://developer.wordpress.org/block-editor/reference-guides/components/radio-control/).
@@ -215,127 +221,130 @@ For more information on these form control components, visit the [CheckboxContro
 RangeControl creates a slider for adjusting numeric values within a specified range.
 
 ```javascript
+import { useState } from 'react';
+import { useBlockProps } from '@wordpress/block-editor';
 import { RangeControl } from '@wordpress/components';
 
-function MySlider() {
+export default function Edit() {
+    const [ columns, setColumns ] = useState( 2 );
     return (
-         setOpacity(value)}
-            min={0}
-            max={100}
-        />
+        <div { ...useBlockProps() }>
+            <RangeControl
+                label="Columns"
+                value={ columns }
+                onChange={ ( value ) => setColumns( value ) }
+                min={ 2 }
+                max={ 10 }
+            />
+        </div>
     );
 }
+
 ```
 
 This component is particularly useful for settings that require fine-tuning of numeric values.
 
-Further Reading: To explore the full potential of the RangeControl component, check out the [RangeControl component documentation](https://developer.wordpress.org/block-editor/reference-guides/components/range-control/).
-
-## Notice Component
-
-The Notice component is used for displaying inline notifications or alerts to users.
-
-```javascript
-import { Notice } from '@wordpress/components';
-
-function MyNotification() {
-    return (
-        <Notice status="error">An unknown error occurred.</Notice>
-    );
-}
-```
-
-Notices can be used to provide feedback, warnings, or important information to users within your block interface.
-
-Further Reading: For a comprehensive guide on using the Notice component, refer to the [Notice component documentation](https://developer.wordpress.org/block-editor/reference-guides/components/notice/).
-
-## ToolbarButton Component
-
-ToolbarButton adds buttons to block toolbars, allowing for quick access to block-specific actions.
-
-```javascript
-import { ToolbarButton } from '@wordpress/components';
-import { BlockControls } from '@wordpress/block-editor';
-
-function MyBlockToolbar() {
-    return (
-        
-             handleStyleChange()}
-            />
-        
-    );
-}
-```
-
-ToolbarButtons enhance the user experience by providing easy access to frequently used block functions.
-
-Further Reading: To learn more about implementing ToolbarButton in your blocks, visit the [ToolbarButton component documentation](https://developer.wordpress.org/block-editor/reference-guides/components/toolbar-button/).
+To explore the full potential of the RangeControl component, check out the [RangeControl component documentation](https://developer.wordpress.org/block-editor/reference-guides/components/range-control/).
 
 ## Popover Component
 
 Popover creates contextual menus or overlays that appear relative to a specific element.
 
 ```javascript
-import { Popover, Button } from '@wordpress/components';
+import { useState } from 'react';
+import { useBlockProps } from '@wordpress/block-editor';
+import { Button, Popover } from '@wordpress/components';
 
-function MyPopoverMenu() {
-    const [isOpen, setIsOpen] = useState(false);
+export default function Edit() {
+    const [ isVisible, setIsVisible ] = useState( false );
+    const toggleVisible = () => {
+        setIsVisible( ( state ) => ! state );
+    };
 
     return (
-        <>
-             setIsOpen(true)}>Open Menu
-            {isOpen && (
-                 setIsOpen(false)}>
-                    Popover content goes here
-                
-            )}
-        
+        <div { ...useBlockProps() }>
+            <Button variant="secondary" onClick={ toggleVisible }>
+                Toggle Popover!
+                { isVisible && <Popover>Popover is toggled!</Popover> }
+            </Button>
+        </div>
     );
 }
 ```
 
 Popovers are useful for displaying additional information or options without cluttering the main interface.
 
-Further Reading: For detailed information on the Popover component and its various use cases, check out the [Popover component documentation](https://developer.wordpress.org/block-editor/reference-guides/components/popover/).
+For detailed information on the Popover component and its various use cases, check out the [Popover component documentation](https://developer.wordpress.org/block-editor/reference-guides/components/popover/).
 
-## ColorPicker Component
+## Notice Component and Snackbar Component
 
-ColorPicker allows users to select and apply colors to various elements within your block.
+Notice and Snackbar components are used to display messages or alerts within the block editor. Notice should be used to communicate important messages to the user, while Snackbar should be used to communicate low priority, non-interruptive messages to the user.
 
 ```javascript
-import { ColorPicker } from '@wordpress/components';
-
-function MyColorSelector() {
+import { useBlockProps } from '@wordpress/block-editor';
+import { Notice } from '@wordpress/components';
+export default function Edit() {
     return (
-         setSelectedColor(color.hex)}
-        />
+        <div { ...useBlockProps() }>
+            <Notice status="error">This is an error notice.</Notice>
+            <h2>Block heading</h2>
+            <p>Block content</p>
+        </div>
     );
 }
 ```
 
-This component provides a user-friendly interface for color selection, which is crucial for customization options in many blocks.
-
-Further Reading: To explore the full capabilities of the ColorPicker component, refer to the [ColorPicker component documentation](https://developer.wordpress.org/block-editor/reference-guides/components/color-picker/).
-
-## Panel, PanelBody and PanelRow Components
-
-These components are used to structure settings panels in the block inspector. `Panel` creates a container with a header,   `PanelBody` creates collapsible sections, while PanelRow organizes content within those sections.
-
 ```javascript
-import { Panel, PanelBody, PanelRow } from '@wordpress/components';
-import { more } from '@wordpress/icons';
-
-const MyPanel = () => (
-    <Panel header="My Panel">
-        <PanelBody title="My Block Settings" icon={ more } initialOpen={ true }>
-            <PanelRow>My Panel Inputs and Labels</PanelRow>
-        </PanelBody>
-    </Panel>
-);
+import { useBlockProps } from '@wordpress/block-editor';
+import { Snackbar } from '@wordpress/components';
+export default function Edit() {
+    return (
+        <div { ...useBlockProps() }>
+            <Snackbar>Post published successfully.</Snackbar>
+            <h2>Block heading</h2>
+            <p>Block content</p>
+        </div>
+    );
+}
 ```
 
-This structure helps organize block settings in a user-friendly, collapsible interface.
+For detailed information on these components and their various use cases, check out the [Notice component documentation](https://developer.wordpress.org/block-editor/reference-guides/components/notice/) and the [Snackbar component documentation](https://developer.wordpress.org/block-editor/reference-guides/components/snackbar/).
 
-For a comprehensive guide on using Panel, PanelBody and PanelRow components, refer to the [Panel component documentation](https://developer.wordpress.org/block-editor/reference-guides/components/panel/).
+### Dynamic Notices
+
+Using these component in the Edit function adds the error message to the block in the Editor. If you're looking to add a notice to the post editor, you can use the `useEffect` hook from the `@wordpress/data` package to add a notice to the `core/notices` store.
+
+Here's an example of how to trigger a Snackbar notice when a button is clicked:
+
+```javascript
+import { useBlockProps } from '@wordpress/block-editor';
+import { useDispatch } from '@wordpress/data';
+import { Button } from '@wordpress/components';
+
+export default function Edit() {
+    const { createNotice } = useDispatch('core/notices');
+
+    const triggerNotice = () => {
+        createNotice(
+            'success',
+            'Action completed successfully!',
+            {
+                type: 'snackbar',
+                isDismissible: true
+            }
+        );
+    };
+
+    return (
+        <div { ...useBlockProps() }>
+            <h2>Block heading</h2>
+            <p>Block content</p>
+            <Button onClick={triggerNotice}>Trigger Notice</Button>
+        </div>
+    );
+}
+```
+
+## Conclusion
 
 By mastering these key components from the @wordpress/components package, you'll be well-equipped to create sophisticated and user-friendly interfaces for your custom blocks. Each component serves a specific purpose and can be combined to create complex UI elements that enhance the overall user experience of your WordPress blocks.

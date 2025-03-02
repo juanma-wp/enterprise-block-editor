@@ -39,16 +39,16 @@
 * **3.2: Key Components and Their Applications**  
   * Button: Creating interactive buttons  
   * BaseControl: Enhancing forms with labeled controls  
-  * PanelBody and PanelRow: Structuring settings panels  
   * TextControl: Capturing user input in text fields  
   * SelectControl: Dropdown menus for option selection  
   * ToggleControl: Managing boolean states with toggles  
   * CheckboxControl and RadioControl: Building form inputs  
-  * RangeControl: Adjusting numeric values with sliders  
+  * RangeControl: Adjusting numeric values with sliders
+  * Popover: Creating contextual menus or overlays
   * Notice: Displaying inline notifications  
-  * ToolbarButton: Adding buttons to block toolbars  
-  * Popover: Creating contextual menus or overlays  
+  * ToolbarButton: Adding buttons to block toolbars   
   * ColorPicker: Selecting and applying colors  
+  * PanelBody and PanelRow: Structuring settings panels
 * **3.3: Best Practices for Using Components**  
   * Customizing and styling components  
   * Handling component state and interactivity
