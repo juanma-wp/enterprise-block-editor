@@ -46,9 +46,9 @@
   * RangeControl: Adjusting numeric values with sliders
   * Popover: Creating contextual menus or overlays
   * Notice: Displaying inline notifications  
-  * ToolbarButton: Adding buttons to block toolbars   
-  * ColorPicker: Selecting and applying colors  
+  * ToolbarButton: Adding buttons to block toolbars
   * PanelBody and PanelRow: Structuring settings panels
+  * ColorPicker: Selecting and applying colors
 * **3.3: Best Practices for Using Components**  
   * Customizing and styling components  
   * Handling component state and interactivity

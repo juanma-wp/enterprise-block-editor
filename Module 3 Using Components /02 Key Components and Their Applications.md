@@ -312,7 +312,7 @@ For detailed information on these components and their various use cases, check 
 
 ### Dynamic Notices
 
-Using these component in the Edit function adds the error message to the block in the Editor. If you're looking to add a notice to the post editor, you can use the `useEffect` hook from the `@wordpress/data` package to add a notice to the `core/notices` store.
+Using these components in the Edit function adds the error message to the block in the Editor. If you're looking to add a notice to the post-editor, you can use the `useEffect` hook from the `@wordpress/data` package to add a notice to the `core/notices` store.
 
 Here's an example of how to trigger a Snackbar notice when a button is clicked:
 
@@ -345,6 +345,149 @@ export default function Edit() {
 }
 ```
 
+## Block Toolbar and Settings Sidebar Components
+
+Some components in the @wordpress/components package make more sense when used in either the block toolbar or settings sidebar. These components provide a consistent user interface for block-level settings and actions.
+
+To implement custom block toolbar and settings sidebar components, you can use the `BlockControls` and `InspectorControls` components from the `@wordpress/block-editor` package.
+
+```javascript
+import { BlockControls, InspectorControls } from '@wordpress/block-editor';
+```
+
+You can then add Block Toolbar and Settings Sidebar components to your block's Edit function to provide additional controls and settings.
+
+### Block Toolbar
+
+The Block Toolbar is a set of controls that appear above the block in the editor. It provides quick access to common block actions and settings. You can add custom toolbar controls using the `BlockControls` component.
+
+```javascript
+export default function Edit() {
+    return (
+        <div { ...useBlockProps() }>
+            <BlockControls>
+                {/* Add custom toolbar controls here */}
+            </BlockControls>
+            <h2>Custom Components!</h2>
+        </div>
+    );
+}
+```
+
+### Settings Sidebar
+
+The Settings Sidebar is a panel that appears on the right side of the editor, providing additional block settings and options. You can add custom settings controls using the `InspectorControls` component.
+
+```javascript
+export default function Edit() {
+    return (
+        <div { ...useBlockProps() }>
+            <InspectorControls>
+                {/* Add custom settings controls here */}
+            </InspectorControls>
+            <h2>Custom Components!</h2>
+        </div>
+    );
+}
+```
+
+## ToolbarButton Component
+
+ToolbarButton adds buttons to the Block Toolbar, usually inside a [Toolbar](https://developer.wordpress.org/block-editor/reference-guides/components/toolbar/) or [ToolbarGroup](https://developer.wordpress.org/block-editor/reference-guides/components/toolbar-group/) component, allowing for quick access to block-specific actions.
+
+```javascript
+import { BlockControls, useBlockProps } from '@wordpress/block-editor';
+import { Toolbar, ToolbarButton } from '@wordpress/components';
+
+export default function Edit() {
+    const handleStyleChange = () => {
+        alert('Style changed!')
+    };
+    return (
+        <div { ...useBlockProps() }>
+            <BlockControls>
+                <Toolbar label="Options">
+                    <ToolbarButton
+                        icon="admin-appearance"
+                        label="Change Style"
+                        onClick={handleStyleChange}
+                    />
+                </Toolbar>
+            </BlockControls>
+            <h2>Custom Components!</h2>
+        </div>
+    );
+}
+```
+
+ToolbarButtons enhance the user experience by providing easy access to frequently used block functions.
+
+To learn more about implementing ToolbarButton in your blocks, visit the [ToolbarButton component documentation](https://developer.wordpress.org/block-editor/reference-guides/components/toolbar-button/).
+
+## Panel, PanelBody, and PanelRow Components
+
+These components are used to structure settings panels in the Settings Sidebar. The Panel creates a container with a header. PanelBody creates collapsible sections which can be added to Panels, while PanelRow organizes content within the PanelBody sections.
+
+```javascript
+import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
+import { Panel, PanelBody, PanelRow, TextControl } from '@wordpress/components';
+
+export default function Edit() {
+    return (
+        <div { ...useBlockProps() }>
+            <InspectorControls>
+                <Panel header="My Panel">
+                    <PanelBody title="My Block Settings" initialOpen={ true }>
+                        <PanelRow>
+                            <TextControl
+                                label="Block Setting"
+                            />
+                        </PanelRow>
+                    </PanelBody>
+                </Panel>
+            </InspectorControls>
+            <h2>Custom Components!</h2>
+        </div>
+    );
+}
+```
+
+This structure helps organize block settings in a user-friendly, collapsible interface in the Settings Sidebar.
+
+For a comprehensive guide on using Panel, PanelBody, and PanelRow components, refer to the [Panel component documentation](https://developer.wordpress.org/block-editor/reference-guides/components/panel/).
+
+## ColorPicker
+
+ColorPicker allows users to select and apply colors to various elements within your block.
+
+```javascript
+import { InspectorControls, useBlockProps } from '@wordpress/block-editor';
+import { Panel, PanelBody, PanelRow, ColorPicker } from '@wordpress/components';
+
+export default function Edit() {
+    return (
+        <div { ...useBlockProps() }>
+            <InspectorControls>
+                <Panel header="My Panel">
+                    <PanelBody title="My Block Settings" initialOpen={ true }>
+                        <PanelRow>
+                            <ColorPicker
+                                color="#000"
+                            />
+                        </PanelRow>
+                    </PanelBody>
+                </Panel>
+            </InspectorControls>
+            <h2>Custom Components!</h2>
+        </div>
+    );
+}
+```
+
+This component provides a user-friendly interface for color selection, which is crucial for customization options in many blocks.
+
+To explore the full capabilities of the ColorPicker component, refer to the [ColorPicker component documentation](https://developer.wordpress.org/block-editor/reference-guides/components/color-picker/).
+
 ## Conclusion
 
-By mastering these key components from the @wordpress/components package, you'll be well-equipped to create sophisticated and user-friendly interfaces for your custom blocks. Each component serves a specific purpose and can be combined to create complex UI elements that enhance the overall user experience of your WordPress blocks.
+By mastering these key parts from the @wordpress/components package, you'll be well-equipped to create sophisticated and user-friendly interfaces for your custom blocks. Each component serves a specific purpose and can be combined to create complex UI elements that enhance the overall user experience of your WordPress blocks.
