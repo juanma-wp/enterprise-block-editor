@@ -1,4 +1,4 @@
-## 3.3 Best Practices for Using Components
+## Best Practices for Using Components
 
 When working with components from the @wordpress/components package, it's essential to understand how to customize them effectively and manage their state and interactivity. This lesson will explore best practices for using these components in your custom block development process.
 

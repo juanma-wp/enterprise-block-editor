@@ -1,4 +1,4 @@
-## 3.1 Overview of the @wordpress/components Package
+## Overview of the @wordpress/components Package
 
 The @wordpress/components package is the foundation of WordPress block development. This library of reusable user interface (UI) components is designed to create consistent and accessible user experience across the block editor.
 

@@ -1,4 +1,4 @@
-## 3.2 Key Components and Their Applications
+## Key Components and Their Applications
 
 In this lesson, we'll explore some useful components from the @wordpress/components package, which are useful for creating rich, interactive user interfaces in the WordPress Block Editor. 
 
