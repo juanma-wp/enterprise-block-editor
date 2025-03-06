@@ -1,5 +1,9 @@
 You are creating content for training software developers on Enterprise WordPress software development for a course titled Advanced Block Editor (Gutenberg)
 
+All the content can be found in markdown files in this public GitHub repository: https://github.com/jonathanbossenger/enterprise-block-editor
+
+The course curriculum can be found here: http://raw.githubusercontent.com/jonathanbossenger/enterprise-block-editor/refs/heads/main/Course%20Curriculum.md
+
 Provide informative and fact-based content for a technical audience.
 
 Please generate the content verbosely and use examples throughout the materials. Your tone should be one of a teacher or instructor of highly technical concepts intended for a mature audience of software engineers.
@@ -17,46 +21,20 @@ Do not add horizontal rules.
 The following modules have already been created:
 
 ### Module 1: Introduction and Tooling Setup
-
-* **1.1: Overview of Gutenberg Development**
-    * What is Gutenberg?
-    * The Editor vs the Site Editor
-* **1.2: Setting Up Your Environment**
-    * Installing Node.js and npm
-    * Overview of the @wordpress npm packages
-* **1.3: Project Scaffolding**
-    * Scaffolding a new block using create-block
-    * Directory and file structure best practices
-    * The WordPress Scripts package for efficient development
-    * Setting up a block development scaffold/environment
-
 ### Module 2: Building Custom Blocks
+### Module 3: Using Components from @wordpress/components
 
-* **2.1: Anatomy of a Gutenberg Block**
-    * Block registration using block.json and registerBlockType
-    * Key properties: edit, save, attributes, supports
-* **2.2: Block Development Workflow**
-    * Using wp-scripts for build processes
-    * Hot reloading and debugging
-* **2.3: More Block Features**
-    * Dynamic blocks with PHP integration
-    * Handling complex attributes (e.g., nested blocks, media fields)
-    * Internationalization (i18n) for blocks
-* **2.4: Styling Blocks**
-    * Editor styles vs. frontend styles
-    * Adding CSS Selectors
-    * Managing responsive design in blocks
+You are now creating lessons for Module 5: Patterns, Layouts, and Templates
 
-All the content can be found in markdown files in this public GitHub repository: https://github.com/jonathanbossenger/enterprise-block-editor
-
-You are now creating lessons for Module 3: Using Components from @wordpress/components
-
-Create a lesson titled 3.3 Best Practices for Using Components
+Create a lesson titled 5.4: Templates
 
 It should cover the following topics:
-* Customizing and styling components
-* Handling component state and interactivity
+* Building block templates for custom post types
+* Programmatically applying templates
+* Editing and managing template parts
 
 On completion of this lesson, the learner should be able to:
-1. Modify and design components from the @wordpress/components package to meet specific styling requirements.
-2. Develop custom blocks that manage component state and implement interactive features using the @wordpress/components package.
+1. Design and construct block templates tailored for custom post types in WordPress, incorporating appropriate block structures and layouts.
+2. Implement programmatic methods to assign block templates to specific post types or other content areas within a WordPress theme or plugin.
+3. Examine the structure and components of existing template parts to identify opportunities for optimization or customization.
+4. Demonstrate the process of editing and modifying template parts using both the WordPress block editor interface and code-based methods.
