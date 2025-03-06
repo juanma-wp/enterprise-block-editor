@@ -4,7 +4,7 @@
 
 Block patterns are pre-designed layouts composed of multiple blocks that can be easily inserted into posts or pages. They provide a powerful way to create complex, reusable designs without having to manually configure individual blocks each time. Block patterns serve as a bridge between individual blocks and full page templates, offering flexibility and efficiency in content creation.
 
-In the WordPress ecosystem, block patterns play a crucial role in streamlining the page building process. They allow developers and content creators to:
+Block patterns play an important role in streamlining the page building process for site editors and theme developers alike, allowing them to:
 
 1. Quickly insert complex layouts
 2. Maintain design consistency across a site
@@ -22,6 +22,7 @@ Creating custom block patterns involves two main steps: designing the pattern us
 To design a custom pattern, you can use the WordPress block editor to create the desired layout. Here's an example of how you might create a simple "Featured Product" pattern:
 
 1. Create a new post or page in the WordPress admin.
+
 2. Add the necessary blocks to create your pattern. For our "Featured Product" example, we might use:
     - A Group block to contain everything
     - A Columns block with two columns
@@ -39,34 +40,26 @@ To make your custom pattern available in the block editor, you need to register 
 Here's an example of how to register the "Featured Product" pattern we designed:
 
 ```php
+add_action( 'init', 'register_custom_pattern' );
+
 function register_custom_pattern() {
     register_block_pattern(
         'my-theme/featured-product',
         array(
             'title'       => __( 'Featured Product', 'my-theme' ),
             'description' => _x( 'A product showcase with image, description, and call-to-action button.', 'Block pattern description', 'my-theme' ),
-            'content'     => '<!-- wp:group {"className":"featured-product"} -->
-<div class="wp-block-group featured-product"><!-- wp:columns -->
+            'content'     => '<!-- wp:group {"layout":{"type":"constrained"}} -->
+<div class="wp-block-group"><!-- wp:columns -->
 <div class="wp-block-columns"><!-- wp:column -->
-<div class="wp-block-column"><!-- wp:image {"sizeSlug":"large"} -->
-<figure class="wp-block-image size-large"><img src="placeholder.jpg" alt=""/></figure>
+<div class="wp-block-column"><!-- wp:image -->
+<figure class="wp-block-image"><img alt=""/></figure>
 <!-- /wp:image --></div>
 <!-- /wp:column -->
 
 <!-- wp:column -->
 <div class="wp-block-column"><!-- wp:heading -->
-<h2>Product Name</h2>
-<!-- /wp:heading -->
-
-<!-- wp:paragraph -->
-<p>Description of the amazing product and its features.</p>
-<!-- /wp:paragraph -->
-
-<!-- wp:buttons -->
-<div class="wp-block-buttons"><!-- wp:button -->
-<div class="wp-block-button"><a class="wp-block-button__link">Buy Now</a></div>
-<!-- /wp:button --></div>
-<!-- /wp:buttons --></div>
+<h2 class="wp-block-heading"></h2>
+<!-- /wp:heading --></div>
 <!-- /wp:column --></div>
 <!-- /wp:columns --></div>
 <!-- /wp:group -->',
@@ -74,8 +67,6 @@ function register_custom_pattern() {
         )
     );
 }
-add_action( 'init', 'register_custom_pattern' );
-
 ```
 
 In this example, we're using the `register_block_pattern()` function to register our custom pattern. The function takes two arguments:
@@ -136,50 +127,3 @@ For e-commerce or SaaS sites, create patterns to showcase product features consi
 By leveraging block patterns effectively, you can create a library of reusable content structures that enhance consistency, speed up development, and improve the overall user experience of your WordPress site.
 
 In conclusion, block patterns are a powerful feature of the WordPress block editor that bridge the gap between individual blocks and full page templates. By understanding how to create, register, and effectively use custom patterns, you can significantly enhance your WordPress development workflow and provide a better content creation experience for your clients or team members.
-
-Citations:
-[1] https://github.co
-[2] https://jetpack.com/resources/wordpress-block-patterns/
-[3] https://developer.wordpress.org/block-editor/reference-guides/block-api/block-patterns/
-[4] https://learn.wordpress.org/tutorial/registering-block-patterns/
-[5] https://kinsta.com/blog/wordpress-block-patterns/
-[6] https://wpastra.com/guides-and-tutorials/register-block-patterns-in-wordpress/
-[7] https://www.wpbeginner.com/beginners-guide/how-to-create-a-reusable-block-in-wordpress/
-[8] https://www.godaddy.com/resources/skills/wordpress-block-pattern-reusable-block-or-template-part
-[9] https://www.wpexplorer.com/wordpress-reusable-content-blocks/
-[10] https://www.wpbeginner.com/beginners-guide/beginners-guide-how-to-use-wordpress-block-patterns/
-[11] https://wpmet.com/wordpress-reusable-blocks-guide/
-[12] https://wordpress.org/documentation/article/reusable-blocks/
-[13] https://carriedils.com/dynamically-adding-a-reusable-block-in-a-wordpress-template/
-[14] https://css-tricks.com/how-to-work-with-wordpress-block-patterns/
-[15] https://www.pootlepress.com/2022/12/how-to-use-wordpress-block-patterns/
-[16] https://pressable.com/blog/creating-block-patterns-wordpress/
-[17] https://make.wordpress.org/design/2019/11/14/blocks-patterns-and-layouts/
-[18] https://www.youtube.com/watch?v=IWKekSnJ9aQ
-[19] https://thewpminute.com/how-wordpress-block-patterns-improve-your-workflow/
-[20] https://wordpress.com/support/wordpress-editor/block-pattern/
-[21] https://www.youtube.com/watch?v=CK4d-guvkTo
-[22] https://developer.wordpress.org/themes/features/block-patterns/
-[23] https://wpmarmite.com/en/wordpress-block-pattern/
-[24] https://www.hostinger.com/tutorials/wordpress-block-patterns
-[25] https://pressable.com/blog/wordpress-block-patterns/
-[26] https://developer.wordpress.org/reference/functions/register_block_pattern/
-[27] https://wordpress.stackexchange.com/questions/424984/registering-a-block-in-my-patterns
-[28] https://www.youtube.com/watch?v=OT9FvkAFv_s
-[29] https://wordpress.com/support/wordpress-editor/create-a-pattern/
-[30] https://developer.wordpress.org/themes/patterns/registering-patterns/
-[31] https://www.youtube.com/watch?v=iMc1_YinPzs
-[32] https://www.youtube.com/watch?v=w5cEnTfLRuo
-[33] https://www.wpzoom.com/docs/the-difference-between-reusable-blocks-block-patterns-templates-template-parts/
-[34] https://krystal.io/blog/post/wordpress-block-patterns-the-complete-beginner-s-guide
-[35] https://learn.wordpress.org/tutorial/the-difference-between-reusable-blocks-block-patterns-templates-and-template-parts/
-[36] https://learn.wordpress.org/lesson-plan/difference-between-reusable-blocks-block-pattern-templates-template-parts/
-[37] https://www.youtube.com/watch?v=ctNxY9FaH-M
-[38] https://conditionalblocks.com/advanced-use-of-wordpress-blocks/
-[39] https://www.elegantthemes.com/blog/wordpress/wordpress-block-patterns
-[40] https://wpastra.com/guides-and-tutorials/wordpress-block-patterns/
-[41] https://fullsiteediting.com/lessons/introduction-to-block-patterns/
-[42] https://blog.hubspot.com/website/wordpress-block-pattern
-[43] https://vercaa.com/index.php?rp=%2Fknowledgebase%2F1023%2FThe-Ultimate-Guide-to-WordPress-Block-Patterns-Enhance-Your-Design-with-Ease.html&language=turkish
-[44] https://learn.wordpress.org/tutorial/using-block-patterns/
-[45] https://learn.wordpress.org/lesson-plan/how-to-create-and-register-a-block-pattern/
