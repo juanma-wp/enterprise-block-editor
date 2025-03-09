@@ -134,6 +134,31 @@ The `register_block_pattern()` function takes two arguments:
 
 Now, when the user selects Patterns from the Block Inserter, the "Featured" Product pattern will be available in the "Featured" category.
 
+### Cleaner pattern content with template files
+
+Many developers prefer to keep the pattern markup separate from the registration code for better organization and maintainability. You can achieve this by storing the pattern content in a separate file and loading it dynamically in the with a custom function.
+
+To start, create a `patterns` directory in your theme or plugin folder and save the pattern content in an PHP file, such as `featured-product.php`.
+
+Next, create a custom function to load the pattern content from the file:
+
+```php
+/**
+ * Fetch and include the pattern content
+ */
+function vip_learn_get_pattern_content( $pattern ) {
+	ob_start();
+	include __DIR__ . "/patterns/{$pattern}";
+	return ob_get_clean();
+}
+```
+
+Finally, update the `content` property in the `register_block_pattern()` function to call the custom function, passing the file name of the pattern file to be included:
+
+```php
+'content' => vip_learn_get_pattern_content( 'featured-product.php' ),
+```
+
 ## Creating new Pattern Categories
 
 WordPress Core registers a set of default pattern categories you can use to organize your patterns, such as "About", "Banners", "Call to Action", and "Featured".
