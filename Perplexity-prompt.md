@@ -18,21 +18,18 @@ Use US English.
 
 Do not add horizontal rules.
 
-The following modules have already been created:
+You are creating lessons for Module 1: Introduction and Tooling Setup
 
-### Module 1: Introduction and Tooling Setup
-
-You are now creating lessons for Module 1: Introduction and Tooling Setup
-
-Create a lesson titled 5.4: Templates
+Create a lesson titled 1.2: Overview of Block themes
 
 It should cover the following topics:
-* Building block templates for custom post types
-* Programmatically applying templates
-* Editing and managing template parts
+* Templates and template parts
+* Patterns
+* Global Settings and Styles
+* Custom functionality (functions.php) and styling (style.css)
 
 On completion of this lesson, the learner should be able to:
-1. Design and construct block templates tailored for custom post types in WordPress, incorporating appropriate block structures and layouts.
-2. Implement programmatic methods to assign block templates to specific post types or other content areas within a WordPress theme or plugin.
-3. Examine the structure and components of existing template parts to identify opportunities for optimization or customization.
-4. Demonstrate the process of editing and modifying template parts using both the WordPress block editor interface and code-based methods.
+1. Identify the key components of block themes and how they are used.
+2. Describe how to configure global settings and apply styles to block themes elements.
+3. Explain how to add custom functionality to block themes using functions.php and style block themes using style.css.
+

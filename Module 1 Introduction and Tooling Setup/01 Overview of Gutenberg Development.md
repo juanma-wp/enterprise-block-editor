@@ -8,7 +8,7 @@ Gutenberg is the project name for a new WordPress site building and publishing p
 
 At its core, Gutenberg introduces the concept of blocks, which are standalone, isolated, and dynamic user interface components. These blocks represent individual content elements, such as paragraphs, images, headings, or more complex structures like columns and galleries. This modular approach to content creation allows for greater flexibility and control over page layouts, moving beyond the limitations of the traditional WordPress editor.
 
-From a technical perspective, Gutenberg uses modern web technologies, primarily JavaScript and React. This marks a significant departure from the PHP-centric development that has long been associated with WordPress. As an Enterprise WordPress developer, you must familiarize yourself with these technologies to effectively work with and extend the Block Editor.
+From a technical perspective, Gutenberg adds two new uses modern web technologies, primarily JavaScript and React. This marks a significant departure from the PHP-centric development that has long been associated with WordPress. As an Enterprise WordPress developer, you must familiarize yourself with these technologies to effectively work with and extend the Block Editor.
 
 Take a look at a simple example of how a custom block might be registered using JavaScript:
 
