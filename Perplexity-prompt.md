@@ -21,10 +21,8 @@ Do not add horizontal rules.
 The following modules have already been created:
 
 ### Module 1: Introduction and Tooling Setup
-### Module 2: Building Custom Blocks
-### Module 3: Using Components from @wordpress/components
 
-You are now creating lessons for Module 5: Patterns, Layouts, and Templates
+You are now creating lessons for Module 1: Introduction and Tooling Setup
 
 Create a lesson titled 5.4: Templates
 
