@@ -2,7 +2,7 @@
 
 ## Table of Contents
 
-### [7.1: Introduction to the WordPress Data Layer](./01%20Introduction%20to%20the%20WordPress%20Data%20Layer.md)
+### [7.1: Introduction to the WordPress Data Layer](./01%20Introduction%20to%20the%20WP%20Data%20Layer.md)
 
 - Stores and actions overview
 - Accessing core data stores
