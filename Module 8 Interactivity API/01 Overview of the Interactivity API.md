@@ -6,7 +6,7 @@ _[From the docs](https://developer.wordpress.org/block-editor/reference-guides/i
 
 > The Interactivity API is **a [standard](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/iapi-about/#why-a-standard) system of [directives](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/iapi-about/#why-directives), based on declarative code, for [adding frontend interactivity to blocks](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/iapi-about/#api-goals)**.
 
-**\> Directives extend HTML with special attributes** that tell the Interactivity API to attach a specified behavior to a DOM element or even to transform it.
+> **Directives extend HTML with special attributes** that tell the Interactivity API to attach a specified behavior to a DOM element or even to transform it.
 
 This API is already used in several built-in WordPress blocks, such as Search, Query, Navigation, and File. It allows developers to build anything from simple interactions like counters and pop-ups to more advanced functionality like instant navigation, live search, shopping carts, and checkouts.
 
@@ -60,11 +60,11 @@ The [Interactivity API](https://developer.wordpress.org/block-editor/reference-g
 
 To illustrate the capabilities of the Interactivity API, let's explore an example using the Interactivity API
 
-To create this example go to the “plugins” folder of your WordPress installation and run:
+To [create this example](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/iapi-quick-start-guide/) go to the “plugins” folder of your WordPress installation and run:
 
-**`npx @wordpress/create-block@latest my-first-interactive-block --template @wordpress/create-block-interactive-template`**
-
-(https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/iapi-quick-start-guide/)
+```
+npx @wordpress/create-block@latest my-first-interactive-block --template @wordpress/create-block-interactive-template
+```
 
 In this example, we will create a simple toggle block that expands or collapses content when a button is clicked.
 
@@ -95,13 +95,14 @@ block.json
 
 render.php
 
-```javascript
+```php
 <div
 	<?php echo get_block_wrapper_attributes(); ?>
 	data-wp-interactive="create-block"
 	...
 >
-...</div>
+...
+</div>
 ```
 
 ### Implementing directives in render.php
