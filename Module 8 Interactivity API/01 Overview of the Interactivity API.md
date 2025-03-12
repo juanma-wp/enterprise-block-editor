@@ -77,7 +77,7 @@ In the scaffolded `my-first-interactive-block` example, we can see the following
 - The Interactivity API JavaScript code is loaded with [`viewScriptModule`](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-metadata/#view-script-module) in `block.json`, which loads the file in the frontend using script modules
 - The [`wp-interactive`](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/api-reference/#wp-interactive) directive is added to a DOM element in the render.php file which enables the Interactivity API for that portion of the DOM
 
-block.json
+_`block.json`_
 
 ```javascript
 {
@@ -93,7 +93,7 @@ block.json
 
 - The `wp-interactive` directive is added to a DOM element in the render.php file which enables the Interactivity API for that portion of the DOM
 
-render.php
+_`render.php`_
 
 ```php
 <div
@@ -125,7 +125,7 @@ wp_interactivity_state(
 ?>
 
 <div
-...
+  ...
 	data-wp-interactive="create-block"
 	<?php echo wp_interactivity_data_wp_context( array( 'isOpen' => false ) ); ?>
 	data-wp-watch="callbacks.logIsOpen"
@@ -139,13 +139,13 @@ wp_interactivity_state(
 	<button
 		data-wp-on--click="actions.toggleOpen"
 		data-wp-bind--aria-expanded="context.isOpen"
-...
+    ...
 	>
 		<?php esc_html_e( 'Toggle', 'my-first-interactive-block' ); ?>
 	</button>
 
 	<p
-...
+    ...
 		data-wp-bind--hidden="!context.isOpen"
 	>
 		...
