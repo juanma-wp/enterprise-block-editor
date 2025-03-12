@@ -156,77 +156,7 @@ One of the benefits of this approach is that theme developer can design the site
 
 - **Customization**: Block themes provide more granular control over site customization, allowing users to edit headers, footers, and other page parts directly. Classic themes often require plugins or custom code for similar flexibility[1][6].
 
-- **Template Files**: Classic themes store template files in the theme's root directory, following a PHP-based template hierarchy (e.g., `index.php`, `single.php`). In contrast, block themes store templates in a `templates` directory using HTML files (e.g., `index.html`, `single.html`)[2][4].
-
-### Example Templates
-
-To illustrate the difference, consider a `single.php` file from a classic theme versus a `single.html` file from a block theme.
-
-#### Classic Theme: `single.php`
-
-```php
-<?php
-/**
- * The template for displaying all single posts and attachments.
- *
- * @package WordPress
- * @subpackage Twenty_Fifteen
- * @since Twenty Fifteen 1.0
- */
-
-get_header(); ?>
-
-<div id="primary" class="content-area">
-    <main id="main" class="site-main" role="main">
-        <?php
-        // Start the Loop.
-        while ( have_posts() ) : the_post();
-
-            // Include the post format-specific template for the content.
-            get_template_part( 'content', get_post_format() );
-
-            // If comments are open or we have at least one comment, load up the comment template.
-            if ( comments_open() || get_comments_number() ) :
-                comments_template();
-            endif;
-
-        endwhile;
-        ?>
-    </main><!-- #main -->
-</div><!-- #primary -->
-
-<?php get_footer(); ?>
-```
-
-#### Block Theme: `single.html`
-
-```html
-<!-- wp:template-part {"slug":"header"} /-->
-
-<!-- wp:group {"tagName":"main","style":{"spacing":{"margin":{"top":"var:preset|spacing|60"}}},"layout":{"type":"constrained"}} -->
-<main class="wp-block-group" style="margin-top:var(--wp--preset--spacing--60)">
-    <!-- wp:group {"align":"full","style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|60"}}},"layout":{"type":"constrained"}} -->
-    <div class="wp-block-group alignfull" style="padding-top:var(--wp--preset--spacing--60);padding-bottom:var(--wp--preset--spacing--60)">
-        <!-- wp:post-title {"level":1} /-->
-        <!-- wp:post-featured-image {"aspectRatio":"3/2"} /-->
-        <!-- wp:pattern {"slug":"twentytwentyfive/hidden-written-by"} /-->
-        <!-- wp:post-content {"align":"full","layout":{"type":"constrained"}} /-->
-        <!-- wp:group {"style":{"spacing":{"padding":{"top":"var:preset|spacing|60","bottom":"var:preset|spacing|60"}}},"layout":{"type":"constrained"}} -->
-        <div class="wp-block-group" style="padding-top:var(--wp--preset--spacing--60);padding-bottom:var(--wp--preset--spacing--60)">
-            <!-- wp:post-terms {"term":"post_tag","separator":"  ","className":"is-style-post-terms-1"} /-->
-        </div>
-        <!-- /wp:group -->
-
-        <!-- wp:pattern {"slug":"twentytwentyfive/post-navigation"} /-->
-        <!-- wp:pattern {"slug":"twentytwentyfive/comments"} /-->
-    </div>
-    <!-- /wp:group -->
-    <!-- wp:pattern {"slug":"twentytwentyfive/more-posts"} /-->
-</main>
-<!-- /wp:group -->
-
-<!-- wp:template-part {"slug":"footer"} /-->
-```
+- **Template Files**: Classic themes store template files in the theme's root directory, following a PHP-based template hierarchy (e.g., `index.php`, `single.php`). In contrast, block themes store templates in a `templates` directory using HTML files (e.g., `index.html`, `single.html`).
 
 ### Directory Structure
 
@@ -238,37 +168,64 @@ Classic themes typically store all template files directly in the theme's root d
     - **parts**: Holds reusable template parts such as `header.html` and `footer.html`.
     - **patterns**: Stores custom block patterns.
 
-This structured approach in block themes makes them more organized and easier to maintain compared to classic themes[6][8].
+This structured approach in block themes makes them more organized and easier to maintain compared to classic themes.
 
 ## Templates and Template Parts
 
-In block themes, **templates** are the foundation upon which pages are built. They are composed of blocks and can be thought of as the blueprints for different types of content, such as single posts, archives, or the front page. Templates follow a specific hierarchy similar to traditional WordPress themes but are defined using HTML files (e.g., `index.html`, `single.html`, `archive.html`) instead of PHP files.
+In block themes, **Templates** are the foundation upon which pages are built. They are composed of blocks and can be thought of as the blueprints for different types of content, such as single posts, archives, or the front page. Templates follow a specific hierarchy similar to traditional WordPress themes but are defined using HTML files (e.g., `index.html`, `single.html`, `archive.html`) instead of PHP files.
 
 **Template parts**, on the other hand, are reusable blocks of content that can be included within templates. These parts can be anything from headers to footers or sidebars. They are stored in a `parts` directory within the theme and are typically named after their function (e.g., `header.html`, `footer.html`). Template parts allow for easy maintenance and consistency across the site, as changes made to a part are reflected everywhere it is used.
 
-For example, if you want to create a custom header template part, you would create a file named `header.html` in the `parts` directory. This file would contain the necessary blocks to define your header, such as a site title, navigation menu, or logo.
-
 ### Patterns
 
-**Block patterns** are pre-designed arrangements of blocks that can be easily inserted into pages or posts. They provide a quick way to add complex layouts without needing to manually configure each block. Patterns can be registered in themes or plugins using the `register_block_pattern` function in PHP. This allows developers to offer users a variety of layouts that fit the theme's design and functionality.
+**Patterns** are pre-designed arrangements of blocks that can be easily included in templates or template parts. 
 
-To register a custom pattern, you would add code similar to the following in your theme's `functions.php` file:
+Unlike Templates or Template Parts, Patterns are PHP files, but can use block markup for the layout. All predefined theme patterns reside in the `patterns` directory of the theme. 
+
+Here's an example of a custom header pattern:
 
 ```php
-add_action( 'init', 'themeslug_register_patterns' );
+<?php
+/**
+ * Title: Header
+ * Slug: twentytwentyfive/header
+ * Categories: header
+ * Block Types: core/template-part/header
+ * Description: Header with site title and navigation.
+ *
+ * @package WordPress
+ * @subpackage Twenty_Twenty_Five
+ * @since Twenty Twenty-Five 1.0
+ */
 
-function themeslug_register_patterns() {
-    register_block_pattern(
-        'themeslug/hero',
-        array(
-            'title'       => __( 'Hero', 'themeslug' ),
-            'categories'  => array( 'featured' ),
-            'source'      => 'theme',
-            'content'     => '',
-        )
-    );
-}
+?>
+<!-- wp:group {"align":"full","layout":{"type":"default"}} -->
+<div class="wp-block-group alignfull">
+	<!-- wp:group {"layout":{"type":"constrained"}} -->
+	<div class="wp-block-group">
+		<!-- wp:group {"align":"wide","style":{"spacing":{"padding":{"top":"var:preset|spacing|30","bottom":"var:preset|spacing|30"}}},"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"space-between"}} -->
+		<div class="wp-block-group alignwide" style="padding-top:var(--wp--preset--spacing--30);padding-bottom:var(--wp--preset--spacing--30)">
+			<!-- wp:site-title {"level":0} /-->
+			<!-- wp:group {"style":{"spacing":{"blockGap":"var:preset|spacing|10"}},"layout":{"type":"flex","flexWrap":"nowrap","justifyContent":"right"}} -->
+			<div class="wp-block-group">
+				<!-- wp:navigation {"overlayBackgroundColor":"base","overlayTextColor":"contrast","layout":{"type":"flex","justifyContent":"right","flexWrap":"wrap"}} /-->
+			</div>
+			<!-- /wp:group -->
+		</div>
+		<!-- /wp:group -->
+	</div>
+	<!-- /wp:group -->
+</div>
+<!-- /wp:group -->
 ```
+
+A theme developer can add a pattern to a template or template part by using the pattern block markup.
+
+```php
+<!-- wp:pattern {"slug":"twentytwentyfive/header"} /-->
+```
+
+The benefit of creating patterns in a theme this way, is that it allows users of the Site Editor to add these patterns to any other templates or template parts they may need to create.
 
 ### Global Settings and Styles
 
