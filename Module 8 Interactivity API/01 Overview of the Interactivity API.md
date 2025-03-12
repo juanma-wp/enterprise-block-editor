@@ -207,7 +207,7 @@ In the code above:
 - The `store` method is used to create the 'create-block' store (merging any data that has been initialized in the server for that store's namespace )
 - The `useContext` method is used inside callbacks and actions to get access to the local context of the element that triggered the call of function
 - The store is defined with some state, actions and callbacks. All elements under [wp-interactive](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/api-reference/#wp-interactive) directive pointing to this store will have access to these state values, actions and callbacks
-- ## The actions will update state values. When state values are updated the DOM elements with directives pointing to these state values "react" by updating their attributes or displayed values accordingly
+- The actions will update state values. When state values are updated the DOM elements with directives pointing to these state values "react" by updating their attributes or displayed values accordingly
 
 In this example, when the button is clicked, it triggers the `toggle` action which updates the `isOpen` state defined as [local context](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/core-concepts/undestanding-global-state-local-context-and-derived-state/#local-context) of the `div`. The paragraph's visibility is then dynamically controlled based on this state.
 
