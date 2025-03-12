@@ -1,14 +1,14 @@
-# Creating Custom Data Stores
+# 7.5: Creating Custom Data Stores
 
 In the WordPress ecosystem, custom data stores play a crucial role in managing application state efficiently. By leveraging the WordPress Data Layer and wp.data, developers can create powerful and flexible state management solutions for their plugins and themes.
 
 ## Introduction to the WordPress Data Layer and wp.data
 
-The WordPress Data Layer, facilitated by the `@wordpress/data` package, provides a centralized approach to managing state across WordPress applications. It is inspired by Redux, a predictable state container for JavaScript applications, but tailored to fit seamlessly into the WordPress ecosystem. This system allows developers to manage and share data across various components and plugins efficiently.
+The WordPress Data Layer, facilitated by the [`@wordpress/data`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-data/) package, provides a centralized approach to managing state across WordPress applications. It is inspired by Redux, a predictable state container for JavaScript applications, but tailored to fit seamlessly into the WordPress ecosystem. This system allows developers to manage and share data across various components and plugins efficiently.
 
 ### State Management with Redux Principles
 
-At its core, the `wp.data` package adopts Redux-like principles for state management, which include:
+At its core, the `wp.data` package adopts Redux-like principles for state management, which include [the following elements](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-data/#redux-store-options):
 
 - **Store**: Holds the application state.
 - **Actions**: Plain JavaScript objects that describe events affecting the state.
@@ -20,15 +20,15 @@ By adhering to these principles, developers can create predictable and maintaina
 
 ## Creating and registering a Custom Store
 
-The `register` function (from the @wordpress/data package) is the interface for registering a store with `wp.data`. By using this function, you custom store gets integrated into the centralized data registry.
+The [`register`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-data/#register) function (from the `@wordpress/data` package) is the interface for registering a store with `wp.data`. By using this function, your custom store gets integrated into the centralized data registry.
 
 In the WordPress Block Editor (Gutenberg), each data store within `wp.data` must be registered, and numerous [examples of this can be found throughout the Gutenberg codebase](https://github.com/search?q=repo%3AWordPress%2Fgutenberg+register%28+store+%29&type=code).
 
-When registering a custom data store, you typically use `createReduxStore` and `register`. These functions are provided by the `@wordpress/data` package and help define and manage custom state in Gutenberg.
+When registering a custom data store, you typically use [`createReduxStore`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-data/#createreduxstore) and [`register`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-data/#register). These functions are provided by the `@wordpress/data` package and help define and manage custom state in Gutenberg.
 
 ### createReduxStore
 
-`createReduxStore` is a function used to create a Redux-like store that manages state in Gutenberg. It returns an object representing the store with actions, selectors, and a reducer.
+[`createReduxStore`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-data/#createreduxstore) is a function used to create a Redux-like store that manages state in Gutenberg. It returns an object representing the store with actions, selectors, and a reducer.
 
 Example:
 
@@ -77,7 +77,7 @@ const myStore = createReduxStore(''my-custom-store', {
 
 ### register
 
-Once you've created the store using `createReduxStore`, you need to **register** it using `register` from `@wordpress/data`. This makes the store available throughout Gutenberg, allowing components and blocks to access and interact with its state.
+Once you've created the store using `createReduxStore`, you need to **register** it using [`register`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-data/#register) from `@wordpress/data`. This makes the store available throughout Gutenberg, allowing components and blocks to access and interact with its state.
 
 ```javascript
 import { register } from "@wordpress/data";
@@ -85,11 +85,13 @@ import { register } from "@wordpress/data";
 register(myStore);
 ```
 
+In WordPress, if you don't register a store, it won't be available from `wp.data` (like for example doing `wp.data.select(<%NAMESPACE-STORE%>)`)
+
 ## **Using Selectors and Resolvers**
 
-Selectors are functions that extract specific pieces of state from the stores that are registered. They help in accessing data without directly manipulating the state. Here's an example of using a selector:
+[Selectors](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-data/#selectors) are functions that extract specific pieces of state from the stores that are registered. They help in accessing data without directly manipulating the state. Here's an example of using a selector:
 
-After registering the store, you can use it within your React components using `useSelect`.
+After registering the store, you can use it within your React components using [`useSelect`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-data/#useselect).
 
 ```javascript
 import { useSelect } from '@wordpress/data';
@@ -99,7 +101,7 @@ const MyComponent = () => {
     return <p>Num Items: {count}</p>;
 ```
 
-Resolvers are special functions that can be used to fetch data asynchronously the first time a selector is called. They are particularly useful for handling API requests. A resolver's name should match that of its corresponding selector.
+[Resolvers](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-data/#redux-store-options) are special functions that can be used to fetch data asynchronously the first time a selector is called. They are particularly useful for handling API requests. A resolver's name should match that of its corresponding selector.
 
 Here's an example of a resolver of the previously defined \``getItems`\` selector:
 
@@ -131,7 +133,7 @@ const myStore = createReduxStore(''my-custom-store', {
 
 ## **Using Thunks for Async Operations**
 
-Thunks are a powerful way to handle asynchronous operations in your custom store. They allow you to write action creators that return a function instead of an action object. This function can perform async logic and dispatch actions when needed5.
+[Thunks](https://developer.wordpress.org/block-editor/how-to-guides/thunks/) are a powerful way to handle asynchronous operations in your custom store. They allow you to write action creators that return a function instead of an action object. This function can perform async logic and dispatch actions when needed.
 
 Thunks can be used in actions and resolvers.
 
@@ -158,15 +160,15 @@ In this example, `fetchItems` is a thunk that performs an API request and dispat
 
 ## **Using useRegistry Hook**
 
-The `useRegistry` hook provides access to the \*\*data registry\*\* within a React component, allowing you to interact with custom data stores dynamically within your components.
+The [`useRegistry`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-data/#useregistry) hook provides access to the **data registry** within a React component, allowing you to interact with custom data stores dynamically within your components.
 
-The \*\*data registry\*\* is an object that holds references to all the registered stores. It provides methods to:
+The **data registry** is an object that holds references to all the registered stores. It provides methods to:
 
-- \- Register new stores.
-- \- Access existing stores.
-- \- Dispatch actions to modify state.
-- \- Select data from stores.
-- \- Subscribe to changes in the store.
+- Register new stores.
+- Access existing stores.
+- Dispatch actions to modify state.
+- Select data from stores.
+- Subscribe to changes in the store.
 
 For example. If you need to register or unregister a store dynamically during the lifecycle of a component, `useRegistry` is required. `useSelect` and `useDispatch` don't provide this capability.
 
@@ -206,7 +208,7 @@ However, `useRegistry` becomes useful in scenarios requiring more advanced opera
 
 ### batch
 
-There’s a handy method of registry called \`batch\` that can avoid unnecessary re-renders in React components for dispatch actions.[This method is widely used in the “gutenberg” repo](https://github.com/search?q=repo%3AWordPress%2Fgutenberg+registry.batch&type=code)
+There's a handy method of registry called [`batch`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-data/#batch) that can avoid unnecessary re-renders in React components for dispatch actions. [This method is widely used in the "gutenberg" repo](https://github.com/search?q=repo%3AWordPress%2Fgutenberg+registry.batch&type=code).
 
 In WordPress data-based applications, dispatch calls trigger component updates in two steps:
 
@@ -234,6 +236,7 @@ function Component() {
 
 This approach optimizes state updates by minimizing unnecessary re-renders
 
-—
+---
 
-Custom data stores in WordPress provide a powerful way to manage application state. By understanding how to register stores, use selectors and resolvers, implement thunks for async operations, and leverage the `useRegistry` hook, developers can create robust and scalable state management solutions for their WordPress projects.
+> [!NOTE]
+> The [review-system](https://github.com/Automattic/wpvip-learn-enterprise-block-editor/tree/trunk/examples/review-system) ([live demo](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/Automattic/wpvip-learn-enterprise-block-editor/refs/heads/trunk/examples/review-system/_playground/blueprint.json)) example illustrates how to create a custom store to interact with a custom REST API endpoint

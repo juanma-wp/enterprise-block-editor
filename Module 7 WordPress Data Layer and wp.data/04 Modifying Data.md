@@ -1,12 +1,12 @@
-# WordPress Data Layer and wp.data: Modifying Data
+# 7.4: Modifying Data
 
 In this lesson, we'll explore how to modify data using the WordPress Data Layer and wp.data module, focusing on updating post settings and options, managing nonces, and security considerations.
 
-The WordPress Data Layer provides a powerful way to modify data in the block editor environment. The `useDispatch` hook is the recommended method for dispatching actions to update the state.
+The WordPress Data Layer provides a powerful way to modify data in the block editor environment. The [`useDispatch`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-data/#usedispatch) hook is the recommended method for dispatching actions to update the state.
 
 ## Using useDispatch
 
-The `useDispatch` hook allows you to access the dispatch functions (actions) for a specific store. Here's an example of how to use it to update post title:
+The [`useDispatch`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-data/#usedispatch) hook allows you to access the dispatch functions (actions) for a specific store. Here's an example of how to use it to update post title:
 
 ```javascript
 import { useDispatch } from "@wordpress/data";
@@ -23,11 +23,11 @@ function MyComponent() {
 }
 ```
 
-The `useDispatch` hook is recommended because it integrates seamlessly with React's lifecycle. Every store provides its own set of actions that can be dispatched to update the state of that store. Refer to the [Data Module Reference docs](https://developer.wordpress.org/block-editor/reference-guides/data/) for a complete documentation of the actions available for each store
+The `useDispatch` hook is recommended because it integrates seamlessly with React's lifecycle. Every store provides its own set of actions that can be dispatched to update the state of that store. Refer to the [Data Module Reference docs](https://developer.wordpress.org/block-editor/reference-guides/data/) for a complete documentation of the actions available for each store.
 
 ## Nonces and Security Considerations
 
-Nonces are crucial for securing WordPress REST API requests**.** The [Block Editor stores](https://developer.wordpress.org/block-editor/reference-guides/data/) handle nonce management automatically when you use their actions. Here's an example:
+Nonces are crucial for securing WordPress REST API requests. The [Block Editor stores](https://developer.wordpress.org/block-editor/reference-guides/data/) handle nonce management automatically when you use their actions. Here's an example:
 
 ```javascript
 import { useDispatch } from "@wordpress/data";
@@ -49,7 +49,7 @@ function SaveButton() {
 
 In this case, the nonce is automatically included in the request.
 
-For direct REST API requests, you need to include the nonce manually:
+For direct REST API requests, you need to include the nonce manually using [`@wordpress/api-fetch`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-api-fetch/):
 
 ```javascript
 import apiFetch from "@wordpress/api-fetch";
@@ -67,15 +67,15 @@ apiFetch({
 });
 ```
 
-## Different Stores and Popular Actions
+## WordPress Data Stores and Popular Actions
 
-## "core" store
+### "core" store
 
-The ["core" store](https://developer.wordpress.org/block-editor/reference-guides/data/data-core/) (managed by the `@wordpress/core-data` package) provides actions for interacting with WordPress core data. Some key actions include:
+The [`core` store](https://developer.wordpress.org/block-editor/reference-guides/data/data-core/) (managed by the [`@wordpress/core-data`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-core-data/) package) provides actions for interacting with WordPress core data. Some key actions include:
 
-- `saveEntityRecord`: Save an entity record
-- `deleteEntityRecord`: Delete an entity record
-- `editEntityRecord`: Edit an entity record
+- [`saveEntityRecord`](https://developer.wordpress.org/block-editor/reference-guides/data/data-core/#saveentityrecord): Save an entity record
+- [`deleteEntityRecord`](https://developer.wordpress.org/block-editor/reference-guides/data/data-core/#deleteentityrecord): Delete an entity record
+- [`editEntityRecord`](https://developer.wordpress.org/block-editor/reference-guides/data/data-core/#editentityrecord): Edit an entity record
 
 Example:
 
@@ -113,15 +113,15 @@ const UpdatePostTitleButton = () => {
 export default UpdatePostTitleButton;
 ```
 
-## "core/block-directory" store
+### "core/block-directory" store
 
-The ["core/block-directory" store](https://developer.wordpress.org/block-editor/reference-guides/data/data-core-block-directory/) (managed by the [`@wordpress/block-directory` package](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-block-directory/))
+The [`core/block-directory` store](https://developer.wordpress.org/block-editor/reference-guides/data/data-core-block-directory/) (managed by the [`@wordpress/block-directory` package](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-block-directory/))
 
 This store manages the block directory. Key actions include:
 
-- `downloadBlock`: Download a block
-- `installBlock`: Install a block
-- `uninstallBlock`: Uninstall a block
+- [`downloadBlock`](https://developer.wordpress.org/block-editor/reference-guides/data/data-core-block-directory/#downloadblock): Download a block
+- [`installBlock`](https://developer.wordpress.org/block-editor/reference-guides/data/data-core-block-directory/#installblock): Install a block
+- [`uninstallBlock`](https://developer.wordpress.org/block-editor/reference-guides/data/data-core-block-directory/#uninstallblock): Uninstall a block
 
 Example:
 
@@ -160,12 +160,12 @@ const InstallBlockButton = () => {
 export default InstallBlockButton;
 ```
 
-## "core/blocks" Store
+### "core/blocks" Store
 
-The "core/blocks" store (managed by the [`@wordpress/blocks package`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-blocks/)) manages block types. Popular actions include:
+The [`core/blocks` store](https://developer.wordpress.org/block-editor/reference-guides/data/data-core-blocks/) (managed by the [`@wordpress/blocks` package](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-blocks/)) manages block types. Popular actions include:
 
-- `addBlockTypes`: Add block types
-- `removeBlockTypes`: Remove block types
+- [`addBlockTypes`](https://developer.wordpress.org/block-editor/reference-guides/data/data-core-blocks/#addblocktypes): Add block types
+- [`removeBlockTypes`](https://developer.wordpress.org/block-editor/reference-guides/data/data-core-blocks/#removeblocktypes): Remove block types
 
 Example:
 
@@ -209,13 +209,13 @@ const RegisterBlockButton = () => {
 export default RegisterBlockButton;
 ```
 
-## "core/block-editor" Store
+### "core/block-editor" Store
 
-This store "core/block-editor" ((managed by the [`@wordpress/block-editor package`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-block-editor/))) manages the block editor state. Key actions include:
+This store [`core/block-editor`](https://developer.wordpress.org/block-editor/reference-guides/data/data-core-block-editor/) (managed by the [`@wordpress/block-editor` package](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-block-editor/)) manages the block editor state. Key actions include:
 
-- `insertBlocks`: Insert blocks
-- `updateBlockAttributes`: Update block attributes
-- `removeBlock`: Remove a block
+- [`insertBlocks`](https://developer.wordpress.org/block-editor/reference-guides/data/data-core-block-editor/#insertblocks): Insert blocks
+- [`updateBlockAttributes`](https://developer.wordpress.org/block-editor/reference-guides/data/data-core-block-editor/#updateblockattributes): Update block attributes
+- [`removeBlock`](https://developer.wordpress.org/block-editor/reference-guides/data/data-core-block-editor/#removeblock): Remove a block
 
 Example:
 
@@ -247,14 +247,6 @@ const InsertParagraphButton = () => {
 export default InsertParagraphButton;
 ```
 
-## Conclusion
-
-Upon completing this lesson, you should be able to:
-
-1. Explain how the WordPress Data API facilitates modifying post settings and options using the wp.data module.
-
-2. Demonstrate how to securely update post data while managing nonces to prevent unauthorized modifications.
-
-3. Modify post settings and options programmatically using wp.data.dispatch and validate changes through state management functions.
+---
 
 The WordPress Data Layer provides a powerful and secure way to modify data in the block editor environment. By using the `useDispatch` hook and understanding the different stores and their actions, you can efficiently update post settings, manage options, and ensure proper security measures are in place.

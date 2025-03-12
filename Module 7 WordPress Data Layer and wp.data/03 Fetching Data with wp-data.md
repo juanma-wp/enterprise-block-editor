@@ -1,12 +1,12 @@
-# **Fetching Data with wp.data**
+# 7.3: Fetching Data with wp.data
 
-The WordPress Data Layer, powered by `wp.data`, provides a structured way to interact with WordPress data (available through the REST API). The `@wordpress/core-data` package simplifies querying and manipulating entities such as posts, terms, and users by offering hooks and selectors that enable fetching this type of data efficiently within the Block Editor.
+The WordPress Data Layer, powered by `wp.data`, provides a structured way to interact with WordPress data (available through the REST API). The [`@wordpress/core-data`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-core-data/) package simplifies querying and manipulating entities such as posts, terms, and users by offering hooks and selectors that enable fetching this type of data efficiently within the Block Editor.
 
 ## Querying Posts, Terms, and Users with `@wordpress/core-data`
 
-The `@wordpress/core-data` package introduces several and actions to retrieve and update data related to of core WordPress entities.
+The [`@wordpress/core-data`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-core-data/) package introduces several hooks and actions to retrieve and update data related to core WordPress entities.
 
-`getEntityRecord` and `getEntityRecords` are two selectors available on the "core" store that allow in combination with other selectors such as `hasFinishedResolution` or `isResolving` to efficiently fetch and track the loading state of WordPress entities.
+[`getEntityRecord`](https://developer.wordpress.org/block-editor/reference-guides/data/data-core/#getentityrecord) and [`getEntityRecords`](https://developer.wordpress.org/block-editor/reference-guides/data/data-core/#getentityrecords) are two selectors available on the "core" store that allow in combination with other selectors such as [`hasFinishedResolution`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-data/#hasfinishedresolution) or [`isResolving`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-data/#isresolving) to efficiently fetch and track the loading state of WordPress entities.
 
 ```javascript
 const data = useSelect((select) => {
@@ -22,11 +22,11 @@ const data = useSelect((select) => {
 }, []);
 ```
 
-The `@wordpress/core-data` package also provides the `useEntityRecords` and `useEntityRecord` hooks, making it easier to fetch and manipulate WordPress entities.
+The `@wordpress/core-data` package also provides the [`useEntityRecords`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-core-data/#useentityrecords) and [`useEntityRecord`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-core-data/#useentityrecord) hooks, making it easier to fetch and manipulate WordPress entities.
 
 ### `useEntityRecord`: Fetching Single Records
 
-The useEntityRecord hook is used to fetch a single record of a given entity type. This is useful when you need to retrieve a specific post, page, or other WordPress entity.
+The [`useEntityRecord`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-core-data/#useentityrecord) hook is used to fetch a single record of a given entity type. This is useful when you need to retrieve a specific post, page, or other WordPress entity.
 
 **Example: Fetching a Single Post**
 
@@ -60,7 +60,7 @@ const SinglePost = ({ postId }) => {
 
 ### `useEntityRecords`: Fetching Multiple Records
 
-The `useEntityRecords` hook is used to fetch multiple records of a given entity type, such as posts, pages, categories, or users.
+The [`useEntityRecords`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-core-data/#useentityrecords) hook is used to fetch multiple records of a given entity type, such as posts, pages, categories, or users.
 
 **Example: Fetching Posts**
 
@@ -153,47 +153,47 @@ const { records: posts } = useEntityRecords("postType", "post", {
 });
 ```
 
-## Exploring WordPress Data Stores and Popular Selectors
+## WordPress Data Stores and Popular Selectors
 
-The `wp.data` module provides access to multiple data stores, each with its own selectors.
+The `wp.data` module provides access to multiple data stores, each with its own selectors. For a complete reference, see the [WordPress Data Layer Reference](https://developer.wordpress.org/block-editor/reference-guides/data/).
 
 ### The `core` Store
 
-The `core` store is used for retrieving WordPress site-wide data.
+The [`core` store](https://developer.wordpress.org/block-editor/reference-guides/data/data-core/) is used for retrieving WordPress site-wide data.
 
 **Popular Selectors:**
 
-- `getEntityRecords( 'postType', 'post', query )` \- Fetches posts.
-- `getEntityRecord( 'postType', 'post', id )` \- Fetches a specific post.
-- `getUser( id )` \- Fetches a specific user.
-- `getTaxonomy( slug )` \- Fetches a taxonomy.
+- [`getEntityRecords`](https://developer.wordpress.org/block-editor/reference-guides/data/data-core/#getentityrecords) - Fetches posts (ex: `getEntityRecords( 'postType', 'post', query )`).
+- [`getEntityRecord`](https://developer.wordpress.org/block-editor/reference-guides/data/data-core/#getentityrecord) - Fetches a specific post (ex: `getEntityRecord( 'postType', 'post', id )`).
+- [`getUser`](https://developer.wordpress.org/block-editor/reference-guides/data/data-core/#getuser) - Fetches a specific user (ex: `getUser( id )`).
+- [`getTaxonomy`](https://developer.wordpress.org/block-editor/reference-guides/data/data-core/#gettaxonomy) - Fetches a taxonomy (ex: `getTaxonomy( slug )` ).
 
 ### The `core/block-directory` Store
 
-Used to interact with the WordPress Block Directory.
+Used to interact with the WordPress Block Directory. See the [Block Directory Store Reference](https://developer.wordpress.org/block-editor/reference-guides/data/data-core-block-directory/).
 
 **Popular Selectors:**
 
-- `getBlockTypes()` \- Fetches registered block types.
-- `getCategories()` \- Fetches block categories.
+- [`getBlockTypes`](https://developer.wordpress.org/block-editor/reference-guides/data/data-core-blocks/#getblocktypes) - Fetches registered block types.
+- [`getCategories`](https://developer.wordpress.org/block-editor/reference-guides/data/data-core-blocks/#getcategories) - Fetches block categories.
 
 ### The `core/blocks` Store
 
-Handles block-related data, including registered blocks and block variations.
+Handles block-related data, including registered blocks and block variations. See the [Blocks Store Reference](https://developer.wordpress.org/block-editor/reference-guides/data/data-core-blocks/).
 
 **Popular Selectors:**
 
-- `getBlockType( name )` \- Fetches a block type definition.
-- `getBlockVariations( name )` \- Fetches variations of a block type.
+- [`getBlockType`](https://developer.wordpress.org/block-editor/reference-guides/data/data-core-blocks/#getblocktype) - Fetches a block type definition.
+- [`getBlockVariations`](https://developer.wordpress.org/block-editor/reference-guides/data/data-core-blocks/#getblockvariations) - Fetches variations of a block type.
 
 ### The `core/block-editor` Store
 
-Handles editor-related data, including the block list and selection.
+Handles editor-related data, including the block list and selection. See the [Block Editor Store Reference](https://developer.wordpress.org/block-editor/reference-guides/data/data-core-block-editor/).
 
 **Popular Selectors:**
 
-- `getSelectedBlock()` \- Retrieves the currently selected block.
-- `getBlocks()` \- Fetches all blocks in the editor.
+- [`getSelectedBlock`](https://developer.wordpress.org/block-editor/reference-guides/data/data-core-block-editor/#getselectedblock) - Retrieves the currently selected block.
+- [`getBlocks`](https://developer.wordpress.org/block-editor/reference-guides/data/data-core-block-editor/#getblocks) - Fetches all blocks in the editor.
 
 ## Fetching and Displaying Data in a Custom Block
 

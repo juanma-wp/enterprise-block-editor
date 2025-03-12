@@ -1,16 +1,16 @@
-# **Introduction to the WP Data Layer**
+# 7.1: Introduction to the WordPress Data Layer
 
-The WordPress Data Layer, powered by the `@wordpress/data` package, provides a centralized system for managing state within the Block Editor. This system allows developers to retrieve, modify, and interact with various aspects of WordPress content dynamically. This lesson focuses on how to leverage the existing WordPress data stores to access and manipulate editor data efficiently.
+The WordPress Data Layer, powered by the [`@wordpress/data`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-data/) package, provides a centralized system for managing state within the Block Editor. This system allows developers to retrieve, modify, and interact with various aspects of WordPress content dynamically. This lesson focuses on how to leverage the existing WordPress data stores to access and manipulate editor data efficiently.
 
 ## **The @wordpress/data Package**
 
-The `@wordpress/data` package is the foundation of state management in the WordPress Block Editor. It enables developers to:
+The [`@wordpress/data`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-data/) package is the foundation of state management in the WordPress Block Editor. It enables developers to:
 
 - Retrieve data using **selectors**
 - Modify state using **actions**
 - Manage asynchronous operations and subscriptions
 
-This package provides a consistent way to interact with editor-related data, such as retrieving the current post content or updating a block’s attributes.
+This package provides a consistent way to interact with editor-related data, such as retrieving the current post content or updating a block's attributes.
 
 ## **Core Data Stores**
 
@@ -19,10 +19,10 @@ WordPress provides several pre-registered data stores that manage different aspe
 Most relevant data stores in the Block Editor are:
 
 - [`core`](https://developer.wordpress.org/block-editor/reference-guides/data/data-core/) – Manages general WordPress data, including posts, users, taxonomies, and site settings.
-- [`core/block-directory`](https://developer.wordpress.org/block-editor/reference-guides/data/data-core-block-directory/) \- Block directory
+- [`core/block-directory`](https://developer.wordpress.org/block-editor/reference-guides/data/data-core-block-directory/) - Block directory
 - [`core/block-editor`](https://developer.wordpress.org/block-editor/reference-guides/data/data-core-block-editor/) – Manages the state of blocks within the editor.
-- [`core/blocks`](https://developer.wordpress.org/block-editor/reference-guides/data/data-core-blocks/) \- Block Types Data
-- [`core/editor`](https://developer.wordpress.org/block-editor/reference-guides/data/data-core-editor/) \- The Editor's Data
+- [`core/blocks`](https://developer.wordpress.org/block-editor/reference-guides/data/data-core-blocks/) - Block Types Data
+- [`core/editor`](https://developer.wordpress.org/block-editor/reference-guides/data/data-core-editor/) - The Editor's Data
 
 Each store is identified by a namespace and provides a set of selectors and actions to interact with its state. Developers can use `wp.data.select()` to retrieve data and `wp.data.dispatch()` to update data.
 
@@ -97,4 +97,4 @@ This retrieves the first block in the editor and inserts a copy of it after its 
 
 ---
 
-The WordPress Data Layer provides a powerful way to interact with the Block Editor’s state. By using `wp.data.select()` to retrieve data and `wp.data.dispatch()` to modify data, developers can create dynamic, responsive experiences in the editor without direct DOM manipulation.
+The WordPress Data Layer provides a powerful way to interact with the Block Editor's state. By using `wp.data.select()` to retrieve data and `wp.data.dispatch()` to modify data, developers can create dynamic, responsive experiences in the editor without direct DOM manipulation.
