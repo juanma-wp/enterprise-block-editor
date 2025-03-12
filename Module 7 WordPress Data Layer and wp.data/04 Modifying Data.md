@@ -1,10 +1,10 @@
-# **WordPress Data Layer and wp.data: Modifying Data**
+# WordPress Data Layer and wp.data: Modifying Data
 
 In this lesson, we'll explore how to modify data using the WordPress Data Layer and wp.data module, focusing on updating post settings and options, managing nonces, and security considerations.
 
 The WordPress Data Layer provides a powerful way to modify data in the block editor environment. The `useDispatch` hook is the recommended method for dispatching actions to update the state.
 
-## **Using useDispatch**
+## Using useDispatch
 
 The `useDispatch` hook allows you to access the dispatch functions (actions) for a specific store. Here's an example of how to use it to update post title:
 
@@ -25,7 +25,7 @@ function MyComponent() {
 
 The `useDispatch` hook is recommended because it integrates seamlessly with React's lifecycle. Every store provides its own set of actions that can be dispatched to update the state of that store. Refer to the [Data Module Reference docs](https://developer.wordpress.org/block-editor/reference-guides/data/) for a complete documentation of the actions available for each store
 
-## **Nonces and Security Considerations**
+## Nonces and Security Considerations
 
 Nonces are crucial for securing WordPress REST API requests**.** The [Block Editor stores](https://developer.wordpress.org/block-editor/reference-guides/data/) handle nonce management automatically when you use their actions. Here's an example:
 
@@ -67,9 +67,9 @@ apiFetch({
 });
 ```
 
-## **Different Stores and Popular Actions**
+## Different Stores and Popular Actions
 
-## **"core" store**
+## "core" store
 
 The ["core" store](https://developer.wordpress.org/block-editor/reference-guides/data/data-core/) (managed by the `@wordpress/core-data` package) provides actions for interacting with WordPress core data. Some key actions include:
 
@@ -113,7 +113,7 @@ const UpdatePostTitleButton = () => {
 export default UpdatePostTitleButton;
 ```
 
-## **"core/block-directory" store**
+## "core/block-directory" store
 
 The ["core/block-directory" store](https://developer.wordpress.org/block-editor/reference-guides/data/data-core-block-directory/) (managed by the [`@wordpress/block-directory` package](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-block-directory/))
 
@@ -160,7 +160,7 @@ const InstallBlockButton = () => {
 export default InstallBlockButton;
 ```
 
-## **"core/blocks" Store**
+## "core/blocks" Store
 
 The "core/blocks" store (managed by the [`@wordpress/blocks package`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-blocks/)) manages block types. Popular actions include:
 
@@ -209,7 +209,7 @@ const RegisterBlockButton = () => {
 export default RegisterBlockButton;
 ```
 
-## **"core/block-editor" Store**
+## "core/block-editor" Store
 
 This store "core/block-editor" ((managed by the [`@wordpress/block-editor package`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-block-editor/))) manages the block editor state. Key actions include:
 
@@ -247,7 +247,7 @@ const InsertParagraphButton = () => {
 export default InsertParagraphButton;
 ```
 
-## **Conclusion**
+## Conclusion
 
 Upon completing this lesson, you should be able to:
 

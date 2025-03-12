@@ -14,17 +14,15 @@ This package provides a consistent way to interact with editor-related data, suc
 
 ## **Core Data Stores**
 
-WordPress provides several pre-registered data stores that manage different aspects of the Block Editor. These stores are available globally through `wp.data` methodsand can be accessed without additional setup.
-
-### **Core Data Stores**
+WordPress provides several pre-registered data stores that manage different aspects of the Block Editor. These stores are available globally through `wp.data` methods and can be accessed without additional setup.
 
 Most relevant data stores in the Block Editor are:
 
-- [core](https://developer.wordpress.org/block-editor/reference-guides/data/data-core/) – Manages general WordPress data, including posts, users, taxonomies, and site settings.
-- [core/block-directory](https://developer.wordpress.org/block-editor/reference-guides/data/data-core-block-directory/) \- Block directory
-- [core/block-editor](https://developer.wordpress.org/block-editor/reference-guides/data/data-core-block-editor/) – Manages the state of blocks within the editor.
-- [core/blocks](https://developer.wordpress.org/block-editor/reference-guides/data/data-core-blocks/) \- Block Types Data
-- [core/editor](https://developer.wordpress.org/block-editor/reference-guides/data/data-core-editor/) \- The Editor’s Data
+- [`core`](https://developer.wordpress.org/block-editor/reference-guides/data/data-core/) – Manages general WordPress data, including posts, users, taxonomies, and site settings.
+- [`core/block-directory`](https://developer.wordpress.org/block-editor/reference-guides/data/data-core-block-directory/) \- Block directory
+- [`core/block-editor`](https://developer.wordpress.org/block-editor/reference-guides/data/data-core-block-editor/) – Manages the state of blocks within the editor.
+- [`core/blocks`](https://developer.wordpress.org/block-editor/reference-guides/data/data-core-blocks/) \- Block Types Data
+- [`core/editor`](https://developer.wordpress.org/block-editor/reference-guides/data/data-core-editor/) \- The Editor's Data
 
 Each store is identified by a namespace and provides a set of selectors and actions to interact with its state. Developers can use `wp.data.select()` to retrieve data and `wp.data.dispatch()` to update data.
 
@@ -40,7 +38,7 @@ For example:
 
 Selectors allow developers to retrieve specific pieces of state from a store. They are accessed using `wp.data.select( storeName )`.
 
-### **Example: Retrieving the Current Post Title**
+**Example: Retrieving the Current Post Title**
 
 To get the title of the post being edited:
 
@@ -51,7 +49,7 @@ To get the title of the post being edited:
 
 This function call retrieves the `title` attribute of the post being edited from the `core/editor` store.
 
-### **Example: Retrieving the Current Blocks**
+**Example: Retrieving the Current Blocks**
 
 To get an array of blocks present in the editor:
 
@@ -66,7 +64,7 @@ This allows developers to dynamically inspect the content of the editor and mani
 
 Actions allow developers to modify the state within a store. They are accessed using `wp.data.dispatch( storeName )`.
 
-### **Example: Updating the Post Title**
+**Example: Updating the Post Title**
 
 To update the title of the current post:
 
@@ -76,7 +74,7 @@ To update the title of the current post:
 
 This function modifies the post's title in the `core/editor` store, which reflects immediately in the editor interface.
 
-### **Example: Inserting a New Block**
+**Example: Inserting a New Block**
 
 To insert a paragraph block at the end of the editor:
 
@@ -97,6 +95,6 @@ Developers often use selectors to retrieve data and then use actions to modify i
 
 This retrieves the first block in the editor and inserts a copy of it after its original position.
 
-## ---
+---
 
 The WordPress Data Layer provides a powerful way to interact with the Block Editor’s state. By using `wp.data.select()` to retrieve data and `wp.data.dispatch()` to modify data, developers can create dynamic, responsive experiences in the editor without direct DOM manipulation.
