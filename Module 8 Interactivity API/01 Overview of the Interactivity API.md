@@ -1,10 +1,10 @@
 ## **Overview of the Interactivity API**
 
-The Interactivity API, introduced in WordPress 6.5, is a **standard** way to add interactivity to the **frontend** of WordPress—whether inside blocks or other parts of a page. It provides a consistent method for developers to enhance user experiences with dynamic features.
+The [Interactivity API](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/), introduced in WordPress 6.5, is a **standard** way to add interactivity to the **frontend** of WordPress—whether inside blocks or other parts of a page. It provides a consistent method for developers to enhance user experiences with dynamic features.
 
-[From the docs](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/iapi-about/):
+_[From the docs](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/iapi-about/):_
 
-\> The Interactivity API is **a [standard](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/iapi-about/#why-a-standard) system of [directives](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/iapi-about/#why-directives), based on declarative code, for [adding frontend interactivity to blocks](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/iapi-about/#api-goals)**.
+> The Interactivity API is **a [standard](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/iapi-about/#why-a-standard) system of [directives](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/iapi-about/#why-directives), based on declarative code, for [adding frontend interactivity to blocks](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/iapi-about/#api-goals)**.
 
 **\> Directives extend HTML with special attributes** that tell the Interactivity API to attach a specified behavior to a DOM element or even to transform it.
 
@@ -14,21 +14,21 @@ Because it follows a standardized approach, blocks and other frontend elements c
 
 ## **Key Features of the Interactivity API**
 
-The Interactivity API is a standard system of directives for adding frontend interactivity to WordPress blocks. Its key features include:
+The [Interactivity API](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/api-reference/) is a standard system of directives for adding frontend interactivity to WordPress blocks. Its key features include:
 
-- **Directive-based Approach**
+- **[Directive-based Approach](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/iapi-about/#why-directives)**
   - Uses HTML attributes as directives to extend HTML functionality
   - Allows attaching behaviors to DOM elements or transforming them
-- **Server-side Rendering Support**
+- **[Server-side Rendering Support](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/core-concepts/server-side-rendering/)**
   - Works seamlessly with PHP and the current block system
   - Supports dynamic blocks and server-side rendering
-- **Declarative and Reactive**
+- **[Declarative and Reactive](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/core-concepts/the-reactive-and-declarative-mindset/)**
   - Uses declarative code to describe desired outcomes
   - Automatically updates UI in response to data changes
-- **Performant Design**
+- **[Performant Design](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/iapi-about/#performant)**
   - Runtime code for directives is only \~10 KB
   - Scripts load without blocking page rendering
-- **Compatibility**
+- **[Compatibility](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/iapi-about/#compatible-with-the-existing-block-development-tooling)**
   - Works with WordPress hooks and internationalization
   - Compatible with existing JS libraries on the site
 
@@ -70,12 +70,12 @@ In this example, we will create a simple toggle block that expands or collapses 
 
 ### Pre-requisites of a block using the Interactivity API
 
-In the scaffolded `my-first-interactive-block` example, we can see the following [parts that are required for any block using the Interactivity API](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/#requirements-of-the-interactivity-api)
+In the scaffolded `my-first-interactive-block` example, we can see the following [parts that are required for any block using the Interactivity API](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/api-reference/#requirements):
 
-- The `@wordpress/interactivity` package is installed (and a dependency declared on package. json)
-
-- `interactivity` support is added to `block.json`
-- The Interactivity API JavaScript code is loaded with `viewScriptModule` in `block.json`, which loads the file in the frontend using script modules
+- The [`@wordpress/interactivity`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-interactivity/) package is installed (and a dependency declared on package.json)
+- [`interactivity`](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-supports/#interactivity) support is added to `block.json`
+- The Interactivity API JavaScript code is loaded with [`viewScriptModule`](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-metadata/#view-script-module) in `block.json`, which loads the file in the frontend using script modules
+- The [`wp-interactive`](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/api-reference/#wp-interactive) directive is added to a DOM element in the render.php file which enables the Interactivity API for that portion of the DOM
 
 block.json
 
@@ -106,11 +106,11 @@ render.php
 
 ### Implementing directives in render.php
 
-The Interactivity API usually works better blocks with “dynamic rendering” that use a `render.php` to define the frontend output for the block. In this case, directives are added to this file:
+The Interactivity API usually works better blocks with "dynamic rendering" that use a `render.php` to define the frontend output for the block. In this case, directives are added to this file:
 
 ```javascript
 <?php
-...// Adds the global state.
+// Adds the global state.
 wp_interactivity_state(
 	'create-block',
 	array(
@@ -203,10 +203,10 @@ const { state } = store("create-block", {
 
 In the code above:
 
-- The `store` method is used to create the `'create-block'` store (merging any data that has been initialized in the server for that store’s namespace )
+- The `store` method is used to create the 'create-block' store (merging any data that has been initialized in the server for that store's namespace )
 - The `useContext` method is used inside callbacks and actions to get access to the local context of the element that triggered the call of function
 - The store is defined with some state, actions and callbacks. All elements under [wp-interactive](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/api-reference/#wp-interactive) directive pointing to this store will have access to these state values, actions and callbacks
-- ## The actions will update state values. When state values are updated the DOM elements with directives pointing to these state values “react” by updating their attributes or displayed values accordingly
+- ## The actions will update state values. When state values are updated the DOM elements with directives pointing to these state values "react" by updating their attributes or displayed values accordingly
 
 In this example, when the button is clicked, it triggers the `toggle` action which updates the `isOpen` state defined as [local context](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/core-concepts/undestanding-global-state-local-context-and-derived-state/#local-context) of the `div`. The paragraph's visibility is then dynamically controlled based on this state.
 

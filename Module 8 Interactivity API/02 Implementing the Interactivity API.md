@@ -1,14 +1,14 @@
 # Implementing the Interactivity API
 
-The WordPress Interactivity API introduces a powerful framework for creating dynamic, interactive blocks. This lesson will explore key concepts and techniques for implementing the Interactivity API effectively.
+The [WordPress Interactivity API](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/) introduces a powerful framework for creating dynamic, interactive blocks. This lesson will explore key concepts and techniques for implementing the Interactivity API effectively.
 
 > [!NOTE]
 > Check [The Reactive and Declarative mindset](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/core-concepts/the-reactive-and-declarative-mindset/) docs page from the Interactivity API docs for more examples and info about this topic
 
 To add dynamic behaviour in the frontend using the Interactivity API, developers can use:
 
-- **Directives**: Added to the markup to control the behavior of elements.
-- **Store**: Manages logic and data (such as state, actions, and side effects) needed for interactivity.
+- **[Directives](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/api-reference/#list-of-directives)**: Added to the markup to control the behavior of elements.
+- **[Store](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/api-reference/#the-store)**: Manages logic and data (such as state, actions, and side effects) needed for interactivity.
 
 Directives connect DOM elements to data in the state and context. When the data changes, the directives automatically update the DOM, ensuring a dynamic and responsive experience (see [diagram](https://excalidraw.com/#json=T4meh6lltJh6TCX51NTIu,DmIhxYSGFTL_ywZFbsmuSw)).
 
@@ -16,7 +16,7 @@ Directives connect DOM elements to data in the state and context. When the data 
 
 ## **Directives**
 
-Directives are special attributes you can add to your block’s markup to control how its elements behave. For dynamic blocks, you add them in the `render.php` file, and for static blocks, you use the `save.js` file.
+Directives are special attributes you can add to your block's markup to control how its elements behave. For dynamic blocks, you add them in the `render.php` file, and for static blocks, you use the `save.js` file.
 
 Example:
 
@@ -43,14 +43,13 @@ Example:
 The value assigned to a directive is a string pointing to a specific state, action, or side effect from a store.
 
 > [!NOTE]
-> The list of directives and a detailed description of each one is available [here](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/api-reference/#list-of-directives)
+> The list of directives and a detailed description of each one is available in the [API Reference](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/api-reference/#list-of-directives)
 
 ### Directives for setting a "scope"
 
 These directives define a specific scope for a DOM element and its children:
 
 - [`wp-interactive`](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/api-reference/#wp-interactive): Activates interactivity for an element and its children, associating them with a store's namespace and providing access to it.
-
 - [`wp-context`](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/api-reference/#wp-context): Defines a local state that can be accessed by child elements.
 
 ### Directives to manipulate attributes
@@ -58,9 +57,7 @@ These directives define a specific scope for a DOM element and its children:
 These directives manipulate attributes, classes, and styles based on boolean expressions.
 
 - [`wp-bind`](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/api-reference/#wp-bind): Dynamically sets attributes on an element (`data-wp-bind--hidden="!context.isOpen"`).
-
 - [`wp-class`](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/api-reference/#wp-class): Adds or removes a class based on a boolean value (`data-wp-class--selected="context.isSelected"`).
-
 - [`wp-style`](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/api-reference/#wp-style): Dynamically applies inline styles (`data-wp-style--color="context.color"`).
 
 ### Directives for event handling
@@ -68,15 +65,10 @@ These directives manipulate attributes, classes, and styles based on boolean exp
 These directives execute actions in response to events.
 
 - [`wp-on`](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/api-reference/#wp-on): Attaches event listeners to elements (`data-wp-on--click="actions.toggleMenu"`).
-
 - [`wp-on-async`](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/api-reference/#wp-on-async): A more performant version of `wp-on`, yielding control back to the main thread.
-
 - [`wp-on-window`](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/api-reference/#wp-on-window): Attaches global window event listeners (`data-wp-on-window--resize="callbacks.logWidth"`).
-
 - [`wp-on-async-window`](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/api-reference/#wp-on-async-window): Optimized version of `wp-on-window`.
-
 - [`wp-on-document`](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/api-reference/#wp-on-document): Listens for document-wide events (`data-wp-on-document--keydown="callbacks.logKeydown"`).
-
 - [`wp-on-async-document`](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/api-reference/#wp-on-async-document): Optimized version of `wp-on-document`.
 
 ### Directives for Text and Content Manipulation
@@ -90,9 +82,7 @@ These directives modify content dynamically.
 These directives execute callbacks in response to state changes or lifecycle events.
 
 - [`wp-watch`](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/api-reference/#wp-watch): Runs a callback when a node is created and whenever its state/context changes.
-
 - [`wp-init`](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/api-reference/#wp-init): Executes a callback only once when a node is created.
-
 - [`wp-run`](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/api-reference/#wp-run): Executes a callback during the render cycle, allowing the use of hooks.
 
 ### Directives for Dynamic Lists and Keys
@@ -100,14 +90,12 @@ These directives execute callbacks in response to state changes or lifecycle eve
 These directives manage list rendering and key-based identification.
 
 - [`wp-key`](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/api-reference/#wp-key): Assigns a unique key to an element to optimize re-rendering.
-
 - [`wp-each`](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/api-reference/#wp-each): Loops over an array and renders a list of elements.
-
 - [`wp-each-child`](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/api-reference/#wp-each-child): Ensures hydration works correctly for server-rendered lists.
 
 ## **The Store**
 
-The store is a fundamental concept in the Interactivity API that serves as the central hub for managing state and logic in your blocks. It is used to create the logic (actions, side effects, etc.) linked to the directives and the data used inside that logic (state, derived state, etc.).
+[The store](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/api-reference/#the-store) is a fundamental concept in the Interactivity API that serves as the central hub for managing state and logic in your blocks. It is used to create the logic (actions, side effects, etc.) linked to the directives and the data used inside that logic (state, derived state, etc.).
 
 The store is responsible for:
 
@@ -162,7 +150,7 @@ const { state } = store("myPlugin", {
 
 #### Actions
 
-Actions are functions that modify state or perform operations. They can be:
+[Actions](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/api-reference/#elements-of-the-store) are functions that modify state or perform operations. They can be:
 
 - Triggered by directives like `data-wp-on`
 - Called from other actions

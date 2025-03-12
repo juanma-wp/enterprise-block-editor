@@ -2,11 +2,11 @@
 
 The Interactivity API manages three types of state: global state, local context, and derived state. Each of these serves a different purpose in managing and sharing data across blocks:
 
-- **Global state:** This data is associated to a namespace and can be accessed by any interactive block on the page. It ensures that multiple blocks remain synchronized, even if they are not directly related in the DOM.
-- **Local context:** This is data that belongs to a specific DOM element and is accessible only to that element and its child elements. It allows independent state management for separate instances of a block.
-- **Derived state:** These are computed values based on global state or local context. They are dynamically calculated as needed, helping to avoid redundant data storage and ensuring consistency.
+- **[Global state](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/core-concepts/undestanding-global-state-local-context-and-derived-state/#global-state):** This data is associated to a namespace and can be accessed by any interactive block on the page. It ensures that multiple blocks remain synchronized, even if they are not directly related in the DOM.
+- **[Local context](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/core-concepts/undestanding-global-state-local-context-and-derived-state/#local-context):** This is data that belongs to a specific DOM element and is accessible only to that element and its child elements. It allows independent state management for separate instances of a block.
+- **[Derived state](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/core-concepts/undestanding-global-state-local-context-and-derived-state/#derived-state):** These are computed values based on global state or local context. They are dynamically calculated as needed, helping to avoid redundant data storage and ensuring consistency.
 
-Each of these concepts plays a crucial role in managing state efficiently within interactive blocks. Let’s explore them in more detail with examples.
+Each of these concepts plays a crucial role in managing state efficiently within interactive blocks. Let's explore them in more detail with examples.
 
 ## **Global State**
 
@@ -14,12 +14,12 @@ Each of these concepts plays a crucial role in managing state efficiently within
 
 ### **Server-Side State Initialization**
 
-The global state can be initialized on the server using the `wp_interactivity_state()` function. This function takes two parameters:
+The global state can be initialized on the server using the [`wp_interactivity_state()`](https://developer.wordpress.org/reference/functions/wp_interactivity_state/) function. This function takes two parameters:
 
 - The namespace (string)
 - An array of initial state values
 
-```
+```php
 <?php
 // In your PHP file (e.g. render.php)
 wp_interactivity_state( 'myPlugin', [
@@ -40,7 +40,7 @@ In the client side (view.js file of each block) the developer can define both th
 
 The client-side store can both access the server-initialized state AND augment it with additional properties.
 
-The `store` method used to set the store in JavaScript can be imported from @wordpress/interactivity.
+The [`store`](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/api-reference/#the-store) method used to set the store in JavaScript can be imported from @wordpress/interactivity.
 
 ```javascript
 const { state } = store("myPlugin", {
@@ -73,10 +73,10 @@ const { state } = store("myPlugin", {
 
 The final state resulted form merging server-side and client-side definitions for the store, is available to any element using the corresponding namespace:
 
-```
+```html
 <div data-wp-interactive="myPlugin">
-	<span data-wp-text="state.counter"></span>
-	<button data-wp-on--click="actions.increment">+</button>
+  <span data-wp-text="state.counter"></span>
+  <button data-wp-on--click="actions.increment">+</button>
 </div>
 ```
 
@@ -84,7 +84,7 @@ The final state resulted form merging server-side and client-side definitions fo
 
 ### **Private Stores**
 
-Private stores provide a **controlled way** to manage store state within a plugin, ensuring that **certain data and actions are not exposed to external namespaces**. This helps maintain **encapsulation, security, and backward compatibility** while still allowing controlled access when necessary.
+[Private stores](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/api-reference/#private-stores) provide a **controlled way** to manage store state within a plugin, ensuring that **certain data and actions are not exposed to external namespaces**. This helps maintain **encapsulation, security, and backward compatibility** while still allowing controlled access when necessary.
 
 For example, an e-commerce plugin might have pricing calculation logic that should not be tampered with by third-party plugins.
 
@@ -115,7 +115,7 @@ If no store has been initialized on the server for the specified `namespace` in 
 
 Example: Combined Server and Client State
 
-```
+```php
 // Server-side initialization (PHP)
 wp_interactivity_state( 'todoApp', [
     'todos' => [
@@ -153,19 +153,19 @@ const { state } = store("todoApp", {
 });
 ```
 
-```
+```html
 <div data-wp-interactive="todoApp">
-	<!-- Access both server and client state -->
-	<select data-wp-bind--value="state.filter">
-		<option value="all">All</option>
-		<option value="done">Done</option>
-		<option value="pending">Pending</option>
-	</select>
+  <!-- Access both server and client state -->
+  <select data-wp-bind--value="state.filter">
+    <option value="all">All</option>
+    <option value="done">Done</option>
+    <option value="pending">Pending</option>
+  </select>
 
-	<!-- Use computed property combining both states -->
-	<ul data-wp-each="state.filteredTodos">
-		<li data-wp-text="context.item.text"></li>
-	</ul>
+  <!-- Use computed property combining both states -->
+  <ul data-wp-each="state.filteredTodos">
+    <li data-wp-text="context.item.text"></li>
+  </ul>
 </div>
 ```
 
@@ -173,9 +173,9 @@ const { state } = store("todoApp", {
 
 From directives, you can reference global state in HTML using `state`:
 
-```
+```html
 <div data-wp-bind--hidden="!state.show">
-    <span data-wp-text="state.helloText"></span>
+  <span data-wp-text="state.helloText"></span>
 </div>
 ```
 
@@ -193,15 +193,15 @@ const { state } = store("myPlugin", {
 
 ## **Local Context**
 
-Local context is state that belongs to a specific element in the DOM and its children. It is ideal when you need independent state for different instances of a block.
+[Local context](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/core-concepts/undestanding-global-state-local-context-and-derived-state/#local-context) is state that belongs to a specific element in the DOM and its children. It is ideal when you need independent state for different instances of a block.
 
 ### **Setting Local Context on the Server**
 
 #### Using PHP Function
 
-You can initialize local context on the server using the `wp_interactivity_data_wp_context()` function:
+You can initialize local context on the server using the [`wp_interactivity_data_wp_context()`](https://developer.wordpress.org/reference/functions/wp_interactivity_data_wp_context/) function:
 
-```
+```php
 <div
     <?php echo wp_interactivity_data_wp_context( array(
         'foods' => array( 'Pie', 'Smoothie' )
@@ -213,11 +213,11 @@ You can initialize local context on the server using the `wp_interactivity_data_
 
 #### Using HTML Attribute
 
-Alternatively, you can define local context directly in the HTML using the `data-wp-context` attribute:
+Alternatively, you can define local context directly in the HTML using the [`data-wp-context`](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/api-reference/#wp-context) attribute:
 
-```
+```html
 <div data-wp-context='{ "counter": 0 }'>
-    <span data-wp-text="context.counter"></span>
+  <span data-wp-text="context.counter"></span>
 </div>
 ```
 
@@ -225,7 +225,7 @@ Alternatively, you can define local context directly in the HTML using the `data
 
 #### Accessing and Modifying Local Context
 
-In JavaScript, use the `getContext()` function to access and modify the context from any action or function in the store:
+In JavaScript, use the [`getContext()`](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/api-reference/#store-client-methods) function to access and modify the context from any action or function in the store:
 
 ```javascript
 store("myPlugin", {
