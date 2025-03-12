@@ -85,7 +85,7 @@ _`block.json`_
 	"supports": {
 		"interactivity": true
 	},
-...
+	...
 	"render": "file:./render.php",
 	"viewScriptModule": "file:./view.js"
 }
@@ -125,7 +125,7 @@ wp_interactivity_state(
 ?>
 
 <div
-  ...
+	...
 	data-wp-interactive="create-block"
 	<?php echo wp_interactivity_data_wp_context( array( 'isOpen' => false ) ); ?>
 	data-wp-watch="callbacks.logIsOpen"
@@ -139,13 +139,13 @@ wp_interactivity_state(
 	<button
 		data-wp-on--click="actions.toggleOpen"
 		data-wp-bind--aria-expanded="context.isOpen"
-    ...
+		...
 	>
 		<?php esc_html_e( 'Toggle', 'my-first-interactive-block' ); ?>
 	</button>
 
 	<p
-    ...
+		...
 		data-wp-bind--hidden="!context.isOpen"
 	>
 		...
