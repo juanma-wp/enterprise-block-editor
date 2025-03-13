@@ -1,8 +1,8 @@
 You are creating content for training software developers on Enterprise WordPress software development for a course titled Advanced Block Editor (Gutenberg)
 
-All the content can be found in markdown files in this public GitHub repository: https://github.com/jonathanbossenger/enterprise-block-editor
+All the content can be found in markdown files in this public GitHub repository: https://github.com/juanma-wp/enterprise-block-editor
 
-The course curriculum can be found here: http://raw.githubusercontent.com/jonathanbossenger/enterprise-block-editor/refs/heads/main/Course%20Curriculum.md
+The course curriculum can be found here: http://raw.githubusercontent.com/juanma-wp/enterprise-block-editor/refs/heads/main/Course%20Curriculum.md
 
 Provide informative and fact-based content for a technical audience.
 
@@ -18,18 +18,19 @@ Use US English.
 
 Do not add horizontal rules.
 
-You are creating lessons for Module 1: Introduction and Tooling Setup
+You are creating lessons for Module 6: Customizing the Editor Experience
 
-Create a lesson titled 1.2: Overview of Block themes
+Create a lesson titled 6.1: Custom Block Controls
 
 It should cover the following topics:
-* Templates and template parts
-* Patterns
-* Global Settings and Styles
-* Custom functionality (functions.php) and styling (style.css)
+
+- Custom sidebar panels for a block ([Settings Sidebar](https://developer.wordpress.org/block-editor/getting-started/fundamentals/block-in-the-editor/#settings-sidebar))
+- Custom options in the block's toolbar ([Block Toolbar](https://developer.wordpress.org/block-editor/getting-started/fundamentals/block-in-the-editor/#block-toolbar))
 
 On completion of this lesson, the learner should be able to:
-1. Identify the key components of block themes and how they are used.
-2. Describe how to configure global settings and apply styles to block themes elements.
-3. Explain how to add custom functionality to block themes using functions.php and style block themes using style.css.
 
+1. **Identify** the purpose and functionality of the Settings Sidebar and Block Toolbar in the WordPress Block Editor.
+
+2. **Explain** how custom sidebar panels and toolbar controls enhance the block editing experience and improve user customization.
+
+3. **Create** a custom sidebar panel and toolbar button for a block using the Block Editor API, ensuring proper integration with WordPress development best practices.

@@ -1,4 +1,4 @@
-## **Block Style Variations**
+# 6.3: Registering Custom Block Styles Variations
 
 Block Style Variations allow developers to define alternative visual appearances for existing blocks in the WordPress Block Editor. Unlike block variations, which modify the structure or behavior of a block, style variations focus solely on altering the block's appearance by applying custom CSS classes. This feature enhances the flexibility of the editor, enabling users to quickly switch between predefined styles without modifying the block's core functionality.
 
@@ -6,7 +6,7 @@ By the end of this lesson, will learn how to register block style variations usi
 
 ## **How do Block Style Variations work**
 
-Block Styles let you apply different looks to existing blocks by adding a special class to them. This class changes the block’s appearance when a specific style is selected.
+Block Styles let you apply different looks to existing blocks by adding a special class to them. This class changes the block's appearance when a specific style is selected.
 
 For example, the following code adds a "Fancy Quote" style to the Quote block:
 
@@ -27,6 +27,7 @@ The [`registerBlockStyle`](https://developer.wordpress.org/block-editor/referenc
 2. **styleVariation**: An object containing:
    - `name`: A unique identifier for the style (used as a CSS class).
    - `label`: A human-readable label displayed in the editor.
+   - `isDefault`: Optional boolean to set this style as the default.
 
 ```javascript
 registerBlockStyle("core/image", {
@@ -40,9 +41,9 @@ This code adds a "'Hand Drawn JS" style to the Image Block. When selected, it ap
 
 To remove a block style, you can use [`unregisterBlockStyle`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-blocks/#unregisterblockstyle)`()`.
 
-To ensure this script is loaded in the editor, enqueue it using the `'enqueue_block_editor_assets'`hook:
+To ensure this script is loaded in the editor, enqueue it using the [`enqueue_block_editor_assets`](https://developer.wordpress.org/reference/hooks/enqueue_block_editor_assets/) hook:
 
-```py
+```php
 add_action( 'enqueue_block_editor_assets', 'wpviplearn_editor_assets' );
 
 /**
@@ -70,22 +71,21 @@ function wpviplearn_editor_assets() {
 
 The styles that will be applied when the Block Style Variation is selected (and related class is added to the element) could look like this
 
-```
+```css
 .wp-block-image.is-style-hand-drawn-js img {
-	color: inherit;
-	border: 3px dashed currentcolor;
-	overflow: hidden;
-	box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2);
-	border-radius: 50px 5px 50px 5px/5px 50px 5px 50px !important;
-	transform: rotate(2deg);
-	padding: 10px;
+  color: inherit;
+  border: 3px dashed currentcolor;
+  overflow: hidden;
+  box-shadow: 4px 4px 8px rgba(0, 0, 0, 0.2);
+  border-radius: 50px 5px 50px 5px/5px 50px 5px 50px !important;
+  transform: rotate(2deg);
+  padding: 10px;
 }
-
 ```
 
-To ensure that the styles are properly loaded in both the editor and the frontend, enqueue them using the `'enqueue_block_assets'`hook:
+To ensure that the styles are properly loaded in both the editor and the frontend, enqueue them using the [`enqueue_block_assets`](https://developer.wordpress.org/reference/hooks/enqueue_block_assets/) hook:
 
-```py
+```php
 add_action( 'enqueue_block_assets', 'wpviplearn_block_assets' );
 
 /**
@@ -106,7 +106,6 @@ function wpviplearn_block_assets() {
 		);
 	}
 }
-
 ```
 
 ## **Register a Block Style Variations using PHP**
@@ -121,8 +120,7 @@ The [`register_block_style`](https://developer.wordpress.org/reference/functions
 
 Example:
 
-```py
-
+```php
 add_action( 'init', 'wpviplearn_register_block_styles' );
 
 function wpviplearn_register_block_styles() {
@@ -143,31 +141,18 @@ function wpviplearn_register_block_styles() {
 		)
 	);
 }
-
-
 ```
 
 This registers an "`Hand Drawn PHP`" style to the image block with inline CSS applied directly
 
-## **Dynamic Modification of Block Styles**
-
-You can dynamically modify styles using JavaScript or CSS:
-
-1. Use JavaScript to toggle classes based on user actions.
-2. Define responsive or conditional styles in your CSS files.
-
-Example:
-
-```
-.wp-block-image.is-style-hand-drawn-js img:hover {
-background-color: yellowgreen;
-}
-
-```
-
-This CSS changes the appearance of blocks with `.is-style-hand-drawn-js` when hovered.
+> [!NOTE]
+> The [block-styles](https://github.com/Automattic/wpvip-learn-enterprise-block-editor/tree/trunk/examples/block-styles) ([live demo](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/Automattic/wpvip-learn-enterprise-block-editor/refs/heads/trunk/examples/block-styles/_playground/blueprint.json)) example illustrates how to to register block style variations via PHP and JS
 
 ## Further Reading
 
-- [Section Styles \- DevNote](https://make.wordpress.org/core/2024/06/24/section-styles/)
-- [Block API Reference: Styles](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-styles/)
+- [Block Style Variations – Theme Handbook](https://developer.wordpress.org/themes/features/block-style-variations/)
+- [Block Styles API Reference](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-styles/)
+- [Section Styles - DevNote](https://make.wordpress.org/core/2024/06/24/section-styles/)
+- [Styling Your WordPress Block](https://learn.wordpress.org/tutorial/styling-your-wordpress-block/)
+- [`wp_enqueue_script` Reference](https://developer.wordpress.org/reference/functions/wp_enqueue_script/)
+- [`wp_enqueue_style` Reference](https://developer.wordpress.org/reference/functions/wp_enqueue_style/)

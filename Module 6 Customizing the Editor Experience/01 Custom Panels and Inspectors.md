@@ -1,212 +1,356 @@
-## **Custom Panels and Inspectors**
+# 6.1: Custom Block Controls
 
-In this lesson, you'll learn how to create and improve custom block panels and inspector controls in the WordPress Block Editor (Gutenberg).
+## Purpose and Functionality of Custom Block Controls
 
-After this lesson, you'll be able to:
+The [WordPress Block Editor](https://developer.wordpress.org/block-editor/) (Gutenberg) provides two primary interfaces for customizing blocks: the **Settings Sidebar** and the **Block Toolbar**. These components allow users to modify and configure blocks without cluttering the main content area.
 
-- Understand what **InspectorControls** does in the Block Editor.
-- Organize block settings using custom panels in the inspector.
-- Add a sidebar panel with **InspectorControls**.
-- Modify a block to include more settings.
+![](../_assets/block-toolbar-settings-sidebar.png)
 
-### **Understanding InspectorControls**
+### Settings Sidebar
 
-[`InspectorControls`](https://github.com/WordPress/gutenberg/blob/HEAD/packages/block-editor/src/components/inspector-controls/README.md) is a WordPress Block Editor component that allows developers to add custom settings to the editor's sidebar. It helps separate content editing from configuration settings, keeping the editing area clean and focused.
+The Settings Sidebar appears on the right side of the editor and contains collapsible panels that provide access to various block settings. It serves as the control center for block configuration, allowing users to:
 
-Settings that affect a block's appearance, behavior, or functionality should go in `InspectorControls` rather than inline controls like toolbars. This improves clarity and makes blocks easier to use.
+- Adjust block-specific settings and properties
+- Configure advanced options like spacing, typography, and colors
+- Set custom attributes that affect the block's behavior
+- Manage block metadata and additional settings
 
-Grouping related settings in custom panels makes blocks easier to configure. For example, an "Alert" block could include a panel for selecting the alert type (success, warning, error) and an option to show or hide an icon.
+### Block Toolbar
 
-### **Creating a Custom Sidebar Panel with InspectorControls**
+The Block Toolbar appears above a selected block and provides quick access to commonly used actions and settings. It allows users to:
 
-To add custom settings to a block’s sidebar, use the `InspectorControls` component from `@wordpress/block-editor`. This wraps the settings in a structured panel.
+- Format content with buttons for text styling (bold, italic, etc.)
+- Align content within the block
+- Perform block-specific actions
+- Access additional options through dropdown menus
 
-For example, having the following block with the attributes “`fallbackCurrentYear”, “showStartingYear” and “startingYear”`
+## Enhancing the Block Editing Experience
 
-```javascript
-{
-	"$schema": "https://schemas.wp.org/trunk/block.json",
-	"apiVersion": 3,
-	"name": "block-development-examples/copyright-date-block-09aac3",
-	"version": "0.1.0",
-	"title": "Copyright Date Block 09aac3",
-	"category": "widgets",
-	"description": "Display your site's copyright date.",
-	"example": {},
-	"keywords": [ "09aac3"],
-	"attributes": {
-		"fallbackCurrentYear": {
-			"type": "string"
-		},
-		"showStartingYear": {
-			"type": "boolean"
-		},
-		"startingYear": {
-			"type": "string"
-		}
-	},
-	"supports": {
-		"color": {
-			"background": false,
-			"text": true
-		},
-		"html": false,
-		"typography": {
-			"fontSize": true
-		}
-	},
-	"textdomain": "block-development-examples",
-	"editorScript": "file:./index.js",
-	"editorStyle": "file:./index.css",
-	"style": "file:./style-index.css",
-	"render": "file:./render.php"
-}
-```
+Custom sidebar panels and toolbar controls significantly improve the user experience by:
 
-The following block's edit file include `InspectorControls` alongside other UI components such as `PanelBody, TextControl, ToggleControl` to display a custom area the block’s sidebar panel to update some of the block’s attributes
+1. **Organizing Settings Logically**: Grouping related options in collapsible panels makes complex blocks easier to configure.
+2. **Separating Content from Configuration**: Keeping formatting options in the toolbar and advanced settings in the sidebar creates a cleaner editing interface.
+3. **Providing Context-Specific Controls**: Showing only relevant options based on block type and current state reduces cognitive load.
+4. **Improving Workflow Efficiency**: Adding frequently used actions to the toolbar speeds up content creation.
+5. **Enabling Advanced Customization**: Custom controls allow users to create precisely tailored content without writing code.
+
+## Creating Custom Sidebar Panels with InspectorControls
+
+The [`InspectorControls`](https://github.com/WordPress/gutenberg/blob/HEAD/packages/block-editor/src/components/inspector-controls/README.md) component from [`@wordpress/block-editor`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-block-editor/) allows developers to add custom settings panels to the block sidebar. Here's how to implement it:
 
 ```javascript
 import { __ } from "@wordpress/i18n";
 import { InspectorControls, useBlockProps } from "@wordpress/block-editor";
 import { PanelBody, TextControl, ToggleControl } from "@wordpress/components";
-import { useEffect } from "react";
 
 export default function Edit({ attributes, setAttributes }) {
-  const { fallbackCurrentYear, showStartingYear, startingYear } = attributes;
-
-  const currentYear = new Date().getFullYear().toString();
-
-  useEffect(() => {
-    if (currentYear !== fallbackCurrentYear) {
-      setAttributes({ fallbackCurrentYear: currentYear });
-    }
-  }, [currentYear, fallbackCurrentYear, setAttributes]);
-
-  let displayDate;
-
-  if (showStartingYear && startingYear) {
-    displayDate = startingYear + "–" + currentYear;
-  } else {
-    displayDate = currentYear;
-  }
+  const { showDate, customText } = attributes;
 
   return (
     <>
       <InspectorControls>
-        <PanelBody title={__("Settings", "block-development-examples")}>
+        <PanelBody
+          title={__("Content Settings", "my-plugin")}
+          initialOpen={true}
+        >
           <ToggleControl
-            checked={showStartingYear}
-            label={__("Show starting year", "block-development-examples")}
-            onChange={() =>
-              setAttributes({
-                showStartingYear: !showStartingYear,
-              })
-            }
+            label={__("Show Date", "my-plugin")}
+            checked={showDate}
+            onChange={() => setAttributes({ showDate: !showDate })}
           />
-          {showStartingYear && (
-            <TextControl
-              label={__("Starting year", "block-development-examples")}
-              value={startingYear}
-              onChange={(value) => setAttributes({ startingYear: value })}
-            />
-          )}
+          <TextControl
+            label={__("Custom Text", "my-plugin")}
+            value={customText}
+            onChange={(value) => setAttributes({ customText: value })}
+          />
         </PanelBody>
       </InspectorControls>
-      <p {...useBlockProps()}>© {displayDate}</p>
+      <div {...useBlockProps()}>
+        {/* Block content here */}
+        {showDate && <p>{new Date().toLocaleDateString()}</p>}
+        {customText && <p>{customText}</p>}
+      </div>
     </>
   );
 }
 ```
 
-Here, `PanelBody` groups `TextControl` and `ToggleControl` inside a "`'Settings`" panel. `TextControl` sets the `startingYear` attribute, while `ToggleControl` allows users to set the `showStartingYear` attribute
+Key components for creating effective sidebar panels:
 
-### **Modifying an Existing Block to Add Inspector Controls**
+1. [`PanelBody`](https://developer.wordpress.org/block-editor/reference-guides/components/panel/#panelbody): Creates a collapsible section for related settings
+2. [`TextControl`](https://developer.wordpress.org/block-editor/reference-guides/components/text-control/): Provides input fields for text-based attributes
+3. [`ToggleControl`](https://developer.wordpress.org/block-editor/reference-guides/components/toggle-control/): Adds toggle switches for boolean options
+4. [`ColorPicker`](https://developer.wordpress.org/block-editor/reference-guides/components/color-picker/): Enables color selection for styling options
+5. [`RangeControl`](https://developer.wordpress.org/block-editor/reference-guides/components/range-control/): Allows numerical input within a specified range
 
-The [`editor.BlockEdit`](https://developer.wordpress.org/block-editor/reference-guides/filters/block-filters/#editor-blockedit) filter allows developers to enhance block editing by injecting custom components into the block editor. This filter is used with `addFilter()` to wrap existing blocks with additional controls, improving their customization options without modifying the core block code.
+> [!NOTE]
+> This [Build your first block](https://developer.wordpress.org/block-editor/getting-started/tutorial/) tutorial explains how to create a custom block with an Inspector Controls panel. Check the [code](https://github.com/WordPress/block-development-examples/tree/trunk/plugins/copyright-date-block-09aac3) and its [live preview](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/WordPress/block-development-examples/trunk/plugins/copyright-date-block-09aac3/_playground/blueprint.json).
+
+## Creating Custom Block Toolbar Controls
+
+To add custom buttons to the block toolbar, use the [`BlockControls`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-editor/#blockcontrols) component from [`@wordpress/block-editor`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-editor/):
 
 ```javascript
-addFilter(editor.BlockEdit, "namespace", callback);
+import { __ } from "@wordpress/i18n";
+import { BlockControls } from "@wordpress/editor";
+import { useBlockProps } from "@wordpress/block-editor";
+import { ToolbarButton, ToolbarGroup } from "@wordpress/components";
+import { formatBold } from "@wordpress/icons";
+
+export default function Edit({ attributes, setAttributes }) {
+  const { isBold } = attributes;
+
+  const toggleBold = () => {
+    setAttributes({ isBold: !isBold });
+  };
+
+  return (
+    <>
+      <BlockControls>
+        <ToolbarGroup>
+          <ToolbarButton
+            icon={formatBold}
+            title={__("Bold Text", "my-plugin")}
+            isActive={isBold}
+            onClick={toggleBold}
+          />
+        </ToolbarGroup>
+      </BlockControls>
+      <div {...useBlockProps()}>
+        <p style={{ fontWeight: isBold ? "bold" : "normal" }}>
+          {/* Block content here */}
+          This is my custom block content.
+        </p>
+      </div>
+    </>
+  );
+}
 ```
 
-The callback required by the [`editor.BlockEdit`](https://developer.wordpress.org/block-editor/reference-guides/filters/block-filters/#editor-blockedit) filter is a a Higher-Order Component (HOC) that takes the original `BlockEdit` component, extends it with additional UI elements, and returns the modified version. This lets developers introduce new settings within the inspector panel.
+Best practices for implementing toolbar controls:
 
-As a HOC returns a new component, the `createHigherOrderComponent` function can be be used to return a custom name for the component returned by the HOC.
+1. Group related controls using [`ToolbarGroup`](https://developer.wordpress.org/block-editor/reference-guides/components/toolbar-group/)
+2. Use [WordPress icons](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-icons/) for consistency with the editor interface
+3. Keep the toolbar focused on the most commonly used actions
+4. Implement `isActive` state to show active selections
+5. Provide descriptive labels with proper [translations](https://developer.wordpress.org/block-editor/how-to-guides/internationalization/)
 
-For example, adding a custom CSS class input to the core "Image" block:
+> [!NOTE]
+> This [Block Toolbar Controls](https://github.com/WordPress/block-development-examples/tree/trunk/plugins/block-toolbar-ab967f) example in the `block-development-examples` repo illustrates how to add a block toolbar to a custom block.
 
-```
-import { addFilter } from '@wordpress/hooks';
-import { createHigherOrderComponent } from '@wordpress/compose';
-import { InspectorControls } from '@wordpress/block-editor';
-import { PanelBody, Notice, TextControl } from '@wordpress/components';
-import { Fragment } from '@wordpress/element';
+## Modifying Existing Blocks to Add Inspector Controls
 
-const withCharacterLimitWarning = createHigherOrderComponent( ( BlockEdit ) => {
-	return ( props ) => {
-		// Only apply to the Paragraph block.
-		if ( props.name !== 'core/paragraph' ) {
-			return <BlockEdit { ...props } />;
-		}
+The WordPress Block Editor allows developers to extend existing blocks with additional settings using the [`editor.BlockEdit`](https://developer.wordpress.org/block-editor/reference-guides/filters/block-filters/#editor-blockedit) filter. This is particularly useful for adding custom functionality to core blocks without modifying their source code.
 
-		// Get the block's attributes and setAttributes function.
-		const { attributes, setAttributes } = props;
-		const { content, maxCharacters } = attributes;
+To modify an existing block's inspector controls:
 
-		// Check if the content exceeds the character limit.
-		const exceedsLimit =
-			content && maxCharacters && content.length > maxCharacters;
+```javascript
+import { addFilter } from "@wordpress/hooks";
+import { createHigherOrderComponent } from "@wordpress/compose";
+import { InspectorControls } from "@wordpress/block-editor";
+import { PanelBody, TextControl } from "@wordpress/components";
+import { Fragment } from "@wordpress/element";
 
-		// Update the maxCharacters attribute.
-		const updateMaxCharacters = ( newValue ) => {
-			const parsedValue = parseInt( newValue, 10 );
-			if ( ! isNaN( parsedValue ) && parsedValue > 0 ) {
-				setAttributes( { maxCharacters: parsedValue } );
-			}
-		};
+// Create a higher-order component to enhance the block
+const withCustomInspectorControls = createHigherOrderComponent((BlockEdit) => {
+  return (props) => {
+    // Only apply to paragraph blocks
+    if (props.name !== "core/paragraph") {
+      return <BlockEdit {...props} />;
+    }
 
-		return (
-			<Fragment>
-				<BlockEdit { ...props } />
-				<InspectorControls>
-					<PanelBody
-						title="Character Limit Settings"
-						initialOpen={ true }
-					>
-						<TextControl
-							label="Maximum Characters"
-							type="number"
-							value={ maxCharacters || '' }
-							onChange={ updateMaxCharacters }
-							min={ 1 }
-							help="Set the maximum number of characters allowed for this paragraph."
-						/>
-						{ exceedsLimit && (
-							<Notice status="warning" isDismissible={ false }>
-								This paragraph exceeds the recommended{ ' ' }
-								{ maxCharacters }-character limit. Consider
-								splitting it into smaller paragraphs for better
-								readability.
-							</Notice>
-						) }
-					</PanelBody>
-				</InspectorControls>
-			</Fragment>
-		);
-	};
-}, 'withCharacterLimitWarning' );
+    const { attributes, setAttributes } = props;
+    const { customAttribute } = attributes;
 
-// Hook into the BlockEdit component.
+    return (
+      <Fragment>
+        <BlockEdit {...props} />
+        <InspectorControls>
+          <PanelBody title="Custom Settings" initialOpen={true}>
+            <TextControl
+              label="Custom Attribute"
+              value={customAttribute || ""}
+              onChange={(value) => setAttributes({ customAttribute: value })}
+            />
+          </PanelBody>
+        </InspectorControls>
+      </Fragment>
+    );
+  };
+}, "withCustomInspectorControls");
+
+// Register attributes for the core paragraph block
+const addCustomAttributes = (settings, name) => {
+  if (name !== "core/paragraph") {
+    return settings;
+  }
+
+  return {
+    ...settings,
+    attributes: {
+      ...settings.attributes,
+      customAttribute: {
+        type: "string",
+        default: "",
+      },
+    },
+  };
+};
+
+// Add the custom attribute
 addFilter(
-	'editor.BlockEdit',
-	'my-plugin/with-character-limit-warning',
-	withCharacterLimitWarning
+  "blocks.registerBlockType",
+  "my-plugin/add-custom-attributes",
+  addCustomAttributes
+);
+
+// Add the custom inspector controls
+addFilter(
+  "editor.BlockEdit",
+  "my-plugin/with-custom-inspector-controls",
+  withCustomInspectorControls
 );
 ```
 
-This code adds character limit functionality specifically for paragraph blocks. It adds a new control in the Inspector (sidebar) panel where users can set a maximum character limit. When the paragraph's content exceeds this limit, a warning notice appears suggesting to split the text into smaller paragraphs for better readability. This is implemented as a higher-order component that wraps around the default paragraph block editor component.
+This approach uses:
 
-Custom block panels and inspectors improve the WordPress Block Editor experience by keeping settings organized and easy to use. Use clear labels, logical grouping, and helpful instructions to create blocks that offer powerful customization options while maintaining a clean editing experience.
+1. [`addFilter`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-hooks/#addfilter) to hook into WordPress's filter system
+2. [`createHigherOrderComponent`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-compose/#createhigherordercomponent) to wrap the original BlockEdit component
+3. A condition to target only specific block types
+4. Addition of new attributes to store the custom settings
+
+> [!NOTE]
+> The [block-filters-inspector-controls](https://github.com/Automattic/wpvip-learn-enterprise-block-editor/tree/trunk/examples/block-filters-inspector-controls) ([live demo](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/Automattic/wpvip-learn-enterprise-block-editor/refs/heads/trunk/examples/block-filters-inspector-controls/_playground/blueprint.json)) example illustrates how to add sidebar panel to an existing block.
+
+## Modifying Existing Blocks to Add Block Controls
+
+Similar to adding inspector controls, you can enhance existing blocks with custom toolbar controls:
+
+```javascript
+import { addFilter } from "@wordpress/hooks";
+import { createHigherOrderComponent } from "@wordpress/compose";
+import { BlockControls } from "@wordpress/block-editor";
+import { ToolbarButton } from "@wordpress/components";
+import { Fragment } from "@wordpress/element";
+import { formatUppercase } from "@wordpress/icons";
+
+// Create a higher-order component to add toolbar controls
+const withCustomToolbarControls = createHigherOrderComponent((BlockEdit) => {
+  return (props) => {
+    // Only apply to heading blocks
+    if (props.name !== "core/heading") {
+      return <BlockEdit {...props} />;
+    }
+
+    const { attributes, setAttributes } = props;
+    const { isUppercase } = attributes;
+
+    const toggleUppercase = () => {
+      setAttributes({ isUppercase: !isUppercase });
+    };
+
+    return (
+      <Fragment>
+        <BlockControls>
+          <ToolbarButton
+            icon={formatUppercase}
+            title="Toggle Uppercase"
+            isActive={isUppercase}
+            onClick={toggleUppercase}
+          />
+        </BlockControls>
+        <BlockEdit {...props} />
+      </Fragment>
+    );
+  };
+}, "withCustomToolbarControls");
+
+// Register attributes for the core heading block
+const addCustomBlockAttributes = (settings, name) => {
+  if (name !== "core/heading") {
+    return settings;
+  }
+
+  return {
+    ...settings,
+    attributes: {
+      ...settings.attributes,
+      isUppercase: {
+        type: "boolean",
+        default: false,
+      },
+    },
+  };
+};
+
+// Apply the custom attribute
+addFilter(
+  "blocks.registerBlockType",
+  "my-plugin/add-custom-block-attributes",
+  addCustomBlockAttributes
+);
+
+// Add the custom toolbar controls
+addFilter(
+  "editor.BlockEdit",
+  "my-plugin/with-custom-toolbar-controls",
+  withCustomToolbarControls
+);
+
+// Transform the block output
+const applyCustomStyle = createHigherOrderComponent((BlockListBlock) => {
+  return (props) => {
+    if (props.name !== "core/heading") {
+      return <BlockListBlock {...props} />;
+    }
+
+    const { attributes } = props;
+    const { isUppercase } = attributes;
+
+    let wrapperProps = props.wrapperProps || {};
+    wrapperProps = {
+      ...wrapperProps,
+      style: {
+        ...wrapperProps.style,
+        textTransform: isUppercase ? "uppercase" : undefined,
+      },
+    };
+
+    return <BlockListBlock {...props} wrapperProps={wrapperProps} />;
+  };
+}, "applyCustomStyle");
+
+// Apply the custom style to the block in the editor
+addFilter(
+  "editor.BlockListBlock",
+  "my-plugin/apply-custom-style",
+  applyCustomStyle
+);
+```
+
+This approach:
+
+1. Adds custom toolbar buttons to specific blocks
+2. Registers new attributes to store button states
+3. Includes a third filter to apply visual styling based on the custom settings
+4. Implements proper toggling of the active state
+
+## Conclusion
+
+Custom panels and inspectors significantly enhance the WordPress Block Editor by providing intuitive interfaces for block configuration. By creating custom sidebar panels and toolbar controls, developers can:
+
+1. Improve the editing experience with context-specific settings
+2. Maintain a clean, uncluttered interface by organizing options logically
+3. Provide advanced customization options without requiring users to write code
+4. Extend core blocks with additional functionality
+
+Using the [WordPress Block Editor API](https://developer.wordpress.org/block-editor/reference-guides/block-api/) to implement these customizations ensures compatibility with future WordPress updates and provides a consistent experience for users. By following the examples and best practices outlined in this lesson, you can create powerful, user-friendly blocks that enhance the content creation experience.
 
 ## Further Reading
 
-- [InspectorControls](https://github.com/WordPress/gutenberg/blob/HEAD/packages/block-editor/src/components/inspector-controls/README.md)
+- [Block Editor Handbook](https://developer.wordpress.org/block-editor/)
+- [Block API Reference](https://developer.wordpress.org/block-editor/reference-guides/block-api/)
+- [Components Reference](https://developer.wordpress.org/block-editor/reference-guides/components/)
+- [SlotFills Reference](https://developer.wordpress.org/block-editor/reference-guides/slotfills/)
+- [Filters Reference](https://developer.wordpress.org/block-editor/reference-guides/hooks/block-filters/)
+- [Plugin Sidebar](https://developer.wordpress.org/block-editor/how-to-guides/plugin-sidebar-0/)

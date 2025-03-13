@@ -1,6 +1,6 @@
-## **Slot & Fill System**
+# 6.2: Slot & Fill System
 
-The Slot & Fill system is a powerful feature in WordPress that allows developers to inject custom UI elements into predefined areas of the Block Editor. This system provides a flexible way to extend and customize the editor experience without modifying core code.
+The [Slot & Fill system](https://developer.wordpress.org/block-editor/reference-guides/slotfills/) is a powerful feature in WordPress that allows developers to inject custom UI elements into predefined areas of the Block Editor. This system provides a flexible way to extend and customize the editor experience without modifying core code.
 
 The Slot & Fill system consists of two main components:
 
@@ -21,15 +21,15 @@ This mechanism allows for seamless integration of custom elements without the ne
 
 WordPress provides several predefined SlotFills for extending different parts of the editor. Some of the most commonly used ones include:
 
-1. [MainDashboardButton](https://developer.wordpress.org/block-editor/reference-guides/slotfills/main-dashboard-button/): Adds a button to the main dashboard header.
-2. [PluginBlockSettingsMenuItem](https://developer.wordpress.org/block-editor/reference-guides/slotfills/plugin-block-settings-menu-item/): Adds an item to the block settings menu.
-3. [PluginDocumentSettingPane](https://developer.wordpress.org/block-editor/reference-guides/slotfills/plugin-document-setting-panel/): Adds a panel to the Document sidebar.
-4. [PluginMoreMenuItem](https://developer.wordpress.org/block-editor/reference-guides/slotfills/plugin-more-menu-item/): Adds an item to the main ellipsis menu.
-5. [PluginPostPublishPanel](https://developer.wordpress.org/block-editor/reference-guides/slotfills/plugin-post-publish-panel/): Adds a panel to the post-publish area.
-6. [PluginPostStatusInfo](https://developer.wordpress.org/block-editor/reference-guides/slotfills/plugin-post-status-info/): Adds information to the post-status section of the sidebar.
-7. [PluginPrePublishPanel](https://developer.wordpress.org/block-editor/reference-guides/slotfills/plugin-pre-publish-panel/): Adds a panel to the pre-publish area.
-8. [PluginSidebar](https://developer.wordpress.org/block-editor/reference-guides/slotfills/plugin-sidebar/): Adds a sidebar to the editor.
-9. [PluginSidebarMoreMenuItem](https://developer.wordpress.org/block-editor/reference-guides/slotfills/plugin-sidebar-more-menu-item/): Adds a menu item to access a custom sidebar.
+1. [`MainDashboardButton`](https://developer.wordpress.org/block-editor/reference-guides/slotfills/main-dashboard-button/): Adds a button to the main dashboard header.
+2. [`PluginBlockSettingsMenuItem`](https://developer.wordpress.org/block-editor/reference-guides/slotfills/plugin-block-settings-menu-item/): Adds an item to the block settings menu.
+3. [`PluginDocumentSettingPanel`](https://developer.wordpress.org/block-editor/reference-guides/slotfills/plugin-document-setting-panel/): Adds a panel to the Document sidebar.
+4. [`PluginMoreMenuItem`](https://developer.wordpress.org/block-editor/reference-guides/slotfills/plugin-more-menu-item/): Adds an item to the main ellipsis menu.
+5. [`PluginPostPublishPanel`](https://developer.wordpress.org/block-editor/reference-guides/slotfills/plugin-post-publish-panel/): Adds a panel to the post-publish area.
+6. [`PluginPostStatusInfo`](https://developer.wordpress.org/block-editor/reference-guides/slotfills/plugin-post-status-info/): Adds information to the post-status section of the sidebar.
+7. [`PluginPrePublishPanel`](https://developer.wordpress.org/block-editor/reference-guides/slotfills/plugin-pre-publish-panel/): Adds a panel to the pre-publish area.
+8. [`PluginSidebar`](https://developer.wordpress.org/block-editor/reference-guides/slotfills/plugin-sidebar/): Adds a sidebar to the editor.
+9. [`PluginSidebarMoreMenuItem`](https://developer.wordpress.org/block-editor/reference-guides/slotfills/plugin-sidebar-more-menu-item/): Adds a menu item to access a custom sidebar.
 
 ## **Implementing Slot & Fill**
 
@@ -41,23 +41,21 @@ To use the Slot & Fill system, you'll need to follow these steps:
 
 Here's a basic example of how to implement a custom Fill:
 
-javascript  
-`import { registerPlugin } from '@wordpress/plugins';`  
-`import { PluginSidebar } from '@wordpress/edit-post';`  
-`import { __ } from '@wordpress/i18n';`
+```js
+import { registerPlugin } from "@wordpress/plugins";
+import { PluginSidebar } from "@wordpress/edit-post";
+import { __ } from "@wordpress/i18n";
 
-`const MyCustomSidebar = () => (`  
- `<PluginSidebar`  
- `name="my-custom-sidebar"`  
- `title={__('My Custom Sidebar')}`  
- `>`  
- `<p>{__('This is my custom sidebar content.')}</p>`  
- `</PluginSidebar>`  
-`);`
+const MyCustomSidebar = () => (
+  <PluginSidebar name="my-custom-sidebar" title={__("My Custom Sidebar")}>
+    <p>{__("This is my custom sidebar content.")}</p>
+  </PluginSidebar>
+);
 
-`registerPlugin('my-custom-sidebar-plugin', {`  
- `render: MyCustomSidebar,`  
-`});`
+registerPlugin("my-custom-sidebar-plugin", {
+  render: MyCustomSidebar,
+});
+```
 
 In this example, we're creating a custom sidebar using the `PluginSidebar` component, which is a pre-defined Slot in the editor
 
@@ -128,6 +126,9 @@ export const registerCopyBlockAsJsonMenuItem = () => {
 
 This code adds a custom menu item to the block settings dropdown to copy a block's data as JSON format.
 
+> [!NOTE]
+> See [full code](https://github.com/Automattic/wpvip-learn-enterprise-block-editor/blob/trunk/examples/slot-fills/src/CopyBlockAsJsonMenuItem.js) of the example above and a [live demo](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/Automattic/wpvip-learn-enterprise-block-editor/refs/heads/trunk/examples/slot-fills/_playground/blueprint.json)
+
 ### Creating Sidebar Panels
 
 To add a custom section to the edit Document settings area, you can use the `PluginDocumentSettingPanel` component:
@@ -178,14 +179,23 @@ export const registerReadingTimePanel = () => {
 };
 ```
 
+> [!NOTE]
+> See [full code](https://github.com/Automattic/wpvip-learn-enterprise-block-editor/blob/trunk/examples/slot-fills/src/ReadingTimePanel.js) of the example above and a [live demo](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/Automattic/wpvip-learn-enterprise-block-editor/refs/heads/trunk/examples/slot-fills/_playground/blueprint.json)
+
 ## **Best Practices for Using Slot & Fill**
 
 1. **Use Appropriate Slots**: Choose the correct Slot for your custom UI to ensure it appears in the intended location.
 2. **Keep Performance in Mind**: Avoid adding too many Fills, as they can impact editor performance.
 3. **Follow WordPress Coding Standards**: Adhere to WordPress coding standards and best practices when creating your custom components.
 4. **Use Conditional Rendering**: By default Slot & Fills are imported from `@wordpress/editor` package and they will be applied in both the Post Editor and the Site Editor. You can implement custom logic to show your custom UI only when relevant to the current context.
+5. **Consider the Plugin API**: Use the [`registerPlugin`](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-plugins) function to ensure proper registration of your SlotFills.
 
-## Related:
+## Further reading
 
-1. [https://developer.wordpress.org/block-editor/reference-guides/slotfills/](https://developer.wordpress.org/block-editor/reference-guides/slotfills/)
-2. [https://developer.wordpress.org/block-editor/reference-guides/packages/packages-plugins/](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-plugins/)
+- [SlotFill Reference Guide](https://developer.wordpress.org/block-editor/reference-guides/slotfills/)
+- [WordPress Plugins Package Documentation](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-plugins/)
+- [Creating a Plugin for the Block Editor](https://developer.wordpress.org/block-editor/how-to-guides/plugin-sidebar-0/)
+- [Block Editor Architecture Key Concepts](https://developer.wordpress.org/block-editor/explanations/architecture/key-concepts/)
+- [Block Editor Components Reference](https://developer.wordpress.org/block-editor/reference-guides/components/)
+- [Adding a Custom Sidebar to the Block Editor](https://developer.wordpress.org/block-editor/how-to-guides/plugin-sidebar-0/)
+- [Block Editor Accessibility](https://developer.wordpress.org/block-editor/explanations/a11y/)
