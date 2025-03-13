@@ -18,18 +18,16 @@ Use US English.
 
 Do not add horizontal rules.
 
-You are creating lessons for Module 1: Introduction and Tooling Setup
+You are creating lessons for Module 2: Building with Blocks
 
-Create a lesson titled 1.2: Overview of Block themes
+Create a lesson titled 2.1: Alternatives to Custom blocks
 
 It should cover the following topics:
-* Templates and template parts
-* Patterns
-* Global Settings and Styles
-* Custom functionality (functions.php) and styling (style.css)
+* What to consider before reaching for custom blocks
+* Introduce block patterns, block templates, and block variations
+* How to decide which fits the needs of the project
 
 On completion of this lesson, the learner should be able to:
-1. Identify the key components of block themes and how they are used.
-2. Describe how to configure global settings and apply styles to block themes elements.
-3. Explain how to add custom functionality to block themes using functions.php and style block themes using style.css.
+1. Identify when to use existing tools (block patterns, block templates, block variations) and when to use custom blocks.
+2. Describe how to determine when custom blocks would be necessary.
 
