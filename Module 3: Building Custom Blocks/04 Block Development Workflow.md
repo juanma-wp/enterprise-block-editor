@@ -1,14 +1,14 @@
 # Block Development Workflow
 
-Mastering the block development workflow is useful for creating efficient and maintainable custom blocks. This lesson will delve into using `wp-scripts` for build processes, implementing hot reloading for rapid development, and cover some useful debugging techniques. 
+Mastering the block development workflow is useful for creating efficient and maintainable custom blocks. This lesson will delve into using `wp-scripts` for build processes, implementing hot reloading for rapid development, and cover some useful debugging techniques.
 
 ## Leveraging wp-scripts for Build Processes
 
-Now that you're familiar with `wp-scripts` from Module 1, let's dive deeper into how to leverage its capabilities in your block development workflow. 
+Now that you're familiar with `wp-scripts` from Module 1, let's dive deeper into how to leverage its capabilities in your block development workflow.
 
 Let's review the scripts that create-block set up for you in your project.
 
-```json
+```
 	"scripts": {
 		"build": "wp-scripts build",
 		"format": "wp-scripts format",
@@ -28,11 +28,11 @@ Here's what each script does:
 - `lint:js`: Analyzes your JavaScript code for potential errors and coding standard violations
 - `packages-update`: Updates your npm package dependencies to their latest compatible versions
 - `plugin-zip`: Creates a ZIP archive of your plugin, ready for distribution
-- `start`: Launches a development server that watches your source files and automatically rebuilds them when changes are detected. 
+- `start`: Launches a development server that watches your source files and automatically rebuilds them when changes are detected.
 
 These scripts can be run from the command line using npm.
 
-```shell
+```
 npm run build
 ```
 
@@ -52,7 +52,7 @@ The beauty of this process is that you can leave the development server running 
 
 While the development server will automatically rebuild your block as you work, you still need to refresh the post or page you might be testing your block in to see the changes. This can be time-consuming and disrupt your workflow.
 
-Hot reloading is a powerful feature that allows you to see changes in your block immediately without refreshing the entire page. This significantly speeds up the development process and provides instant feedback on your changes. 
+Hot reloading is a powerful feature that allows you to see changes in your block immediately without refreshing the entire page. This significantly speeds up the development process and provides instant feedback on your changes.
 
 You make a change to your code, the dev server detects the change, rebuilds the block and updates the block editor with the new code. This process happens in milliseconds, allowing you to see the changes in real-time.
 
@@ -62,7 +62,7 @@ You'll need to set up a local WordPress environment to support hot reloading. `w
 
 You will also need to enable the `SCRIPT_DEBUG` [constant](https://developer.wordpress.org/advanced-administration/debug/debug-wordpress/#script_debug) in your local WordPress installations `wp-config.php` file. This constant forces WordPress to use the “dev” versions of core CSS and JavaScript files rather than the minified versions that are normally loaded.
 
-```php
+```
 define( 'SCRIPT_DEBUG', true );
 ```
 
@@ -103,11 +103,11 @@ To use the browser developer tools:
 1. Open the WordPress block editor in your browser.
 2. Open the developer tools (usually F12, Ctrl+Shift+I on Windows/Linux or Option+Cmd+I on MacOS).
 
-You will be presented with a set of tabs, including Elements, Console, Sources, Network, and more. 
+You will be presented with a set of tabs, including Elements, Console, Sources, Network, and more.
 
 ### Leveraging console.log for Debugging
 
-A popular way to debug code is to log variables to the Console. This can be incredibly useful for quick debugging and understanding the flow of your code. 
+A popular way to debug code is to log variables to the Console. This can be incredibly useful for quick debugging and understanding the flow of your code.
 
 Here's an example of how you might use `console.log()` in your block's Edit component:
 
@@ -131,17 +131,15 @@ export default function Edit( { attributes } ) {
 
 This will log information about the different variables at key points in the block's lifecycle, which can help you understand the data flow when your block is rendered in the editor.
 
-### Using breakpoints and step through debugging
+### Using the breakpoints and step through debugging
 
 Another powerful debugging technique is setting breakpoints in your code. Breakpoints pause the execution of your code at a specific line, allowing you to inspect variables and step through your code line by line. To set breakpoints in your block's JavaScript code:
 
 1. Navigate to the Sources tab in your browser's developer tools.
 2. Find your block's JavaScript file in the file tree.
-3. Set breakpoints by clicking on the line numbers in the `src` files where you want to pause execution.
+3. Set breakpoints by clicking on the line numbers where you want to pause execution.
 4. Refresh the page to trigger the debugger.
 
 When the code execution hits your breakpoint, it will pause. You can then step through your code, inspect variables, and identify issues.
 
-Debugging this way is possible due to the work that `wp-scripts` does to generate source maps for your block's JavaScript code. Source maps map the minified JavaScript code back to the original source code, and make it easier to debug code in the browser's developer tools.
-
-If you combine the `wp-scripts` development server with hot reloading and use the browser developer tools efficiently, you'll have a powerful setup for efficient block development and debugging.
+If you combine the `wp-scripts` development server with hot reloading and use the browser developer tools efficiently, you'll have a powerful setup for efficient block development and debugging.  

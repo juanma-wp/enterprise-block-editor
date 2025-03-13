@@ -17,14 +17,14 @@
   * What to consider before reaching for custom blocks
   * Introduce block patterns, block templates, and block variations
   * How to decide which fits the needs of the project
-* **2.2: Patterns**
+* **2.2: Block Patterns**
   * Understanding block patterns
   * Creating and registering custom patterns
   * Using patterns for reusable content
-* **2.3: Templates**
-  * Building block templates for custom post types
+* **2.3: Block Templates**
+  * Building block templates for custom post-types
   * Programmatically applying templates
-* **2.4: Variations**
+* **2.4: Block Variations**
   * Creating block variations
   * Managing reusable configurations
 
