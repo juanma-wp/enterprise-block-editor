@@ -1,12 +1,12 @@
-## Best Practices for Using Components
+# Best Practices for Using Components
 
 When working with components from the @wordpress/components package, it's essential to understand how to customize them effectively and manage their state and interactivity. This lesson will explore best practices for using these components in your custom block development process.
 
-### Customizing and Styling Components
+## Customizing and Styling Components
 
 The @wordpress/components package provides a wide range of pre-built components that adhere to WordPress design principles. However, you may often need to customize these components to fit your specific block requirements or match your theme's design.
 
-#### Using Component Props
+### Using Component Props
 
 Most components in the @wordpress/components package come with a variety of [props](https://developer.wordpress.org/block-editor/reference-guides/components/button/#props) that allow you to customize their appearance and behavior. Always refer to the component's documentation to understand available props.
 
@@ -41,7 +41,7 @@ In this example, we've customized the Button's `icon` and `variant` props, and a
 
 The WordPress Storybook is a great resource for [exploring components and their props](https://wordpress.github.io/gutenberg/?path=/docs/components-introduction--docs), as well as seeing how they look and behave in different contexts. 
 
-#### Applying Custom CSS
+### Applying Custom CSS
 
 While component props offer a good starting point, you may need to apply custom CSS for more specific styling needs. You can do this by adding classes to your components via the `className` prop.
 
@@ -85,7 +85,7 @@ Then in your block's `style.scss` file (or `editor.scss` if you want the styles 
 }
 ```
 
-#### Overriding Default Styles
+### Overriding Default Styles
 
 In some cases, you may need to override the default styles of a component. While this should be done cautiously to maintain consistency across the WordPress admin interface, it's sometimes necessary for unique design requirements.
 
@@ -104,11 +104,11 @@ You can use more specific CSS selectors to override default styles:
 
 This CSS targets a primary Button component specifically within your custom block, overriding its default blue color with a custom red shade.
 
-### Handling Component State and Interactivity
+## Handling Component State and Interactivity
 
 Managing state and implementing interactivity are useful for many aspects of creating dynamic and responsive blocks. The @wordpress/components package provides several tools to help with this.
 
-#### Using the useState Hook
+### Using the useState Hook
 
 For simple state management within a component, the `useState` [hook](https://react.dev/reference/react/useState) from React is often sufficient. Here's an example of using the RadioControl component to manage local state:
 
@@ -134,7 +134,7 @@ const MyRadioControl = () => {
 };
 ```
 
-#### Implementing Controlled Components
+### Implementing Controlled Components
 
 Many components in the @wordpress/components package are designed to be controlled components, meaning their state is controlled by React. This is typically done by passing a value prop and an onChange prop:
 
@@ -161,7 +161,7 @@ const MyRangeControl = () => {
 
 Here, the RangeControl component's state is managed by our component, allowing us to respond to changes and update other parts of our UI accordingly.
 
-#### Handling Side Effects with useEffect
+### Handling Side Effects with useEffect
 
 When you need to perform side effects in response to state or prop changes, the React `useEffect` [hook](https://react.dev/reference/react/useEffect) is invaluable:
 
