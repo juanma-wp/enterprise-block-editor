@@ -24,9 +24,11 @@ A block variation is defined using an object with specific properties that deter
 - **isDefault**: A boolean indicating if this variation should be the default.
 - **isActive**: A function or array used to determine if the variation is active based on attributes.
 
+For more details, refer to the [Block Variations API](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-variations/) documentation.
+
 ## Creating Block Variations
 
-To create a block variation, use the `registerBlockVariation` function from the `@wordpress/blocks` package. The following example registers a "`Spacer 180`" variation for the `'core/spacer'` block:
+To create a block variation, use the [`registerBlockVariation`](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-variations/#creating-a-block-variation) function from the `@wordpress/blocks` package. The following example registers a "`Spacer 180`" variation for the `'core/spacer'` block:
 
 ```javascript
 wp.blocks.registerBlockVariation("core/spacer", {
@@ -41,18 +43,11 @@ wp.blocks.registerBlockVariation("core/spacer", {
 });
 ```
 
-In this example:
-
-- The `name` uniquely identifies the variation as 'themeslug/spacer'.
-- The `title` provides a user-friendly label: "Theme Name: Spacer".
-- The `attributes` property sets the `height` attribute to '180px', ensuring all instances of this variation have a fixed height.
-- The `isActive` function checks if the `height` attribute is set to '180px' and marks this variation as active only if this condition is true.
-
 ## Managing Reusable Configurations
 
 Reusable configurations streamline the development process by allowing developers to define and register block variations that can be used across multiple projects. This improves consistency and reduces redundancy.
 
-For example, too further optimize block variations, developers can create reusable functions for registering variations dynamically:
+For example, developers can create reusable functions for registering variations dynamically:
 
 ```javascript
 const sharedAttributes = {
@@ -77,25 +72,6 @@ const createVariation = (
     innerBlocks: customInnerBlocks,
   });
 };
-
-// Apply reusable configuration
-createVariation("core/group", "featured-content", "Featured Content Group", {
-  backgroundColor: "pale-pink",
-});
-
-createVariation(
-  "core/columns",
-  "service-columns",
-  "Service Columns",
-  {
-    columns: 3,
-  },
-  [
-    ["core/column", {}, [["core/paragraph", { content: "Service 1" }]]],
-    ["core/column", {}, [["core/paragraph", { content: "Service 2" }]]],
-    ["core/column", {}, [["core/paragraph", { content: "Service 3" }]]],
-  ]
-);
 ```
 
 ## Modifying Existing Block Variations Dynamically
@@ -104,7 +80,7 @@ Dynamic modification of block variations allows developers to adjust variations 
 
 ### Unregistering a Block Variation
 
-To remove a block variation, use `unregisterBlockVariation`:
+To remove a block variation, use [`unregisterBlockVariation`](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-variations/#removing-a-block-variation):
 
 ```javascript
 function unregisterSocialLinkVariations() {
@@ -117,7 +93,6 @@ function unregisterSocialLinkVariations() {
     "gravatar",
   ];
 
-  // Get all Social Link block variations.
   const allVariations = wp.data
     .select("core/blocks")
     .getBlockVariations("core/social-link");
@@ -128,50 +103,7 @@ function unregisterSocialLinkVariations() {
     }
   });
 }
-
-wp.domReady(() => {
-  unregisterSocialLinkVariations();
-});
 ```
-
-This code removes all the social link variations from the `core/social-link` block, except the ones in the array `allowedVariations`
-
-### Modifying an Existing Variation
-
-The `blocks.registerBlockType` filter can be used to modify existing block variations definitions before they are registered:
-
-```javascript
-function customEmbedVariations(settings, name) {
-  if (name !== "core/embed") {
-    return settings;
-  }
-
-  const variations = settings.variations?.map((variation) => {
-    if (variation.name === "youtube") {
-      return {
-        ...variation,
-        attributes: {
-          ...variation.attributes,
-          align: "wide",
-        },
-      };
-    }
-    return variation;
-  });
-
-  return {
-    ...settings,
-    variations,
-  };
-}
-wp.hooks.addFilter(
-  "blocks.registerBlockType",
-  "my-plugin/custom-embed-variations",
-  customEmbedVariations
-);
-```
-
-This example modifies the YouTube Embed block variation to always have a `wide` alignment.
 
 ## Practical Example: Creating a Custom Block Variation for the Quote block
 
@@ -195,135 +127,17 @@ const quoteApiEditorVariationSettings = {
 registerBlockVariation("core/quote", quoteApiEditorVariationSettings);
 ```
 
-In this example:
+To modify existing block variations dynamically, you can use [`blocks.registerBlockType`](https://developer.wordpress.org/block-editor/reference-guides/filters/block-filters/#blocks-registerblocktype) filter.
 
-- The variation is named `'quote-random-editor` and labeled "`Quote Random`".
-- It applies a value to the `namespace` attribute
-- In the [`isActive` property](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-variations/#using-isactive), It sets the value of the attribute namespace as the value to decide which variation is active.
+> **Note**: Check out the following examples and their live demos of block variations:
 
-As `namespace` is not a default attribute of `core/quote` it must be added previously as the block variation can only modify existing attributes
-
-```javascript
-function addAttributes(settings) {
-  if ("core/quote" !== settings.name) {
-    return settings;
-  }
-
-  const extraAttributes = {
-    namespace: {
-      type: "string",
-    },
-  };
-
-  const newSettings = {
-    ...settings,
-    attributes: {
-      ...settings.attributes,
-      ...extraAttributes,
-    },
-  };
-
-  return newSettings;
-}
-
-addFilter(
-  "blocks.registerBlockType",
-  "quote-random/add-attributes",
-  addAttributes
-);
-```
-
-We can use the namespace attribute to determine which variation is active to add specific Inspector Controls to specific variations:
-
-```javascript
-const isQuoteAPIEditorVariation = ( props ) => {
-	const {
-		attributes: { namespace },
-	} = props;
-	return namespace && namespace === 'quote-random-editor';
-};
-// The inspector controls for the "quote-random-editor" variation.const QuoteAPIEditorInspectorControls = ( props ) => { ... }function addInspectorControls( BlockEdit ) {
-	return ( props ) => {
-		if ( ! isQuoteAPIEditorVariation( props ) ) {
-			return <BlockEdit { ...props } />;
-		}
-		return (
-			<>
-				<BlockEdit { ...props } />
-				<QuoteAPIEditorInspectorControls { ...props } />
-			</>
-		);
-	};
-}
-
-addFilter(
-	'editor.BlockEdit',
-	'quote-random-editor/add-inspector-controls',
-	addInspectorControls
-);
-```
-
-The inspector controls for our Quote Block Variation could include a button to randomly insert a quote from a local json file
-
-```javascript
-import quotes from './quotes.json';
-
-...
-
-const QuoteAPIEditorInspectorControls = ( props ) => {
-	const { clientId, setAttributes } = props;
-
-	const onClickUpdateData = () => {
-		const randomQuote =
-			quotes[ Math.floor( Math.random() * quotes.length ) ];
-		setAttributes( {
-			citation: randomQuote.author,
-		} );
-		const newInnerParagraphWithQuote = [
-			createBlock( 'core/paragraph', {
-				content: randomQuote.content,
-			} ),
-		];
-		dispatch( blockEditorStore ).replaceInnerBlocks(
-			clientId,
-			newInnerParagraphWithQuote
-		);
-	};
-
-	return (
-		<InspectorControls>
-			<PanelBody
-				title={ __( 'Quote settings', 'quote-random' ) }
-				initialOpen={ true }
-			>
-				<PanelRow>
-					<Button
-						variant="primary"
-						label={ __( 'Update data', 'quote-random' ) }
-						onClick={ onClickUpdateData }
-						icon="update"
-						iconPosition="left"
-					>
-						{ __( 'Get random quote', '' ) }
-					</Button>
-				</PanelRow>
-			</PanelBody>
-		</InspectorControls>
-	);
-};
-
-```
-
-> [!NOTE]
-> Check out the following examples and their live demos of block variations:
->
-> - [block-variations](https://github.com/Automattic/wpvip-learn-enterprise-block-editor/tree/trunk/examples/block-variations) ([live demo](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/Automattic/wpvip-learn-enterprise-block-editor/refs/heads/trunk/examples/block-variations/_playground/blueprint.json))
-> - [block-variations-quote](https://github.com/Automattic/wpvip-learn-enterprise-block-editor/tree/trunk/examples/block-variations-quote) ([live demo](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/Automattic/wpvip-learn-enterprise-block-editor/refs/heads/trunk/examples/block-variations-quote/_playground/blueprint.json))
-> - [unregister-block-variations](https://github.com/Automattic/wpvip-learn-enterprise-block-editor/tree/trunk/examples/unregister-block-variations) ([live demo](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/Automattic/wpvip-learn-enterprise-block-editor/refs/heads/trunk/examples/unregister-block-variations/_playground/blueprint.json))
-> - [modify-block-variation](https://github.com/Automattic/wpvip-learn-enterprise-block-editor/tree/trunk/examples/modify-block-variation) ([live demo](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/Automattic/wpvip-learn-enterprise-block-editor/refs/heads/trunk/examples/modify-block-variation/_playground/blueprint.json))
+- [block-variations](https://github.com/Automattic/wpvip-learn-enterprise-block-editor/tree/trunk/examples/block-variations) ([live demo](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/Automattic/wpvip-learn-enterprise-block-editor/refs/heads/trunk/examples/block-variations/_playground/blueprint.json))
+- [block-variations-quote](https://github.com/Automattic/wpvip-learn-enterprise-block-editor/tree/trunk/examples/block-variations-quote) ([live demo](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/Automattic/wpvip-learn-enterprise-block-editor/refs/heads/trunk/examples/block-variations-quote/_playground/blueprint.json))
+- [unregister-block-variations](https://github.com/Automattic/wpvip-learn-enterprise-block-editor/tree/trunk/examples/unregister-block-variations) ([live demo](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/Automattic/wpvip-learn-enterprise-block-editor/refs/heads/trunk/examples/unregister-block-variations/_playground/blueprint.json))
+- [modify-block-variation](https://github.com/Automattic/wpvip-learn-enterprise-block-editor/tree/trunk/examples/modify-block-variation) ([live demo](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/Automattic/wpvip-learn-enterprise-block-editor/refs/heads/trunk/examples/modify-block-variation/_playground/blueprint.json))
 
 ## Conclusion
 
-Block variations are a powerful way to extend and customize blocks in the WordPress Block Editor. By understanding the `registerBlockVariation` API, managing reusable configurations, and dynamically modifying variations, developers can create more efficient, reusable, and flexible block configurations. Leveraging these techniques will enhance the editing experience and improve the maintainability of WordPress projects.
+Block variations are a powerful way to extend and customize blocks in the WordPress Block Editor. By understanding the [`registerBlockVariation`](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-variations/#registerblockvariation) API, managing reusable configurations, and dynamically modifying variations, developers can create more efficient, reusable, and flexible block configurations. Leveraging these techniques will enhance the editing experience and improve the maintainability of WordPress projects.
 
 For further details, refer to the [WordPress Developer Documentation on Block Variations](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-variations/).
