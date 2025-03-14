@@ -1,4 +1,4 @@
-## Overview of the @wordpress/components Package
+# Overview of the @wordpress/components Package
 
 The @wordpress/components package is the foundation of WordPress block development. This library of reusable user interface (UI) components is designed to create consistent and accessible user experience across the block editor.
 
@@ -108,66 +108,3 @@ To deepen your understanding of the @wordpress/components package, consider expl
 4. **npm Package**: For installation and version information, refer to the @wordpress/components npm package page[8].
 
 By mastering the @wordpress/components package, developers can create sophisticated, consistent, and accessible WordPress interfaces with greater efficiency and reliability. As you progress through this course, you'll gain hands-on experience with these components, further enhancing your skills in advanced Block Editor development.
-
-Citations:
-[1] https://make.wordpress.org/design/handbook/get-involved/gutenberg-contribution/wordpress-components/
-[2] https://developer.wordpress.org/block-editor/reference-guides/components/
-[3] https://npm.io/package/@wordpress/components
-[4] https://fabiantodt.at/blog/the-wordpress-components-library/
-[5] https://cornershopcreative.com/blog/pros-cons-wordpress-themes/
-[6] https://crocoblock.com/features/components/
-[7] https://foreignerds.com/using-components-to-improve-your-wordpress-development-workflow/
-[8] https://www.npmjs.com/package/@wordpress/components/v/18.0.0
-[9] https://wpvip.com/reasons-love-wordpress-gutenberg-editor/
-[10] https://makeitwork.press/scripts/wp-components/
-[11] https://fabiantodt.at/wp-content/uploads/2024/03/Fabian-Todt-WordPress-Components-v2.pdf
-[12] https://awhitepixel.com/infoproducts/free-ebook-wordpress-gutenberg-components-guide/
-[13] https://developer.wordpress.org/block-editor/reference-guides/packages/packages-components/
-[14] https://debricked.com/select/package/npm-@wordpress/components
-[15] https://www.exemplifi.io/insights/component-architecture-with-wordpress-and-gutenberg
-[16] https://classic.yarnpkg.com/en/package/@wordpress/components
-[17] https://www.youtube.com/watch?v=1zPqQ2E3Z3g
-[18] https://wp-gb.com
-[19] https://github.com/WordPress/gutenberg/issues/64097
-[20] https://storybook.js.org/showcase/wordpress-gutenberg
-[21] https://wordpress.github.io/gutenberg/
-[22] https://www.liquidweb.com/wordpress/build/gutenberg-blocks/
-[23] https://www.elegantthemes.com/blog/wordpress/wordpress-reusable-blocks
-[24] https://www.youtube.com/watch?v=bjAF2pnbirI
-[25] https://www.elon.edu/u/university-communications/wordpress/components/
-[26] https://www.figma.com/community/file/1436359662053949167/wordpress-design-system
-[27] https://www.wpbeginner.com/beginners-guide/how-to-create-a-reusable-block-in-wordpress/
-[28] https://www.uri.edu/wordpress/components/
-[29] https://10up.github.io/wp-component-library/
-[30] https://jschof.com/gutenberg-blocks/reusable-components-in-wordpress-gutenberg/
-[31] https://siteefy.com/how-wordpress-works/
-[32] https://www.reddit.com/r/ProWordPress/comments/15nakkl/advice_on_building_and_using_individual_ui/
-[33] https://www.wearewibble.com/explained-custom-built-themes-vs-pre-built-themes/
-[34] https://www.wishtreeinfosolutions.com/understanding-wordpress-block-themes/
-[35] https://www.youtube.com/watch?v=4dGq88qLgf8
-[36] https://www.uplers.com/blog/pre-built-vs-custom-wordpress-development/
-[37] https://deliciousbrains.com/custom-gutenberg-block/
-[38] https://thinkfvm.com/wordpress-development-custom-theme-vs-pre-built-advantages-and-disadvantages/
-[39] https://www.10degrees.uk/2023/02/21/how-and-why-weve-embraced-wordpress-block-editor/
-[40] https://forty8creates.com/advantages-disadvantages-of-a-pre-built-wordpress-theme/
-[41] https://learn.wordpress.org/lesson/nested-blocks/
-[42] https://undsgn.com/wordpress-page-builder/
-[43] https://kubeadm.org/understanding-wordpress-components/
-[44] https://developer.wordpress.org/block-editor/reference-guides/components/base-control/
-[45] https://make.wordpress.org/design/2019/08/12/project-reviewing-wordpress-components/
-[46] https://wordpress.com/plugins/browse/components/
-[47] https://wordpress.com/support/wordpress-editor/blocks/
-[48] https://www.wpbeginner.com/wp-tutorials/key-design-elements-for-effective-wordpress-website/
-[49] https://css-tricks.com/getting-started-with-wordpress-block-development/
-[50] https://github.com/WordPress/gutenberg/blob/trunk/docs/explanations/architecture/modularity.md
-[51] https://awhitepixel.com/wp-content/uploads/2020/07/awhitepixel-gutenberg-components-guide.pdf
-[52] https://github.com/WordPress/gutenberg/tree/trunk/packages/components
-[53] https://dev.to/stephengade/wordpress-shortcodes-how-to-create-reusable-components-in-wordpress-4nc8
-[54] https://equalizedigital.com/component-pattern-libraries-for-an-accessible-wordpress-experience-reed-piernock/
-[55] https://makeitwork.press/reusable-components-wordpress/
-[56] https://sherocommerce.com/using-a-prebuilt-wordpress-theme-vs-a-custom-wordpress-website/
-[57] https://diviextended.com/benefits-of-prebuilt-themes/
-[58] https://builderius.io/using-components-to-improve-your-wordpress-development-workflow/
-[59] https://weplugins.com/a-step-by-step-guide-to-block-development-in-wordpress/
-[60] https://weplugins.com/basics-of-block-editor-wordpress/
-[61] https://pinegrow.com/docs/wordpress/components/
