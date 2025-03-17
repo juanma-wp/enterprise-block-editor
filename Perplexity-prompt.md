@@ -18,16 +18,16 @@ Use US English.
 
 Do not add horizontal rules.
 
-You are creating lessons for Module 2: Building with Blocks
+You are creating lessons for Module 10: Security and Accessibility
 
-Create a lesson titled 2.1: Alternatives to Custom blocks
+Create a lesson titled Data Privacy and GDPR Compliance
 
 It should cover the following topics:
-* What to consider before reaching for custom blocks
-* Introduce block patterns, block templates, and block variations
-* How to decide which fits the needs of the project
+* Implementing privacy-by-design principles in block development.
+* Ensuring compliance with GDPR and other data protection regulations.
 
 On completion of this lesson, the learner should be able to:
-1. Identify when to use existing tools (block patterns, block templates, block variations) and when to use custom blocks.
-2. Describe how to determine when custom blocks would be necessary.
+1. Understand the importance of privacy-by-design principles in block development.
+2. Implement privacy-by-design principles in their block development.
+3. Ensure compliance with GDPR and other data protection regulations in their block development.
 
