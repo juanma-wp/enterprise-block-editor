@@ -1,6 +1,8 @@
-Block transforms are a powerful feature of the WordPress Block Editor that allow developers to enhance the editing experience by enabling seamless conversion into different block types. This lesson will explore the concept of block transforms, their practical applications, and how to implement them in your custom block development.
+# Transforms
 
-The WordPress Block Editor provides a robust API to define these transformations, enabling developers to specify how blocks can be converted both **to** and **from** other blocks. This capability not only enhances user experience but also promotes content versatility.
+Block transforms are a powerful feature of the [WordPress Block Editor](https://developer.wordpress.org/block-editor/) that allow developers to enhance the editing experience by enabling seamless conversion into different block types. This lesson will explore the concept of block transforms, their practical applications, and how to implement them in your custom block development.
+
+The WordPress Block Editor provides a robust [Block Transforms API](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-transforms/) to define these transformations, enabling developers to specify how blocks can be converted both **to** and **from** other blocks. This capability not only enhances user experience but also promotes content versatility.
 
 ## **The Block Transforms API**
 
@@ -17,7 +19,7 @@ Each transformation is an object that outlines the type of transformation and th
 
 ### **Transformation Types**
 
-The API supports several transformation types, each serving a distinct purpose:
+The API supports several [transformation types](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-transforms/#transformations-types), each serving a distinct purpose:
 
 - **block**: Handles transformations between block types.
 - **enter**: Triggered when specific text is entered, allowing for dynamic block insertion.
@@ -30,7 +32,7 @@ For this lesson, we'll focus on the `block` transformation type, which is common
 
 ### **Defining a Block Transformation**
 
-To define a block transformation, you'll need to specify the following parameters:
+To define a block transformation, you'll need to specify the following [parameters](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-transforms/#block):
 
 - **type** (string): The type of transformation, for example `'block'`.
 - **blocks** (array): An array of block names that the transformation applies to. It can also accept the wildcard value (`"*"`) to indicate all block types.
@@ -62,7 +64,7 @@ In this example, when a paragraph block is transformed into a heading block, the
 
 Understanding the practical applications of block transformations can inspire developers to implement them effectively. Here are some common use cases:
 
-### **1\. Enhancing Content Flexibility**
+### **1. Enhancing Content Flexibility**
 
 Users often need to change the presentation of their content. For example, transforming a list block into separate paragraph blocks can be achieved through a custom transformation:
 
@@ -87,7 +89,7 @@ transforms: {
 
 This transformation splits each list item into individual paragraph blocks, providing greater flexibility in content editing.
 
-### **2\. Converting Legacy Content**
+### **2. Converting Legacy Content**
 
 When migrating from older content formats, such as shortcodes, to blocks, transformations can automate the process:
 
@@ -112,9 +114,9 @@ This example converts a `[gallery]` shortcode into a gallery block, mapping the 
 
 ## **Applying Filters for Conditional Transforms**
 
-In some cases, you may want to conditionally enable or disable transformations based on specific criteria, such as block attributes or the editing context. WordPress provides filters that allow you to modify block settings during registration, enabling conditional logic for transformations.
+In some cases, you may want to conditionally enable or disable transformations based on specific criteria, such as block attributes or the editing context. WordPress provides [filters](https://developer.wordpress.org/block-editor/reference-guides/filters/block-filters/) that allow you to modify block settings during registration, enabling conditional logic for transformations.
 
-For instance, using the `blocks.registerBlockType` filter in JavaScript, you can conditionally add or remove transformations:
+For instance, using the [`blocks.registerBlockType`](https://developer.wordpress.org/block-editor/reference-guides/filters/block-filters/#blocks-registerblocktype) filter in JavaScript, you can conditionally add or remove transformations:
 
 ```javascript
 import { addFilter } from "@wordpress/hooks";
@@ -166,6 +168,9 @@ addFilter(
 
 In this example, the `modifyBlockTransforms` function checks if the block being registered is a Paragraph block (`core/paragraph`). It then determines whether the block has a specific class (`custom-class`) and conditionally adds or removes a transformation to a Heading block based on that condition. This approach allows for dynamic control over available transformations, enhancing the flexibility and usability of custom blocks.
 
+> [!NOTE]
+> Check out a [live demo](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/Automattic/wpvip-learn-enterprise-block-editor/refs/heads/trunk/examples/transforms-filter/_playground/blueprint.json) of this example and the [complete code](https://github.com/Automattic/wpvip-learn-enterprise-block-editor/tree/trunk/examples/transforms-filter) of the basic and multiple deprecation examples above.
+
 ## **Summary**
 
 By mastering block transformations, developers can provide a more intuitive and flexible content editing experience. The key takeaways from this lesson are:
@@ -177,3 +182,12 @@ By mastering block transformations, developers can provide a more intuitive and 
 - Filters allow for dynamic, context-aware transformations.
 
 With these insights, you can now define, apply, and customize block transformations to enhance the WordPress Block Editor experience.
+
+## **Resources**
+
+- [Block Transforms API Reference](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-transforms/) | Block Editor Handbook
+- [Block Registration API Reference](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-registration/) | Block Editor Handbook
+- [Block Filters Reference](https://developer.wordpress.org/block-editor/reference-guides/filters/block-filters/) | Block Editor Handbook
+- [Core Blocks Reference](https://developer.wordpress.org/block-editor/reference-guides/core-blocks/) | Block Editor Handbook
+- [Shortcode Transforms Guide](https://developer.wordpress.org/block-editor/how-to-guides/block-transforms/shortcode-transforms/) | Block Editor Handbook
+- [Block Development Examples](https://developer.wordpress.org/block-editor/how-to-guides/block-tutorial/) | Block Editor Handbook

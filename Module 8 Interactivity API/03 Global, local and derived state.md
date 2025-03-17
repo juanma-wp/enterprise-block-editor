@@ -1,6 +1,6 @@
 # Global State, Local Context, and Derived State
 
-The Interactivity API manages three types of state: global state, local context, and derived state. Each of these serves a different purpose in managing and sharing data across blocks:
+The [Interactivity API](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/) manages three types of state: global state, local context, and derived state. Each of these serves a different purpose in managing and sharing data across blocks:
 
 - **[Global state](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/core-concepts/undestanding-global-state-local-context-and-derived-state/#global-state):** This data is associated to a namespace and can be accessed by any interactive block on the page. It ensures that multiple blocks remain synchronized, even if they are not directly related in the DOM.
 - **[Local context](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/core-concepts/undestanding-global-state-local-context-and-derived-state/#local-context):** This is data that belongs to a specific DOM element and is accessible only to that element and its child elements. It allows independent state management for separate instances of a block.
@@ -10,7 +10,7 @@ Each of these concepts plays a crucial role in managing state efficiently within
 
 ## **Global State**
 
-**Global state** is a data store, with a specific namespace, that any interactive block on the page can have access and modify. This is useful when multiple blocks need to stay in sync, regardless of their position in the DOM tree.
+[Global state](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/core-concepts/undestanding-global-state-local-context-and-derived-state/#global-state) is a data store, with a specific namespace, that any interactive block on the page can have access and modify. This is useful when multiple blocks need to stay in sync, regardless of their position in the DOM tree.
 
 ### **Server-Side State Initialization**
 
@@ -38,9 +38,7 @@ This state is then automatically embedded in the page's HTML and becomes availab
 
 In the client side (view.js file of each block) the developer can define both the state and the elements of the store referencing functions like actions, side effects or derived state.
 
-The client-side store can both access the server-initialized state AND augment it with additional properties.
-
-The [`store`](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/api-reference/#the-store) method used to set the store in JavaScript can be imported from @wordpress/interactivity.
+The [`store`](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/api-reference/#the-store) method used to set the store in JavaScript can be imported from [@wordpress/interactivity](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-interactivity/).
 
 ```javascript
 const { state } = store("myPlugin", {
@@ -79,8 +77,6 @@ The final state resulted form merging server-side and client-side definitions fo
   <button data-wp-on--click="actions.increment">+</button>
 </div>
 ```
-
-###
 
 ### **Private Stores**
 
@@ -345,3 +341,12 @@ store("myCounterPlugin", {
 >
 > - [iapi-global-local-derived-state-block](https://github.com/Automattic/wpvip-learn-enterprise-block-editor/tree/trunk/examples/iapi-global-local-derived-state-block) ([live demo](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/Automattic/wpvip-learn-enterprise-block-editor/refs/heads/trunk/examples/iapi-global-local-derived-state-block/_playground/blueprint.json))
 > - [iapi-global-local-derived-state-3-blocks](https://github.com/Automattic/wpvip-learn-enterprise-block-editor/tree/trunk/examples/iapi-global-local-derived-state-3-blocks) ([live demo](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/Automattic/wpvip-learn-enterprise-block-editor/refs/heads/trunk/examples/iapi-global-local-derived-state-3-blocks/_playground/blueprint.json))
+
+## **Resources**
+
+- [Interactivity API Reference](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/) | Block Editor Handbook
+- Interactivity API examples:
+  - [Interactivity API examples](https://wordpress.github.io/block-development-examples/?tags=interactivity-api) at `block-development-examples` repo
+  - [wpmovies.dev](https://wpmovies.dev/) demo and its [wp-movies-demo](https://github.com/WordPress/wp-movies-demo) repo
+- [Understanding Global State, Local Context, and Derived State](https://developer.wordpress.org/block-editor/reference-guides/interactivity-api/core-concepts/undestanding-global-state-local-context-and-derived-state/) | Block Editor Handbook
+- [@wordpress/interactivity Package](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-interactivity/) | Block Editor Handbook

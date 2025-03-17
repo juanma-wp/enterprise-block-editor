@@ -1,14 +1,14 @@
-## **Handling Block Versioning and Deprecation**
+# Deprecation
 
-### **Why Deprecate a Block?**
+## Why Deprecate a Block?
 
-During editor initialization, there’s a [block markup validation process](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-edit-save/#validation), where the saved markup for each block is regenerated using the attributes that were parsed from the post’s content. If the newly-generated markup does not match what was already stored in post content, the block is marked as invalid. This is because the block editor assumes that unless the user makes edits, the markup should remain identical to the saved content.
+During editor initialization, there's a [block markup validation process](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-edit-save/#validation), where the saved markup for each block is regenerated using the attributes that were parsed from the post's content. If the newly-generated markup does not match what was already stored in post content, the block is marked as invalid. This is because the block editor assumes that unless the user makes edits, the markup should remain identical to the saved content.
 
-So when the `save` function output of a block changes, existing instances of that block in posts or pages might become invalid. This happens because the saved content no longer matches the block's updated `save` function, leading to validation errors in the editor, displaying messages like "This block contains unexpected or invalid content."
+So when the [`save` function](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-edit-save/#save) output of a block changes, existing instances of that block in posts or pages might become invalid. This happens because the saved content no longer matches the block's updated `save` function, leading to validation errors in the editor, displaying messages like "This block contains unexpected or invalid content."
 
 ![](../_assets/deprecation-message.png)
 
-To prevent such issues, WordPress provides a mechanism called block deprecation. Deprecation allows developers to define older versions of a block, enabling the editor to recognize and update legacy content without errors.
+To prevent such issues, WordPress provides a mechanism called [block deprecation](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-deprecation/). Deprecation allows developers to define older versions of a block, enabling the editor to recognize and update legacy content without errors.
 
 Deprecating old versions of a block is important because:
 
@@ -18,13 +18,13 @@ Deprecating old versions of a block is important because:
 
 By defining deprecated versions of a block, WordPress can match and transform older block structures
 
-Note: For those blocks which save function is null (dynamic blocks), the Block Editor skips the [block markup validation process](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-edit-save/#validation), avoiding issues with frequently changing markup.
+Note: For those blocks which save function is null ([dynamic blocks](https://developer.wordpress.org/block-editor/how-to-guides/block-tutorial/creating-dynamic-blocks/)), the Block Editor skips the [block markup validation process](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-edit-save/#validation), avoiding issues with frequently changing markup.
 
 ## Implementing Block Deprecations
 
-To implement a block deprecation, you'll need to add a `deprecated` array to your block registration. Each item in this array represents a previous version of the block.
+To implement a block deprecation, you'll need to add a [`deprecated` array](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-deprecation/#deprecation-api) to your block registration. Each item in this array represents a previous version of the block.
 
-#### **Basic Deprecation**
+### Basic Deprecation
 
 When updating a block, provide the older versions inside the `deprecated` array.
 
@@ -62,8 +62,6 @@ registerBlockType(metadata.name, {
 ```
 
 In this example, the deprecated version of the block does not include the `alignment` attribute. This ensures that when users open older posts, WordPress can still recognize the older structure and migrate it properly.
-
-.
 
 ### Multiple Deprecations
 
@@ -136,17 +134,18 @@ registerBlockType(metadata.name, {
 });
 ```
 
-This approach allows the block editor to attempt the most recent deprecations first, optimizing performance
+This approach allows the block editor to attempt the most recent deprecations first, optimizing performance.
 
-Check out a [live demo](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/Automattic/wpvip-learn-enterprise-block-editor/refs/heads/trunk/examples/deprecation/_playground/blueprint.json) of this example and the [complete code](https://github.com/Automattic/wpvip-learn-enterprise-block-editor/tree/trunk/examples/deprecation) of the basic and multiple deprecation examples above
+> [!NOTE]
+> Check out a [live demo](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/Automattic/wpvip-learn-enterprise-block-editor/refs/heads/trunk/examples/deprecation/_playground/blueprint.json) of this example and the [complete code](https://github.com/Automattic/wpvip-learn-enterprise-block-editor/tree/trunk/examples/deprecation) of the basic and multiple deprecation examples above.
 
-## **Strategies for Maintaining Backward Compatibility**
+## Strategies for Maintaining Backward Compatibility
 
-### **Attribute Migration**
+### Attribute Migration
 
-If an attribute needs to be renamed, WordPress provides a way to map deprecated attribute names to new ones using a `migrate` function.
+If an attribute needs to be renamed, WordPress provides a way to map deprecated attribute names to new ones using a [`migrate` function](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-deprecation/#migrate).
 
-#### **Example: Renaming an Attribute**
+**Example: Renaming an Attribute**
 
 ```javascript
 const v2 = {
@@ -168,15 +167,15 @@ const v2 = {
 
 This migration ensures that old blocks using `title` and `content` are seamlessly transitioned to `headline` and `body` without breaking.
 
-### **Migrating Blocks with Inner Blocks**
+### Migrating Blocks with Inner Blocks
 
-Sometimes, a block’s structure changes to include or remove inner blocks. When this happens, older versions must be converted properly.
+Sometimes, a block's structure changes to include or remove [inner blocks](https://developer.wordpress.org/block-editor/how-to-guides/block-tutorial/nested-blocks-inner-blocks/). When this happens, older versions must be converted properly.
 
-#### **Example: Adding an Inner Block**
+**Example: Adding an Inner Block**
 
 If we initially had a block storing text as an attribute but later want to include it as a child block:
 
-##### **Initial Version**
+_Initial Version_
 
 ```javascript
 const v1 = {
@@ -189,7 +188,7 @@ const v1 = {
 };
 ```
 
-##### **Updated Version with Inner Blocks**
+_Updated Version with Inner Blocks_
 
 ```javascript
 const v2 = {
@@ -214,17 +213,17 @@ const v2 = {
 
 In this example, existing content from `content` is migrated into an inner paragraph block, ensuring smooth transitions.
 
-## **Addressing Block Validation Errors**
+## Addressing Block Validation Errors
 
-When a block’s `save` function output does not match the stored content, the Block Editor triggers a validation error. This usually happens when:
+When a block's `save` function output does not match the stored content, the Block Editor triggers a [validation error](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-edit-save/#validation). This usually happens when:
 
 - The `save` function is modified without a corresponding deprecation.
-- Attributes are changed without a migration strategy.
+- [Attributes](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-attributes/) are changed without a migration strategy.
 - Inner block structures are altered without proper migration.
 
-### **Steps to Prevent Validation Errors:**
+**Steps to Prevent Validation Errors:**
 
-1. **Use the Deprecation API** – Define deprecated versions whenever changes are made to a block’s save function or structure.
+1. **Use the [Deprecation API](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-deprecation/)** – Define deprecated versions whenever changes are made to a block's save function or structure.
 2. **Ensure the `save` output is consistent** – Older versions should retain the same markup to match saved content.
 3. **Test deprecated versions** – Load older content in the editor and verify that it upgrades correctly.
 4. **Use migrations for attributes and inner blocks** – When modifying attributes or converting content into inner blocks, always provide a migration path.
@@ -233,6 +232,15 @@ For more information, see the [WordPress Block Validation Guide](https://develop
 
 ---
 
-## **Conclusion**
+## Conclusion
 
 Handling block deprecations properly ensures that blocks remain backward-compatible, preventing validation errors and preserving user content. By defining multiple deprecated versions, using the migration function when necessary, and keeping the `save` output consistent, you can ensure a smooth transition for users as your blocks evolve.
+
+## Resources
+
+- [Block Deprecation Guide](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-deprecation/) | Block Editor Handbook
+- [Block Validation Guide](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-edit-save/#validation) | Block Editor Handbook
+- [Block Attributes](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-attributes/) | WordPress Developer Resources
+- [Inner Blocks](https://developer.wordpress.org/block-editor/reference-guides/components/inner-blocks/) | WordPress Developer Resources
+- [Dynamic Blocks](https://developer.wordpress.org/block-editor/how-to-guides/block-tutorial/creating-dynamic-blocks/) | WordPress Developer Resources
+- [Block Migration Strategies](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-deprecation/#migrate) | WordPress Developer Resources
