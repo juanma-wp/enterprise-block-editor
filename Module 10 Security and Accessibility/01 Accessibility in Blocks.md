@@ -1,61 +1,45 @@
 # Accessibility in Blocks
 
-Accessibility is a fundamental aspect of WordPress development, especially when creating custom blocks for the Block Editor. As enterprise WordPress developers, we have a responsibility to ensure that our blocks are usable by everyone, including people with disabilities. In this lesson, we'll explore how to develop blocks that meet Web Content Accessibility Guidelines (WCAG) 2.1 standards and how to test them using screen readers and other accessibility testing tools.
+https://github.com/WordPress/Learn/issues/2188
+
+Accessibility is a fundamental aspect of WordPress development, especially when creating custom blocks for the Block Editor. As WordPress developers, we have a responsibility to ensure that our blocks are usable by everyone, including people with disabilities. 
+
+In this lesson, we'll explore how to develop blocks that meet Web Content Accessibility Guidelines (WCAG) 2.1 standards and how to test them using screen readers and other accessibility testing tools.
 
 ## Understanding WCAG 2.1 Standards
 
-WordPress is committed to conforming to all WCAG 2.2 Level A and Level AA guidelines[2]. As developers creating custom blocks, we need to understand these standards and implement them in our block development process.
+WordPress is committed to conforming to all [WCAG 2.2 Level A and Level AA guidelines](https://developer.wordpress.org/coding-standards/wordpress-coding-standards/accessibility/). As a developer creating custom blocks, you need to understand these standards and implement them in our block development process.
 
 WCAG conformance levels are divided into three categories:
 
-**Level A** represents the minimum level of accessibility, addressing barriers that prevent many people from accessing web content[2].
+**Level A** represents the minimum level of accessibility, addressing barriers that prevent many people from accessing web content.
 
-**Level AA** addresses more complex accessibility concerns that might impact smaller groups of people but are still common needs with broad reach[2].
+**Level AA** addresses more complex accessibility concerns that might impact smaller groups of people but are still common needs with broad reach.
 
-**Level AAA** targets very specific needs and may be quite difficult to implement effectively[2].
-
-For WordPress development, we aim to meet Level AA conformance, which includes all Level A requirements plus additional criteria.
+**Level AAA** targets very specific needs and may be quite difficult to implement effectively.
 
 ## Developing Accessible Blocks
 
-Let's explore the key principles and techniques for developing blocks that meet WCAG 2.1 accessibility standards.
+Let's explore the key principles and techniques for developing blocks that meet WCAG 2.2 accessibility standards.
+
+## Use Existing Tools
+
+First and foremost, wherever possible, make use of existing components from the `@wordpress/components` package. This package provides accessible components that meet the WCAG standards.
+
+You can learn more about the available components in the [WordPress Block Editor Handbook](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-components/).
+
+If you do need to create custom block structures, here are some common accessibility practices to follow:
 
 ### Use Semantic HTML
 
-One of the most important aspects of creating accessible blocks is using semantic HTML. Semantic HTML provides meaning to the structure of your content, making it easier for screen readers and other assistive technologies to interpret and navigate your blocks[3].
+Semantic HTML provides meaning to the structure of your content, making it easier for screen readers and other assistive technologies to interpret and navigate your blocks.
 
-For example, instead of using generic `` elements for everything, use appropriate HTML elements like:
+If you do need to create a custom block layout instead of using generic `<div>` elements for everything, use appropriate HTML elements:
 
-- ``, ``, ``, ``, ``, `` for structural elements
-- `` through `` for headings in the correct hierarchical order
-- `` for interactive elements that perform an action
-- `` for links to other pages or resources
-
-Here's an example of a block with semantic HTML:
-
-```jsx
-import { useBlockProps } from '@wordpress/block-editor';
-
-export default function Edit() {
-    const blockProps = useBlockProps();
-    
-    return (
-        
-            
-                
-                    Article Title
-                
-                
-                    Article content goes here.
-                
-                
-                    Article footer information.
-                
-            
-        
-    );
-}
-```
+- `<h1>` through `<h2>` for headings in the correct hierarchical order
+- `<p>` for paragraphs of text
+- `<button>` for interactive elements that perform an action
+- `<a>` for links to other pages or resources
 
 ### Implement ARIA Landmarks and Roles
 
@@ -65,18 +49,19 @@ Common ARIA landmarks include:
 
 ```jsx
 // Navigation block
-
+<nav aria-label="Main Navigation">
     // Navigation content
-
+</nav>
 
 // Search block
-
+<div role="search" aria-label="Site Search">
     // Search form
-
+</div>
 
 // Main content block
-
+<main role="main">
     // Main content
+</main>
 
 ```
 
@@ -90,14 +75,16 @@ All interactive elements in your blocks must be accessible via keyboard navigati
 // Example of a custom button component with keyboard support
 function CustomButton({ onClick, children }) {
     return (
-         {
+        <button
+            onClick={onClick}
+            onKeyDown={(event) => {
                 if (event.key === 'Enter' || event.key === ' ') {
                     onClick();
                 }
             }}
         >
             {children}
-        
+        </button>
     );
 }
 ```
@@ -115,22 +102,29 @@ import { useBlockProps, RichText } from '@wordpress/block-editor';
 export default function Edit({ attributes, setAttributes }) {
     const { imageUrl, altText } = attributes;
     const blockProps = useBlockProps();
-    
+
     return (
-        
+        <div { ...blockProps }>
             {imageUrl ? (
-                
-                    
-                     setAttributes({ altText: newAltText })}
+                <figure>
+                    <img
+                        src={imageUrl}
+                        alt={altText || ''}
+                    />
+                    <RichText
+                        tagName="figcaption"
+                        value={altText}
+                        onChange={(newAltText) => setAttributes({ altText: newAltText })}
                         placeholder="Add alt text for image"
                     />
-                
+                </figure>
             ) : (
-                Please select an image
+                <p>Please select an image</p>
             )}
-        
+        </div>
     );
 }
+
 ```
 
 ### Maintain Color Contrast
@@ -152,11 +146,16 @@ export default function Edit({ attributes, setAttributes }) {
             backgroundColor: backgroundColor,
         },
     });
-    
+
     return (
         <>
-            
-                 setAttributes({ textColor: color }),
+            <InspectorControls>
+                <PanelColorSettings
+                    title="Color Settings"
+                    colorSettings={[
+                        {
+                            value: textColor,
+                            onChange: (color) => setAttributes({ textColor: color }),
                             label: 'Text Color',
                         },
                         {
@@ -166,11 +165,11 @@ export default function Edit({ attributes, setAttributes }) {
                         },
                     ]}
                 />
-            
-            
-                Block content with customizable colors
-            
-        
+            </InspectorControls>
+            <div { ...blockProps }>
+                <p>Block content with customizable colors</p>
+            </div>
+        </>
     );
 }
 ```
@@ -185,19 +184,19 @@ import { useState, useEffect } from '@wordpress/element';
 
 function DynamicContentBlock() {
     const [content, setContent] = useState('Initial content');
-    
+
     useEffect(() => {
         const timer = setTimeout(() => {
             setContent('Updated content');
         }, 5000);
-        
+
         return () => clearTimeout(timer);
     }, []);
-    
+
     return (
-        
+        <div aria-live="polite">
             {content}
-        
+        </div>
     );
 }
 ```
@@ -210,11 +209,12 @@ WordPress provides a `.screen-reader-text` CSS class that visually hides content
 // Example of using screen-reader-text
 function SkipLink() {
     return (
-        
+        <a className="screen-reader-text" href="#main-content">
             Skip to main content
-        
+        </a>
     );
 }
+
 ```
 
 ## Testing Block Accessibility
@@ -302,10 +302,11 @@ import MyBlock from './MyBlock';
 expect.extend(toHaveNoViolations);
 
 test('MyBlock should have no accessibility violations', async () => {
-    const { container } = render();
+    const { container } = render(<MyBlock />);
     const results = await axe(container);
     expect(results).toHaveNoViolations();
 });
+
 ```
 
 ## Best Practices for Block Accessibility

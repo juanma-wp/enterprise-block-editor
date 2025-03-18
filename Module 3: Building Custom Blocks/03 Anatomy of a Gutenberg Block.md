@@ -181,7 +181,7 @@ export default function Edit() {
 }
 ```
 
-#### The `save` Function
+### The `save` Function
 
 The `save` function is responsible for defining the block's output on the site's front end. This function is also a JavaScript function that returns a React element, describing how the block should be rendered.
 
@@ -214,13 +214,35 @@ export default function save() {
 }
 ```
 
-#### useBlockProps
+### useBlockProps
 
 You will notice that both the `Edit` component and `save` function use `useBlockProps`. `useBlockProps` is a React hook that allows developers to manage and apply properties to the root element of a block, ensuring consistency between the editor and the front end.
 
 Developers can use `useBlockProps` to add custom attributes (e.g., `className`, inline styles) to the root element of a block. It also consolidates attributes like alignment classes and other editor-specific properties into the block’s wrapper element, making it easier to manage.
 
-#### Block Attributes
+### Block Rendering Methods
+
+There are two primary methods to render block content on the site's front end: [static rendering and dynamic rendering](https://developer.wordpress.org/block-editor/getting-started/fundamentals/static-dynamic-rendering/).
+
+#### Static Rendering
+
+Static rendering is the default approach for most blocks in the WordPress Block Editor and is the method used when scaffolding a block with create-block.
+
+With static rendering, the block output (also known as block markup) is generated when the block's `save` function is triggered. This markup is stored directly in the database.
+
+When the post or page that contains the block loads on the front end, the pre-saved markup is retrieved and displayed to the user.
+
+Examples of WordPress core blocks that use static rendering include Paragraph, Heading, and Preformatted blocks.
+
+#### Dynamic Rendering
+
+Dynamic blocks generate their HTML output on the fly when a block is loaded on the front end. Instead of storing the complete HTML in the database, dynamic blocks store a representation of the block (including its attributes) and use server-side PHP code to render the final output when needed.
+
+Examples of WordPress core blocks that use dynamic rendering include Latest Posts, Calendar, and Archives blocks.
+
+You will learn how to create dynamic blocks in Module 5\.
+
+## Block Attributes
 
 Attributes define the data that a block stores and manages. Each attribute has a name, a type, and, optionally, a default value. Attributes can be defined in the `attributes` property of the `block.json` file.
 
@@ -305,7 +327,7 @@ export default function Edit( { attributes } ) {
 }
 ```
 
-#### Block Supports
+## Block Supports
 
 The `supports` property allows you to define the common features that a block supports. This can include things like HTML editing, alignment options, custom styles, and more.
 
@@ -331,3 +353,4 @@ supports: {
 In this example, we're disabling HTML editing and enabling alignment options. This will add the alignment toolbar to the block in the editor, allowing users to choose from different alignment options.
 
 Now that you have a better understanding of the anatomy of a block, you're ready to start building your own custom blocks. In the next lesson, we'll explore the block development workflow and how to set up your local environment for block development.  
+
