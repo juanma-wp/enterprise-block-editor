@@ -1,39 +1,47 @@
 # Security Best Practices for Blocks
 
-Security is a fundamental aspect of WordPress development that cannot be overlooked, especially when developing custom blocks for the Block Editor. As block developers, we are responsible for ensuring that our blocks handle data securely, validate user input properly, and restrict functionality based on user capabilities. In this lesson, we'll explore essential security best practices that should be implemented in every block you develop.
+Security is a fundamental aspect of WordPress development, especially when developing custom blocks for the Block Editor. 
+
+As block developers, we are responsible for ensuring that our blocks handle data securely, validate user input properly, and restrict functionality based on user capabilities. 
+
+In this lesson, we'll explore essential security best practices that should be implemented in every block you develop.
 
 ## Understanding Security in Block Development
 
 Block development introduces unique security challenges because blocks often handle user input, store data in the database, and render dynamic content on the frontend. Without proper security measures, blocks can become vectors for various attacks, including Cross-Site Scripting (XSS), SQL injection, and unauthorized access to functionality.
 
-The WordPress security model follows two fundamental principles:
+WordPress developers are encouraged to follow the these security practices:
 
-1. **Validate Early**: Check and validate data as soon as it's received from the user.
-2. **Escape Late**: Sanitize and escape data just before it's used or displayed[3].
+**Don’t trust any data**. 
 
-These principles form the foundation of the security practices we'll discuss in this lesson.
+Don’t trust user input, third-party APIs, or data in your database without verification. Protection of your WordPress themes begins with ensuring the data entering and leaving your theme is as intended. Always make sure to validate and sanitize user input fore using it, and to escape on output.
 
-## Sanitizing and Validating Block Data
+**Rely on WordPress APIs**.
 
-### The Difference Between Validation and Sanitization
+Many core WordPress APIs provide built in functionality for validating and sanitizing data. Rely on the WordPress provided APIs whenever possible.
 
-Before diving into implementation, it's important to understand the distinction between validation and sanitization:
+**Keep your code up to date**. 
 
-- **Validation** checks if the data meets expected criteria (e.g., is an email address actually formatted like an email address)[3].
-- **Sanitization** applies filters to make data safe for a specific context (e.g., removing potentially harmful HTML tags)[3].
+As technology evolves, so does the potential for new security holes in your plugin or theme. Stay vigilant by maintaining your code and updating as required.
 
-Both processes are crucial for maintaining block security.
+## Relying on WordPress APIs
 
-### Validating Block Attributes
+As a primarily JavaScript powered environment, the Block Editor, and more specifically, the WordPress Data Layer powered by the @wordpress/data package makes use of the WordPress REST API to send and receive data from the WordPress database.
 
-Block attributes should be validated both on the client side (in JavaScript) and on the server side (in PHP). Never trust client-side validation alone, as it can be bypassed.
+To ensure that your block is secure, you should rely on the WordPress Data Layer to handle data retrieval and storage. This ensures that data is validated and sanitized before being saved to the database, and escaped before being returned to your block.
 
-In your block's `edit` function, you can implement basic validation:
+There are, however, some additional security measures that you can implement in your block development workflow to ensure that your block code is secure.
+
+## Validating Block Attributes
+
+While block attributes will already be validated before being processed by the data layer, it's still a good idea to validate them before saving.
+
+In your block's `edit` function, you can implement basic validation before updating an attribute:
 
 ```javascript
 const MyBlockEdit = ({ attributes, setAttributes }) => {
     const { title } = attributes;
-    
+
     const updateTitle = (newTitle) => {
         // Basic validation
         if (newTitle.length > 100) {
@@ -42,61 +50,36 @@ const MyBlockEdit = ({ attributes, setAttributes }) => {
         }
         setAttributes({ title: newTitle });
     };
-    
+
     return (
-        
+        <TextControl
+            label="Title"
+            value={title}
+            onChange={updateTitle}
+        />
     );
 };
 ```
 
-### Server-Side Sanitization
+## Escaping in Content
 
-When saving block data or processing it on the server, always sanitize the input using WordPress's built-in sanitization functions:
+When working with dynamic data in your block's edit or save functions, use the appropriate escaping methods to prevent XSS attacks:
 
-```php
-function my_block_save_post_meta( $post_id, $post, $update ) {
-    // Verify if this is an auto save
-    if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) {
-        return;
-    }
-    
-    // Check permissions
-    if ( ! current_user_can( 'edit_post', $post_id ) ) {
-        return;
-    }
-    
-    // Get the block data from the post content
-    $post_content = get_post_field( 'post_content', $post_id );
-    $blocks = parse_blocks( $post_content );
-    
-    foreach ( $blocks as $block ) {
-        if ( 'my-namespace/my-block' === $block['blockName'] ) {
-            // Sanitize the title attribute
-            $title = isset( $block['attrs']['title'] ) 
-                ? sanitize_text_field( $block['attrs']['title'] ) 
-                : '';
-            
-            // Save the sanitized data
-            update_post_meta( $post_id, '_my_block_title', $title );
-        }
-    }
-}
-add_action( 'save_post', 'my_block_save_post_meta', 10, 3 );
+```javascript
+import { escapeHTML, escapeAttribute } from '@wordpress/escape-html';
+
+const MyBlockSave = ({ attributes }) => {
+    const { title, description } = attributes;
+
+    return (
+        <div className="my-block">
+            <h2>{escapeHTML(title)}</h2>
+            <div dangerouslySetInnerHTML={{ __html: escapeHTML(description) }} />
+        </div>
+    );
+};
 ```
 
-### Common Sanitization Functions
-
-WordPress provides numerous sanitization functions for different data types[7]:
-
-- `sanitize_text_field()` - Removes tags and unnecessary whitespace from text
-- `sanitize_textarea_field()` - Similar to sanitize_text_field but preserves line breaks
-- `sanitize_email()` - Ensures a string is a valid email address
-- `sanitize_file_name()` - Cleans a filename
-- `sanitize_key()` - Sanitizes a string into a key (lowercase alphanumeric characters and underscores)
-- `sanitize_title()` - Converts a string into a URL-friendly slug
-- `sanitize_url()` - Ensures a string is a valid URL
-
-Choose the appropriate function based on the type of data you're handling.
 
 ## Escaping Dynamic Output
 
@@ -139,50 +122,6 @@ WordPress provides several escaping functions for different contexts[4][8]:
 - `esc_url()` - Use when outputting URLs (links, image sources, etc.)
 - `esc_js()` - Use when outputting data within JavaScript
 - `wp_kses()` and `wp_kses_post()` - Use when you need to allow specific HTML tags
-
-### Escaping in JavaScript
-
-When working with dynamic data in your block's edit or save functions, use appropriate escaping:
-
-```javascript
-import { escapeHTML, escapeAttribute } from '@wordpress/escape-html';
-
-const MyBlockSave = ({ attributes }) => {
-    const { title, description } = attributes;
-    
-    return (
-        
-            {escapeHTML(title)}
-            
-        
-    );
-};
-```
-
-### Allowing Specific HTML with wp_kses
-
-Sometimes you need to allow certain HTML tags while still protecting against malicious code. The `wp_kses()` function is perfect for this scenario[8]:
-
-```php
-$allowed_html = [
-    'a'      => [
-        'href'   => [],
-        'title'  => [],
-        'target' => [],
-    ],
-    'strong' => [],
-    'em'     => [],
-    'p'      => [],
-    'br'     => [],
-];
-
-$content = isset( $attributes['content'] ) ? $attributes['content'] : '';
-$safe_content = wp_kses( $content, $allowed_html );
-
-echo '' . $safe_content . '';
-```
-
-For post content that should allow the same HTML tags as regular WordPress posts, you can use the shorthand `wp_kses_post()` function.
 
 ## Validating User Roles and Capabilities
 
@@ -232,22 +171,24 @@ function MyBlockEdit({ attributes, setAttributes }) {
     const canPublishPosts = useSelect(select => {
         return select(coreStore).canUser('create', 'posts');
     }, []);
-    
+
     return (
-        
+        <div>
             {canPublishPosts ? (
-                 {
+                <Button
+                    onClick={() => {
                         // Perform action that requires publish_posts capability
                     }}
                 >
                     Publish
-                
+                </Button>
             ) : (
-                You don't have permission to publish posts.
+                <p>You don't have permission to publish posts.</p>
             )}
-        
+        </div>
     );
 }
+
 ```
 
 ### Restricting Block Features Based on Capabilities
@@ -265,22 +206,31 @@ function MyBlockEdit({ attributes, setAttributes }) {
             canManageOptions: select(coreStore).canUser('update', 'settings')
         };
     }, []);
-    
+
     return (
-        
-             setAttributes({ title })}
+        <div>
+            <TextControl
+                label="Title"
+                value={attributes.title}
+                onChange={(title) => setAttributes({ title })}
             />
-            
+
             {canEditPosts && (
-                 setAttributes({ advancedSetting })}
+                <TextControl
+                    label="Advanced Setting"
+                    value={attributes.advancedSetting}
+                    onChange={(advancedSetting) => setAttributes({ advancedSetting })}
                 />
             )}
-            
+
             {canManageOptions && (
-                 setAttributes({ adminSetting })}
+                <ToggleControl
+                    label="Admin-only Setting"
+                    checked={attributes.adminSetting}
+                    onChange={(adminSetting) => setAttributes({ adminSetting })}
                 />
             )}
-        
+        </div>
     );
 }
 ```
