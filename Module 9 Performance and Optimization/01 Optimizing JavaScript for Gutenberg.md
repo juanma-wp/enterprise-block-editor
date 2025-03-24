@@ -17,9 +17,7 @@ Code splitting allows developers to break their JavaScript code into smaller, mo
 
 ### Customizing `@wordpress/scripts` for code splitting
 
-The [`@wordpress/scripts` package internally uses webpack](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-scripts/#advanced-usage) with a pre-configured setup optimized for WordPress development. While this default configuration handles most common use cases, you can extend and customize it by creating your own `webpack.config.js` file. This allows you to define specific settings like custom entry points while still leveraging the base configuration (see [`gutenberg/packages/scripts/config/webpack.config.js`](https://github.com/WordPress/gutenberg/blob/f90f754367e222b34dfebfaea559dcc4125af3b8/packages/scripts/config/webpack.config.js)).
-
-Here's an example of how to customize the webpack configuration in your `webpack.config.js`:
+The `@wordpress/scripts` package uses a webpack configuration (see [`gutenberg/packages/scripts/config/webpack.config.js`](https://github.com/WordPress/gutenberg/blob/f90f754367e222b34dfebfaea559dcc4125af3b8/packages/scripts/config/webpack.config.js)) optimized for WordPress, but [it can be extended](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-scripts/#advanced-usage) for advanced scenarios like code splitting. You can define multiple entry points in a custom `webpack.config.js`:
 
 ```javascript
 const {
@@ -37,18 +35,15 @@ module.exports = {
 };
 ```
 
-After running `@wordpress/scripts` with this webpach configuration, you might get the following output files:
-
-- `build/module.js`: Contains code from `resources/js/module.js` meant to be loaded as a Javascript modules using the Script Modules API.
-- `build/editor.js`: Contains code from `resources/js/editor.js` meant to be loaded in the block editor to extend the functionality of some core blocks.
+This configuration produces separate bundles (e.g., `build/main.js`, `build/editor.js`) that can be enqueued independently, reducing unnecessary payloads depending on the context (frontend vs editor).
 
 ## Lazy Loading
 
 Lazy loading defers the loading of non-critical resources until they are needed.
 
-While there is interest and some experimentation, Lazy loading is not yet fully implemented in the Block Editor . The core team is exploring ways to make this work without breaking existing functionality or compromising user experience. See [#2768](https://github.com/WordPress/gutenberg/issues/2768) Issue and [#53260](https://github.com/WordPress/gutenberg/discussions/53260) discussion for more info
+In the context of the Block Editor itself, lazy loading is still experimental. The Gutenberg team is actively exploring solutions that avoid breaking existing workflows. See [Issue #2768](https://github.com/WordPress/gutenberg/issues/2768) and [Discussion #53260](https://github.com/WordPress/gutenberg/discussions/53260) for context.
 
-For the frontend though, there's a recent API we can leverage to load dynamically JavaScript modules on demand: The Script Modules API
+However, for the **frontend**, the new **Script Modules API** introduced in WordPress 6.5 provides a stable method to dynamically load JavaScript modules when needed.
 
 ### Script Modules API
 
@@ -150,7 +145,7 @@ export function initializeBlock() {
 }
 ```
 
-This structure enables bundlers to apply [tree shaking](https://webpack.js.org/guides/tree-shaking/) more effectively. To further assist bundlers, you can also declare side-effect-free files explicitly in your `package.json` using the `sideEffects` field. This helps avoid unintentional exclusion of needed code.
+This structure enables bundlers to apply [tree shaking](https://webpack.js.org/guides/tree-shaking/) more effectively. To further assist bundlers, you can also [declare side-effect files explicitly in your `package.json`](https://webpack.js.org/guides/tree-shaking/#mark-the-file-as-side-effect-free) using the `sideEffects` field. This helps prevent the accidental removal of necessary code during the optimization process.
 
 ### Inspect Bundle Contents
 
@@ -255,7 +250,7 @@ This layered approach provides multiple opportunities to optimize performance at
 
 ### Leveraging the WordPress Data Layer
 
-The WordPress Data Layer provides a robust framework for managing application state and data persistence. It's specifically designed to handle REST API interactions efficiently within the Block Editor.
+The **WordPress Data Layer** — powered by the `@wordpress/data` package — serves as the primary in-memory cache for REST API responses inside the editor. It uses resolvers and selectors to avoid duplicate API calls and reuses data efficiently across components.
 
 ```javascript
 import { useSelect, useDispatch } from "@wordpress/data";
