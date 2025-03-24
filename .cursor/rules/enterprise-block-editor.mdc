@@ -1,6 +1,7 @@
 ---
-description: Enterprise Block Development course rules
+description: 
 globs: 
+alwaysApply: true
 ---
 
 # Your rule content
