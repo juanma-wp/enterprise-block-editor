@@ -10,7 +10,7 @@ In this lesson, we'll explore essential security best practices that should be i
 
 Block development introduces unique security challenges because blocks often handle user input, store data in the database, and render dynamic content on the frontend. Without proper security measures, blocks can become vectors for various attacks, including Cross-Site Scripting (XSS), SQL injection, and unauthorized access to functionality.
 
-WordPress developers are encouraged to follow the these security practices:
+WordPress developers are encouraged to follow these security practices:
 
 **Don’t trust any data**. 
 
@@ -18,7 +18,7 @@ Don’t trust user input, third-party APIs, or data in your database without ver
 
 **Rely on WordPress APIs**.
 
-Many core WordPress APIs provide built in functionality for validating and sanitizing data. Rely on the WordPress provided APIs whenever possible.
+Many core WordPress APIs provide built-in functionality for validating and sanitizing data. Rely on the WordPress provided APIs whenever possible.
 
 **Keep your code up to date**. 
 
@@ -26,9 +26,11 @@ As technology evolves, so does the potential for new security holes in your plug
 
 ## Relying on WordPress APIs
 
-As a primarily JavaScript powered environment, the Block Editor, and more specifically, the WordPress Data Layer powered by the @wordpress/data package makes use of the WordPress REST API to send and receive data from the WordPress database.
+As a primarily JavaScript powered environment, the Block Editor, and more specifically, the [WordPress Data Layer](https://developer.wordpress.org/block-editor/reference-guides/data/) powered by the `@wordpress/data` package, makes use of the default [WordPress REST API](https://developer.wordpress.org/rest-api/) endpoints and the `@wordpress/api-fetch` [package](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-api-fetch/) to send and receive data from the WordPress database.
 
-To ensure that your block is secure, you should rely on the WordPress Data Layer to handle data retrieval and storage. This ensures that data is validated and sanitized before being saved to the database, and escaped before being returned to your block.
+As much as possible, you should rely on these APIs to handle the storage and retrieval of any data needed to power your block's functionality. By extension, this means using core WordPress data APIs like Custom Post Types, Post Meta, and Taxonomies for your block's data storage needs.
+
+This will ensure that data is validated and sanitized before being saved to the database, escaped before being returned to your block, and that any requests made include proper security checks.
 
 There are, however, some additional security measures that you can implement in your block development workflow to ensure that your block code is secure.
 
@@ -61,9 +63,13 @@ const MyBlockEdit = ({ attributes, setAttributes }) => {
 };
 ```
 
+This helps by checking that data is within expected bounds before making the request to update the block's attribute.
+
 ## Escaping in Content
 
-When working with dynamic data in your block's edit or save functions, use the appropriate escaping methods to prevent XSS attacks:
+When working with dynamic data in your block's edit or save functions, use the appropriate escaping methods to prevent XSS attacks.
+
+For example, there's a `@wordpress/escape-html` [package](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-escape-html/) that provides functions for escaping HTML and attributes:
 
 ```javascript
 import { escapeHTML, escapeAttribute } from '@wordpress/escape-html';
@@ -80,16 +86,15 @@ const MyBlockSave = ({ attributes }) => {
 };
 ```
 
+Notice the use of the React `dangerouslySetInnerHTML` [property](https://react.dev/reference/react-dom/components/common#dangerously-setting-the-inner-html) to render the escaped HTML content. 
+
+dangerouslySetInnerHTML allows you to render HTML markup as HTML, instead of as text. The name makes it sound like it’s dangerous to use, but in this example, it’s safe because the data is being escaped.
+
+WordPress core also uses this property in the Block Editor to render the content of the post in the editor.
 
 ## Escaping Dynamic Output
 
-### The Importance of Escaping
-
-Escaping is the process of securing output data just before it's rendered to the user. This prevents malicious code from executing in the browser and protects against XSS attacks.
-
-### Escaping in PHP
-
-When rendering block content on the server side, always use the appropriate escaping function:
+When rendering block content for a dynamic block, always use the appropriate escaping function:
 
 ```php
 /**
@@ -113,9 +118,7 @@ function render_my_block( $attributes, $content, $block ) {
 }
 ```
 
-### Common Escaping Functions
-
-WordPress provides several escaping functions for different contexts[4][8]:
+WordPress provides several [escaping functions](https://developer.wordpress.org/apis/security/escaping/) for different contexts:
 
 - `esc_html()` - Use when outputting plain text with no HTML allowed
 - `esc_attr()` - Use when outputting data within HTML attributes
@@ -125,39 +128,30 @@ WordPress provides several escaping functions for different contexts[4][8]:
 
 ## Validating User Roles and Capabilities
 
-### Understanding WordPress Roles and Capabilities
-
-WordPress has a robust system of roles and capabilities that determine what actions users can perform:
+WordPress ships with a robust system of roles and capabilities that determine what actions users can perform:
 
 - **Roles** are collections of capabilities (e.g., Administrator, Editor, Author)
-- **Capabilities** are specific permissions (e.g., `edit_posts`, `publish_posts`, `manage_options`)[5][9]
+- **Capabilities** are specific permissions (e.g., can edit posts, can publish posts, can manage options)
+
+Access to the Block Editor, and therefore block functionality, is controlled by these roles and capabilities. For example, only Administrators can access the Site Editor or edit Pages, while Editors can only edit Posts.
+
+It can, however, be useful to also check for specific capabilities within your block code to restrict access to certain features or functionality.
 
 ### Checking User Capabilities in PHP
 
-Before allowing certain block functionality, always check if the current user has the required capabilities:
+One of the benefits of using WordPress is that you can check user capabilities in any PHP code:
 
 ```php
-/**
- * Register meta field for block, but only make it visible to users who can edit posts.
- */
-function register_block_meta() {
-    register_post_meta(
-        'post',
-        '_my_block_restricted_field',
-        [
-            'show_in_rest'  => current_user_can( 'edit_posts' ),
-            'single'        => true,
-            'type'          => 'string',
-            'auth_callback' => function() {
-                return current_user_can( 'edit_posts' );
-            }
-        ]
-    );
+add_action( 'init', 'vip_learn_custom_block_init' );
+
+function vip_learn_custom_block_init() {
+	if ( current_user_can( 'manage_options' ) ) {
+		register_block_type( __DIR__ . '/build' );
+	}
 }
-add_action( 'init', 'register_block_meta' );
 ```
 
-The `auth_callback` parameter is particularly important as it ensures that only users with the specified capability can modify the meta value.
+Here the `current_user_can()` function checks if the current user has the `manage_options` capability, which is typically reserved for Administrators. If the user has this capability, the custom block is registered.
 
 ### Checking Capabilities in JavaScript
 
@@ -167,7 +161,7 @@ In the Block Editor, you can use the `@wordpress/core-data` package to check cur
 import { useSelect } from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
 
-function MyBlockEdit({ attributes, setAttributes }) {
+function Edit({ attributes, setAttributes }) {
     const canPublishPosts = useSelect(select => {
         return select(coreStore).canUser('create', 'posts');
     }, []);
@@ -237,9 +231,11 @@ function MyBlockEdit({ attributes, setAttributes }) {
 
 ### Custom Capabilities for Blocks
 
-For more granular control, you can define custom capabilities for your blocks:
+For more granular control, you can add custom capabilities to specific roles to perform specific capability checks:
 
 ```php
+register_activation_hook( __FILE__, 'add_block_capabilities' );
+
 /**
  * Add custom capability for managing specific blocks.
  */
@@ -256,7 +252,7 @@ function add_block_capabilities() {
         $editor_role->add_cap( 'manage_custom_blocks' );
     }
 }
-register_activation_hook( __FILE__, 'add_block_capabilities' );
+
 
 /**
  * Check for custom block capability.
@@ -266,19 +262,17 @@ function user_can_manage_custom_blocks() {
 }
 ```
 
-Then use this function to conditionally register blocks or block features.
+Then use this function to conditionally register blocks.
 
-## Implementing Defense in Depth
+```php
+add_action( 'init', 'vip_learn_custom_block_init' );
 
-Security is not a single feature but a layered approach. Implement multiple security measures to create a robust defense:
-
-1. **Validate and sanitize all input** at every level
-2. **Escape all output** in the appropriate context
-3. **Check user capabilities** before allowing actions
-4. **Use nonces** for form submissions and AJAX requests
-5. **Implement proper error handling** without exposing sensitive information
-
-By following these best practices, you'll create blocks that not only function well but also protect your users and their data.
+function vip_learn_custom_block_init() {
+	if ( user_can_manage_custom_blocks() ) {
+		register_block_type( __DIR__ . '/build' );
+	}
+}
+```
 
 ## Conclusion
 
@@ -291,29 +285,3 @@ Remember the key principles:
 - Always check user capabilities before allowing actions
 
 These practices will help protect your WordPress sites from common security vulnerabilities and ensure that your blocks contribute positively to the overall security posture of the sites where they're installed.
-
-Citations:
-[1] https://github.co
-[2] https://www.wpbeginner.com/wordpress-security/
-[3] https://dev.to/gp-webdev/data-validation-and-sanitization-in-wordpress-3on9
-[4] https://css-tricks.com/introduction-to-wordpress-front-end-security-escaping-the-things/
-[5] https://www.ibenic.com/manage-wordpress-user-roles-capabilities-code/
-[6] https://wp-rocket.me/blog/wordpress-security-best-practices/
-[7] https://developer.wordpress.org/apis/security/sanitizing/
-[8] https://highrise.digital/blog/escaping-data-in-wordpress/
-[9] https://developer.wordpress.org/plugins/users/roles-and-capabilities/
-[10] https://jetpack.com/resources/wordpress-security-tips-and-best-practices/
-[11] https://docs.wpvip.com/security/validating-sanitizing-and-escaping/
-[12] https://github.com/WordPress/gutenberg/discussions/37823
-[13] https://kinsta.com/blog/wordpress-user-roles/
-[14] https://developer.wordpress.org/advanced-administration/security/hardening/
-[15] https://www.sitepoint.com/sanitizing-escaping-validating-data-in-wordpress/
-[16] https://wordpress.stackexchange.com/questions/367602/escaping-crashes-my-output
-[17] https://developer.wordpress.org/plugins/security/checking-user-capabilities/
-[18] https://developer.wordpress.org/advanced-administration/security/
-[19] https://codex.wordpress.org/Validating_Sanitizing_and_Escaping_User_Data
-[20] https://developer.wordpress.org/block-editor/getting-started/fundamentals/static-dynamic-rendering/
-[21] https://wpastra.com/guides-and-tutorials/wordpress-user-roles/
-
----
-Answer from Perplexity: pplx.ai/share
