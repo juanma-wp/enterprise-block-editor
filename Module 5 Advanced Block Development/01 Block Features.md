@@ -2,7 +2,9 @@
 
 ## Dynamic Blocks
 
-Dynamic blocks allow developers to create blocks where the front end content is generated on the server-side using PHP. This approach is particularly useful for blocks that need to display frequently updated information or rendering data that requires complex processing.
+Dynamic blocks allow developers to create blocks where the front end content is generated on the server-side using PHP. 
+
+This approach is particularly useful for blocks that need to display frequently updated information or rendering data that requires complex processing.
 
 To create a dynamic block, you need to provide a one of two methods to render the block's content.
 
@@ -70,6 +72,24 @@ When rendering a dynamic block, the block's save functionality is no longer need
 - Remove the save property from the registerBlockType call in the index.js file when you register the block.
 - Remove the importing of the save function from the index.js file.
 - Delete the save.js file
+
+### When to Use Static Rendering
+
+Static rendering is ideal for:
+
+- Simple content blocks where the output doesn't need to change after saving
+- Blocks where performance is a priority (no server-side processing required)
+- Blocks that don't need to access external data or database queries
+- Content that should remain consistent regardless of theme or plugin changes
+
+### When to Use Dynamic Rendering
+
+Dynamic rendering is ideal for:
+
+1. Blocks that need to display content that changes over time (like latest posts, current weather, etc.)
+2. Blocks that need to fetch data from external APIs or the WordPress database
+3. Blocks where you want code updates to immediately affect all instances of the block across the site
+4. Content that should adapt based on user context, time, or other variables
 
 ## Internationalization
 

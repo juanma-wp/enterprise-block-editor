@@ -18,19 +18,12 @@ Use US English.
 
 Do not add horizontal rules.
 
-You are creating lessons for Module 6: Customizing the Editor Experience
+You are creating lessons for Module 3: Building Custom Blocks
 
-Create a lesson titled 6.1: Custom Block Controls
+You have already created the lesson titled Anatomy of a Gutenberg Block, you can find this lesson here: https://github.com/jonathanbossenger/enterprise-block-editor/blob/main/Module%203%3A%20Building%20Custom%20Blocks/03%20Anatomy%20of%20a%20Gutenberg%20Block.md
 
-It should cover the following topics:
+Create a new section for this lesson, introduction Static vs Dynamic rendering
 
-- Custom sidebar panels for a block ([Settings Sidebar](https://developer.wordpress.org/block-editor/getting-started/fundamentals/block-in-the-editor/#settings-sidebar))
-- Custom options in the block's toolbar ([Block Toolbar](https://developer.wordpress.org/block-editor/getting-started/fundamentals/block-in-the-editor/#block-toolbar))
+Use this as a reference: https://developer.wordpress.org/block-editor/getting-started/fundamentals/static-dynamic-rendering/
 
-On completion of this lesson, the learner should be able to:
-
-1. **Identify** the purpose and functionality of the Settings Sidebar and Block Toolbar in the WordPress Block Editor.
-
-2. **Explain** how custom sidebar panels and toolbar controls enhance the block editing experience and improve user customization.
-
-3. **Create** a custom sidebar panel and toolbar button for a block using the Block Editor API, ensuring proper integration with WordPress development best practices.
+When generating an example of a dynamic block, use the static block discussed in the lesson, but update the block to render the content dynamically.
