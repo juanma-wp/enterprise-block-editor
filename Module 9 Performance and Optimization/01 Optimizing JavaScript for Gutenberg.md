@@ -1,5 +1,7 @@
 # Optimizing JavaScript for Gutenberg
 
+In this lesson, we'll explore essential techniques for optimizing JavaScript performance in the WordPress Block Editor (Gutenberg). We'll cover the block rendering lifecycle, code splitting, lazy loading with the Script Modules API, bundle size optimization, and effective caching strategies. These practices are crucial for creating responsive, efficient blocks that enhance the editing experience while maintaining optimal performance.
+
 ## The Block Rendering Cycle in the Block Editor
 
 Gutenberg, the WordPress Block Editor, follows a structured rendering cycle for blocks. Understanding this cycle is crucial for identifying opportunities to optimize performance. The rendering cycle involves the following stages:
@@ -9,7 +11,7 @@ Gutenberg, the WordPress Block Editor, follows a structured rendering cycle for 
 3. **Saving and Serializing** - The `save` function determines [the markup stored](https://developer.wordpress.org/block-editor/getting-started/fundamentals/markup-representation-block/) in post content.
 4. **Frontend Rendering** - When the post is viewed, WordPress parses the saved markup and [renders it accordingly](https://developer.wordpress.org/block-editor/getting-started/fundamentals/static-dynamic-rendering/):
    - **Static Blocks**: These store their output directly in post content, meaning no additional processing in the server is needed when the post is displayed.
-   - **Dynamic Blocks**: These rely on server-side rendering, where the content is generated each time the post is requested, typically via a PHP `render_callback` function.
+   - **Dynamic Blocks**: These rely on server-side rendering, where the content is generated each time the post is requested, typically via a PHP `render_callback` function (or a `render.php` file).
 
 ## Code Splitting
 
@@ -94,20 +96,121 @@ wp_enqueue_script_module(
 
 The `import` parameter accepts two values that determine how dependencies are loaded:
 
-- `static` (default): Loads the module immediately with the main script, similar to standard ES6 imports. Use for critical functionality needed right away.
-- `dynamic`: Loads the module only when requested by code (lazy-loading), similar to `import()` in JavaScript. Use for large features or specialized functionality that isn't always needed.
+- `static` (default): Loads the module immediately with the main script, similar to standard ES6 imports.
+- `dynamic`: Loads the module only when requested by code (lazy-loading).
 
 Using the appropriate import type can significantly improve performance by reducing initial load time while ensuring optimal user experience.
 
+> [!NOTE]
+> Check [the code](https://github.com/Automattic/wpvip-learn-enterprise-block-editor/tree/trunk/examples/script-modules-block-manual) and [live demo](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/Automattic/wpvip-learn-enterprise-block-editor/refs/heads/trunk/examples/script-modules-block-manual/_playground/blueprint.json) of an example that illustrate how to manually register script modules and their dependencies
+
 #### Script Modules API in blocks
 
-- Use of `viewScriptModule`
-- custom `webpack.config.js` to handle imports as JS modules
-- Using scripts inside script modules
+WordPress 6.5 introduced the `viewScriptModule` field in block metadata, allowing block developers to register frontend JavaScript as ES modules:
+
+```json
+{
+  "apiVersion": 2,
+  "name": "my-plugin/featured-content",
+  ...
+  "viewScriptModule":  "file:./view.js"
+}
+```
+
+To automatically generate the `static` and `dynamic` dependencies for a script module registered with `viewScriptModule`, you can run `npm run build` or `wp-scripts start` using the `--experimental-modules` flag.
+
+For the following `view.js`, registed as a `viewScriptModule`, will be loaded as an ES module in the browser and its dependencies will be loaded directly in the browser.
+
+```js
+/* eslint-disable no-console, import/no-unresolved */
+import { store } from "@wordpress/interactivity";
+import { moduleOne } from 'module-1';
+
+setTimeout( async () => {
+	try {
+		const module = await import( 'module-2' );
+		const { moduleTwo } = module;
+		moduleTwo();
+	} catch ( error ) {
+		console.error( 'Error loading module-2:', error );
+	}
+}, 2000 );
+
+...
+```
+
+If we run `npm run build --experimental-modules` over this `view.js` the following dependendencies will be generated:
+
+```PHP
+<?php return array(
+  'dependencies' => array(
+    '@wordpress/interactivity',
+    'module-1',
+    array('id' => 'module-2', 'import' => 'dynamic'),
+    ...
+  ),
+  'version' => 'b7a2dcd9b084b07d7e8d',
+  'type' => 'module'
+);
+```
+
+When using the Script Modules API, the webpack configuration must also be adapted to properly handle ES modules and their dependencies.
+The `@wordpress/dependency-extraction-webpack-plugin` is a critical tool that automatically extracts module dependencies from the bundle.
+Any import of a custom module need to be specified in a custom `webpack.config.js` so the bundler doesn't throw error when generating the final bundle.
+
+```javascript
+// when using --experimental-modules flag, the webpack.config returns an array of two config objects: one for non modules and another for modules
+// https://github.com/WordPress/gutenberg/blob/f90f754367e222b34dfebfaea559dcc4125af3b8/packages/scripts/config/webpack.config.js#L510
+const [
+  defaultConfigNonModule,
+  defaultConfigModule,
+] = require("@wordpress/scripts/config/webpack.config");
+
+const DependencyExtractionWebpackPlugin = require("@wordpress/dependency-extraction-webpack-plugin");
+const path = require("path");
+
+module.exports = [
+  defaultConfigNonModule,
+  {
+    ...defaultConfigModule,
+
+    // These lines are necessary to enable module compilation at time-of-writing:
+    output: {
+      module: true,
+      filename: "[name].js",
+      path: path.resolve(process.cwd(), "build"),
+    },
+    experiments: { outputModule: true },
+
+    plugins: [
+      ...defaultConfigModule.plugins.filter(
+        (plugin) =>
+          plugin.constructor.name !== "DependencyExtractionWebpackPlugin"
+      ),
+      new DependencyExtractionWebpackPlugin({
+        // With modules, use `requestToExternalModule`:
+        requestToExternalModule(request) {
+          if (request === "module-1") {
+            return request;
+          }
+          if (request === "module-2") {
+            return request;
+          }
+        },
+      }),
+    ],
+  },
+];
+```
+
+> [!NOTE]
+> Check [the code](https://github.com/Automattic/wpvip-learn-enterprise-block-editor/tree/trunk/examples/script-modules-block-view) and [live demo](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/Automattic/wpvip-learn-enterprise-block-editor/refs/heads/trunk/examples/script-modules-block-view/_playground/blueprint.json) of an example that demonstrates how to register a block's view.js file as a script module, and how to take advantage of script modules (for example, by dynamically loading additional modules).
 
 ## Reducing Bundle Size
 
-Tree shaking is a key optimization technique in modern JavaScript bundling that removes unused code from the final output. When building custom blocks or extending Gutenberg functionality, applying best practices can significantly reduce your bundle size.
+Tree shaking is a key optimization technique in modern JavaScript bundling that removes unused code from the final output.
+
+The `@wordpress/scripts` package automatically applies tree shaking when generating bundles through webpack, helping to minimize the final bundle size by eliminating dead code. Applying some best practices can significantly help the `wp-script` tool to reduce your bundle size.
 
 ### Use Modular Imports
 
@@ -123,7 +226,7 @@ import { createBlock } from "@wordpress/blocks";
 import { Button, Panel } from "@wordpress/components";
 ```
 
-### Eliminate Module-Level Side Effects
+### Minimize Module-Level Side Effects
 
 Avoid introducing [side effects](https://github.com/WordPress/gutenberg/blob/trunk/packages/side-effects.md) at the top level of your modules. Move logic like block registration into functions:
 
@@ -164,7 +267,7 @@ module.exports = {
 
 ### Reuse Core WordPress Scripts
 
-Avoid bundling libraries that WordPress already provides. Instead, rely on the script dependency system:
+Avoid bundling libraries that WordPress already provides. Instead, [rely on the script dependency system](https://developer.wordpress.org/block-editor/contributors/code/scripts/):
 
 ```php
 wp_enqueue_script(
@@ -175,30 +278,7 @@ wp_enqueue_script(
 );
 ```
 
-### Code Splitting and Dynamic Imports
-
-For larger plugins, use code splitting and dynamic imports to load parts of your UI only when needed:
-
-```javascript
-// Dynamic import example
-const AdvancedBlockControls = () => {
-  const [Controls, setControls] = useState(null);
-
-  useEffect(() => {
-    import("./advanced-controls").then((module) => {
-      setControls(() => module.default);
-    });
-  }, []);
-
-  if (!Controls) {
-    return <Placeholder>Loading controls...</Placeholder>;
-  }
-
-  return <Controls />;
-};
-```
-
-By combining modular imports, avoiding side effects, leveraging WordPress dependencies, and applying dynamic loading, you can ensure your Gutenberg extensions remain lightweight and performant, enhancing the editing experience for all users.
+By combining modular imports, avoiding side effects and leveraging WordPress dependencies, you can ensure your Gutenberg extensions remain lightweight and performant, enhancing the editing experience for all users.
 
 ## Caching Strategies for Block Data and REST API Responses
 
@@ -282,11 +362,7 @@ The Data Layer automatically implements caching, avoiding duplicate network requ
 3. Caches the response for future use
 4. Provides invalidation mechanisms when data changes
 
-#### Strategies for Optimizing Block Data Caching with WordPress Data Layer
-
-##### 1. Selective Data Loading
-
-Load only the data that blocks immediately need, deferring other data retrieval.
+Selective data loading is a key optimization technique in the WordPress Data Layer. Instead of loading all available data at once, developers should only fetch the specific fields their blocks need. This reduces payload size and minimizes unnecessary re-renders, as cache invalidation only occurs when the specific loaded fields change.
 
 ```javascript
 // Instead of loading all post meta at once
@@ -309,22 +385,6 @@ const { specialBlockData } = useSelect((select) => ({
 ```
 
 In the first `useSelect` whenever any property of meta changes, the cache is automatically invalidated by WordPress. In the second `useSelect` only the specific meta field `special_block_data` is tracked, so the cache is only invalidated when that particular field changes, leading to better performance.
-
-##### 2. Batch Processing API Requests
-
-Combine multiple data requests to reduce API calls:
-
-```javascript
-// Using batch processing via the WordPress data API
-const { batchingResolver } = dispatch(coreDataStore);
-
-batchingResolver.batch(() => {
-  // These will be combined into a single API request
-  select(coreDataStore).getEntityRecords("postType", "post");
-  select(coreDataStore).getEntityRecords("taxonomy", "category");
-  select(coreDataStore).getEntityRecords("taxonomy", "tag");
-});
-```
 
 ### Implementing Custom REST API Response Caching
 
@@ -416,3 +476,16 @@ Monitor your caching strategy effectiveness using browser developer tools:
 4. **Versioning**: Include version information in cache keys to invalidate caches when your block implementation changes
 
 Implementing these caching strategies will significantly improve Block Editor performance and provide a smoother editing experience, especially for complex blocks that interact extensively with the WordPress REST API.
+
+# Optimizing JavaScript for Gutenberg
+
+In this lesson, we'll explore essential techniques for optimizing JavaScript performance in the WordPress Block Editor (Gutenberg). We'll cover the block rendering lifecycle, code splitting, lazy loading with the Script Modules API, bundle size optimization, and effective caching strategies. These practices are crucial for creating responsive, efficient blocks that enhance the editing experience while maintaining optimal performance.
+
+## Related Documentation
+
+- [Block Editor Handbook: Performance](https://developer.wordpress.org/block-editor/contributors/code/performance/)
+- [JavaScript Build Setup](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-scripts/)
+- [Data Module Reference](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-data/)
+- [Block API Reference](https://developer.wordpress.org/block-editor/reference-guides/block-api/)
+- [Scripts API Reference](https://developer.wordpress.org/reference/functions/wp_enqueue_script/)
+- [REST API Handbook](https://developer.wordpress.org/rest-api/)
