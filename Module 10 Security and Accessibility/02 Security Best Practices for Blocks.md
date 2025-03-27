@@ -1,20 +1,18 @@
 # Security Best Practices for Blocks
 
-Security is a fundamental aspect of WordPress development, especially when developing custom blocks for the Block Editor. 
-
-As block developers, we are responsible for ensuring that our blocks handle data securely, validate user input properly, and restrict functionality based on user capabilities. 
+As a block developer, you are responsible for ensuring that your blocks handle data securely, and only allow access to block functionality to users with the relevant permssions. 
 
 In this lesson, we'll explore essential security best practices that should be implemented in every block you develop.
 
 ## Understanding Security in Block Development
 
-Block development introduces unique security challenges because blocks often handle user input, store data in the database, and render dynamic content on the frontend. Without proper security measures, blocks can become vectors for various attacks, including Cross-Site Scripting (XSS), SQL injection, and unauthorized access to functionality.
+Blocks will often handle user input, store data in the database, and render dynamic content on the frontend. Without proper security measures, blocks can become vectors for various attacks, including Cross-Site Scripting (XSS), SQL injection, and unauthorized access to functionality.
 
-WordPress developers are encouraged to follow these security practices:
+During development, you are encouraged to follow these security practices:
 
 **Don’t trust any data**. 
 
-Don’t trust user input, third-party APIs, or data in your database without verification. Protection of your WordPress themes begins with ensuring the data entering and leaving your theme is as intended. Always make sure to validate and sanitize user input fore using it, and to escape on output.
+Don’t trust user input, third-party APIs, or data in your database without verification. Protection of your WordPress blocks begins with ensuring the data entering and leaving your block is as intended. Always make sure to validate and sanitize user input before using it, and to escape all data on output.
 
 **Rely on WordPress APIs**.
 
@@ -22,7 +20,7 @@ Many core WordPress APIs provide built-in functionality for validating and sanit
 
 **Keep your code up to date**. 
 
-As technology evolves, so does the potential for new security holes in your plugin or theme. Stay vigilant by maintaining your code and updating as required.
+As technology evolves, so does the potential for new security holes in your blocks. Stay vigilant by maintaining your code and updating as required.
 
 ## Relying on WordPress APIs
 
@@ -41,7 +39,10 @@ While block attributes will already be validated before being processed by the d
 In your block's `edit` function, you can implement basic validation before updating an attribute:
 
 ```javascript
-const MyBlockEdit = ({ attributes, setAttributes }) => {
+import { useBlockProps } from '@wordpress/block-editor';
+import { TextControl } from '@wordpress/components';
+
+export default function Edit({ attributes, setAttributes }) {
     const { title } = attributes;
 
     const updateTitle = (newTitle) => {
@@ -54,11 +55,13 @@ const MyBlockEdit = ({ attributes, setAttributes }) => {
     };
 
     return (
-        <TextControl
-            label="Title"
-            value={title}
-            onChange={updateTitle}
-        />
+        <div { ...useBlockProps() }>
+            <TextControl
+                label="Title"
+                value={title}
+                onChange={updateTitle}
+            />
+        </div>
     );
 };
 ```
@@ -67,18 +70,19 @@ This helps by checking that data is within expected bounds before making the req
 
 ## Escaping in Content
 
-When working with dynamic data in your block's edit or save functions, use the appropriate escaping methods to prevent XSS attacks.
+When working with dynamic data in your block's save functions, use the appropriate escaping methods to prevent XSS attacks.
 
 For example, there's a `@wordpress/escape-html` [package](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-escape-html/) that provides functions for escaping HTML and attributes:
 
 ```javascript
+import { useBlockProps } from '@wordpress/block-editor';
 import { escapeHTML, escapeAttribute } from '@wordpress/escape-html';
 
-const MyBlockSave = ({ attributes }) => {
+export default function save() {
     const { title, description } = attributes;
 
     return (
-        <div className="my-block">
+        <div { ...useBlockProps.save() }>
             <h2>{escapeHTML(title)}</h2>
             <div dangerouslySetInnerHTML={{ __html: escapeHTML(description) }} />
         </div>
@@ -88,7 +92,7 @@ const MyBlockSave = ({ attributes }) => {
 
 Notice the use of the React `dangerouslySetInnerHTML` [property](https://react.dev/reference/react-dom/components/common#dangerously-setting-the-inner-html) to render the escaped HTML content. 
 
-dangerouslySetInnerHTML allows you to render HTML markup as HTML, instead of as text. The name makes it sound like it’s dangerous to use, but in this example, it’s safe because the data is being escaped.
+`dangerouslySetInnerHTML` allows you to render HTML markup as HTML, instead of as text. The name makes it sound like it’s dangerous to use, but in this example, it’s safe because the data is being escaped.
 
 WordPress core also uses this property in the Block Editor to render the content of the post in the editor.
 
@@ -153,21 +157,25 @@ function vip_learn_custom_block_init() {
 
 Here the `current_user_can()` function checks if the current user has the `manage_options` capability, which is typically reserved for Administrators. If the user has this capability, the custom block is registered.
 
-### Checking Capabilities in JavaScript
+### Checking Capabilities
 
-In the Block Editor, you can use the `@wordpress/core-data` package to check current user capabilities:
+In the Block Editor, you can use the `@wordpress/core-data` package to check current user capabilities, via the `canUser` [selector](https://developer.wordpress.org/block-editor/reference-guides/data/data-core/#canuser). 
+
+The selector accepts an action the user role can perform (One of `create`, `read`, `update`, or `delete`) and the resource the action can be performed on (eg `posts`, `pages`, `settings`). It returns a boolean value indicating whether the current user has the specified capability:
 
 ```javascript
+import { useBlockProps } from '@wordpress/block-editor';
+import { Button } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
 
-function Edit({ attributes, setAttributes }) {
+export default function Edit({ attributes, setAttributes }) {    
     const canPublishPosts = useSelect(select => {
         return select(coreStore).canUser('create', 'posts');
     }, []);
 
     return (
-        <div>
+        <div { ...useBlockProps() }>
             {canPublishPosts ? (
                 <Button
                     onClick={() => {
@@ -187,29 +195,31 @@ function Edit({ attributes, setAttributes }) {
 
 ### Restricting Block Features Based on Capabilities
 
-You can conditionally render block controls or features based on user capabilities:
+Using the `canUser` selector also allows you to conditionally render block controls or features based on user capabilities:
 
 ```javascript
+import { useBlockProps } from '@wordpress/block-editor';
+import { TextControl, ToggleControl } from '@wordpress/components';
 import { useSelect } from '@wordpress/data';
 import { store as coreStore } from '@wordpress/core-data';
 
-function MyBlockEdit({ attributes, setAttributes }) {
+export default function Edit({ attributes, setAttributes }) {
     const { canEditPosts, canManageOptions } = useSelect(select => {
         return {
-            canEditPosts: select(coreStore).canUser('update', 'posts'),
-            canManageOptions: select(coreStore).canUser('update', 'settings')
+            canUpdatePosts: select(coreStore).canUser('update', 'posts'),
+            canUpdateSettings: select(coreStore).canUser('update', 'settings')
         };
     }, []);
 
     return (
-        <div>
+        <div { ...useBlockProps() }>
             <TextControl
                 label="Title"
                 value={attributes.title}
                 onChange={(title) => setAttributes({ title })}
             />
 
-            {canEditPosts && (
+            {canUpdatePosts && (
                 <TextControl
                     label="Advanced Setting"
                     value={attributes.advancedSetting}
@@ -217,7 +227,7 @@ function MyBlockEdit({ attributes, setAttributes }) {
                 />
             )}
 
-            {canManageOptions && (
+            {canUpdateSettings && (
                 <ToggleControl
                     label="Admin-only Setting"
                     checked={attributes.adminSetting}
@@ -228,6 +238,8 @@ function MyBlockEdit({ attributes, setAttributes }) {
     );
 }
 ```
+
+In this example, a user who `canUpdatePosts` would typically have the `Editor` role type, and a user who `canUpdateSettings` would be an `Administrator`. The block controls are conditionally rendered based on the user's capabilities.
 
 ### Custom Capabilities for Blocks
 

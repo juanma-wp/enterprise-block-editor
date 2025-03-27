@@ -1,6 +1,6 @@
 # Accessibility in Blocks
 
-Accessibility is a fundamental aspect of WordPress development, especially when creating custom blocks for the Block Editor. As WordPress developers, we have a responsibility to ensure that our blocks are usable by everyone, including people with disabilities. 
+As a WordPress developer, you have a responsibility to ensure that your blocks are usable by everyone, including people with disabilities. 
 
 In this lesson, we'll explore how to develop blocks that meet Web Content Accessibility Guidelines standards and how to test them using screen readers and other accessibility testing tools.
 
@@ -214,7 +214,7 @@ function SkipLink() {
 
 ## Testing Block Accessibility
 
-Developing accessible blocks is only half the battle. We also need to test our blocks to ensure they meet accessibility standards. Let's explore how to test blocks using screen readers and other accessibility testing tools.
+Developing accessible blocks is only half the battle. You also need to test your blocks to ensure they meet accessibility standards. Let's explore how to test blocks using screen readers and other accessibility testing tools.
 
 ### Testing with Screen Readers
 
@@ -237,7 +237,7 @@ When testing blocks with screen readers, follow these steps:
 
 1. Browse to the page containing your block
 2. Start the screen reader
-3. Click in the browser address bar and press Enter to reload the page
+3. Refresh or reload the page
 4. Set the mouse aside and rely only on keyboard navigation
 5. Press Esc to ensure you're not in Forms/Focus Mode (for NVDA)
 
