@@ -43,9 +43,7 @@ This configuration produces separate bundles (e.g., `build/main.js`, `build/edit
 
 Lazy loading defers the loading of non-critical resources until they are needed.
 
-In the context of the Block Editor itself, lazy loading is still experimental. The Gutenberg team is actively exploring solutions that avoid breaking existing workflows. See [Issue #2768](https://github.com/WordPress/gutenberg/issues/2768) and [Discussion #53260](https://github.com/WordPress/gutenberg/discussions/53260) for context.
-
-However, for the **frontend**, the new **Script Modules API** introduced in WordPress 6.5 provides a stable method to dynamically load JavaScript modules when needed.
+The new **[Script Modules API](https://make.wordpress.org/core/2024/03/04/script-modules-in-6-5/)** introduced in WordPress 6.5 provides a stable method to dynamically load JavaScript modules when needed.
 
 ### Script Modules API
 
@@ -101,9 +99,6 @@ The `import` parameter accepts two values that determine how dependencies are lo
 
 Using the appropriate import type can significantly improve performance by reducing initial load time while ensuring optimal user experience.
 
-> [!NOTE]
-> Check [the code](https://github.com/Automattic/wpvip-learn-enterprise-block-editor/tree/trunk/examples/script-modules-block-manual) and [live demo](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/Automattic/wpvip-learn-enterprise-block-editor/refs/heads/trunk/examples/script-modules-block-manual/_playground/blueprint.json) of an example that illustrate how to manually register script modules and their dependencies
-
 #### Script Modules API in blocks
 
 WordPress 6.5 introduced the `viewScriptModule` field in block metadata, allowing block developers to register frontend JavaScript as ES modules:
@@ -117,9 +112,9 @@ WordPress 6.5 introduced the `viewScriptModule` field in block metadata, allowin
 }
 ```
 
-To automatically generate the `static` and `dynamic` dependencies for a script module registered with `viewScriptModule`, you can run `npm run build` or `wp-scripts start` using the `--experimental-modules` flag.
+To automatically generate the `static` and `dynamic` dependencies for a script module registered with `viewScriptModule`, you can run `npm run build` or `wp-scripts start` with the `--experimental-modules` flag.
 
-For the following `view.js`, registed as a `viewScriptModule`, will be loaded as an ES module in the browser and its dependencies will be loaded directly in the browser.
+The following `view.js` registed as a `viewScriptModule` will be loaded as an ES module in the browser and its dependencies will be loaded directly in the browser.
 
 ```js
 /* eslint-disable no-console, import/no-unresolved */
@@ -204,7 +199,11 @@ module.exports = [
 ```
 
 > [!NOTE]
-> Check [the code](https://github.com/Automattic/wpvip-learn-enterprise-block-editor/tree/trunk/examples/script-modules-block-view) and [live demo](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/Automattic/wpvip-learn-enterprise-block-editor/refs/heads/trunk/examples/script-modules-block-view/_playground/blueprint.json) of an example that demonstrates how to register a block's view.js file as a script module, and how to take advantage of script modules (for example, by dynamically loading additional modules).
+> Check the code and demos of the following examples that illustrate the use of the Script Module API , and how to take advantage of script modules (for example, by dynamically loading modules).
+>
+> - [script-modules-block-view](https://github.com/Automattic/wpvip-learn-enterprise-block-editor/tree/trunk/examples/script-modules-block-view) ([live demo](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/Automattic/wpvip-learn-enterprise-block-editor/refs/heads/trunk/examples/script-modules-block-view/_playground/blueprint.json)) - example that demonstrates how to register a block's view.js file as a script module.
+> - [script-modules-block-manual](https://github.com/Automattic/wpvip-learn-enterprise-block-editor/tree/trunk/examples/script-modules-block-manual) ([live demo](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/Automattic/wpvip-learn-enterprise-block-editor/refs/heads/trunk/examples/script-modules-block-manual/_playground/blueprint.json)) - example that demonstrates how to manual register script modules with their dependencies.
+> - [script-modules-block-editor](https://github.com/Automattic/wpvip-learn-enterprise-block-editor/tree/trunk/examples/script-modules-block-editor) ([live demo](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/Automattic/wpvip-learn-enterprise-block-editor/refs/heads/trunk/examples/script-modules-block-editor/_playground/blueprint.json)) - example that demonstrates how the use of script modules in the Block Editor
 
 ## Reducing Bundle Size
 
@@ -476,10 +475,6 @@ Monitor your caching strategy effectiveness using browser developer tools:
 4. **Versioning**: Include version information in cache keys to invalidate caches when your block implementation changes
 
 Implementing these caching strategies will significantly improve Block Editor performance and provide a smoother editing experience, especially for complex blocks that interact extensively with the WordPress REST API.
-
-# Optimizing JavaScript for Gutenberg
-
-In this lesson, we'll explore essential techniques for optimizing JavaScript performance in the WordPress Block Editor (Gutenberg). We'll cover the block rendering lifecycle, code splitting, lazy loading with the Script Modules API, bundle size optimization, and effective caching strategies. These practices are crucial for creating responsive, efficient blocks that enhance the editing experience while maintaining optimal performance.
 
 ## Related Documentation
 

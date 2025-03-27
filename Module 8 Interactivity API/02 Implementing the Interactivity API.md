@@ -328,3 +328,6 @@ const { state } = store("myPlugin", {
   },
 });
 ```
+
+> [!TIP]
+> The Interactivity API uses Preact internally, allowing you to inspect frontend elements with [Preact Devtools](https://chromewebstore.google.com/detail/preact-developer-tools/ilcajpmogmhpliinlbcdebhbcanbghmd?hl=en). To enable this, set the `SCRIPT_DEBUG` PHP constant to true.
