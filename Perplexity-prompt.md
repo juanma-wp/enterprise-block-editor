@@ -18,12 +18,11 @@ Use US English.
 
 Do not add horizontal rules.
 
-You are creating lessons for Module 3: Building Custom Blocks
+You are creating lessons for Module 2: Building with Blocks
 
-You have already created the lesson titled Anatomy of a Gutenberg Block, you can find this lesson here: https://github.com/jonathanbossenger/enterprise-block-editor/blob/main/Module%203%3A%20Building%20Custom%20Blocks/03%20Anatomy%20of%20a%20Gutenberg%20Block.md
+Create a new lesson, Building Block Themes
 
-Create a new section for this lesson, introduction Static vs Dynamic rendering
-
-Use this as a reference: https://developer.wordpress.org/block-editor/getting-started/fundamentals/static-dynamic-rendering/
-
-When generating an example of a dynamic block, use the static block discussed in the lesson, but update the block to render the content dynamically.
+It should cover the following three high level topics
+* Building and extending block themes with theme.json
+* Creating custom templates, template parts, and patterns
+* Creating child themes

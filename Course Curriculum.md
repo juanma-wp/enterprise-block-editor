@@ -17,6 +17,10 @@
   * What to consider before reaching for custom blocks
   * Introduce block patterns, block templates, and block variations
   * How to decide which fits the needs of the project
+* **2.2: Building Block Themes**
+  * Building and extending block themes with theme.json
+  * Creating custom templates, template parts, and patterns
+  * Creating child themes
 * **2.2: Block Patterns**
   * Understanding block patterns
   * Creating and registering custom patterns
