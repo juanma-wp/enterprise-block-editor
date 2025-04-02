@@ -1,6 +1,6 @@
 # Accessibility in Blocks
 
-Accessibility is a fundamental aspect of WordPress development, especially when creating custom blocks for the Block Editor. As WordPress developers, we have a responsibility to ensure that our blocks are usable by everyone, including people with disabilities. 
+As a WordPress developer, you are responsible for ensuring that your blocks are usable by everyone, including people with disabilities.
 
 In this lesson, we'll explore how to develop blocks that meet Web Content Accessibility Guidelines standards and how to test them using screen readers and other accessibility testing tools.
 
@@ -45,7 +45,7 @@ Instead of using generic `<div>` elements for everything, use appropriate HTML e
 
 Common ARIA landmarks include:
 
-```jsx
+```
 // Navigation block
 <nav aria-label="Main Navigation">
     // Navigation content
@@ -66,9 +66,9 @@ Only use ARIA when necessary and when native HTML semantics don't provide enough
 
 ### Ensure Keyboard Accessibility
 
-All interactive elements in your blocks must be accessible via keyboard navigation. Users should be able to navigate through your blocks using the Tab key and interact with elements using Enter or Space keys.
+All interactive elements in your blocks must be accessible via keyboard navigation. Users should be able to navigate through your blocks using the Tab key and interact with elements using **Enter** or **Space** keys.
 
-```jsx
+```
 // Example of a custom button component with keyboard support
 function CustomButton({ onClick, children }) {
     return (
@@ -92,7 +92,7 @@ Make sure that focus states are clearly visible. The WordPress editor provides f
 
 When implementing block layouts that include images, always provide a way for users to add alternative text. This is important for screen reader users to understand the content and purpose of images.
 
-```jsx
+```
 // Example of an image block with alt text support
 import { useBlockProps, RichText } from '@wordpress/block-editor';
 
@@ -129,7 +129,7 @@ Ensure that text and interactive elements have sufficient color contrast against
 
 When developing blocks, avoid hardcoding colors that might not meet contrast requirements. Instead, use WordPress theme colors or provide options for users to customize colors while warning them about potential contrast issues.
 
-```jsx
+```
 // Example of using theme colors in a block
 import { useBlockProps, PanelColorSettings } from '@wordpress/block-editor';
 import { InspectorControls } from '@wordpress/block-editor';
@@ -174,7 +174,7 @@ export default function Edit({ attributes, setAttributes }) {
 
 When blocks include dynamic content that updates without a page reload, ensure that screen readers are informed of these changes. Use ARIA live regions for content that updates automatically.
 
-```jsx
+```
 // Example of using ARIA live regions for dynamic content
 import { useState, useEffect } from '@wordpress/element';
 
@@ -201,7 +201,7 @@ function DynamicContentBlock() {
 
 WordPress provides a `.screen-reader-text` CSS class that visually hides content while keeping it accessible to screen readers. This is useful for providing additional context to screen reader users without affecting the visual design.
 
-```jsx
+```
 // Example of using screen-reader-text
 function SkipLink() {
     return (
@@ -214,7 +214,7 @@ function SkipLink() {
 
 ## Testing Block Accessibility
 
-Developing accessible blocks is only half the battle. We also need to test our blocks to ensure they meet accessibility standards. Let's explore how to test blocks using screen readers and other accessibility testing tools.
+Developing accessible blocks is only half the battle. You also need to test your blocks to ensure they meet accessibility standards. Let's explore how to test blocks using screen readers and other accessibility testing tools.
 
 ### Testing with Screen Readers
 
@@ -224,10 +224,10 @@ Screen readers are assistive technologies that convert text into synthesized spe
 
 There are several screen readers available for testing:
 
-1. **NVDA (NonVisual Desktop Access)** - Free, open-source [screen reader for Windows](https://www.nvaccess.org/download/)
-2. **VoiceOver** - Built into [macOS and iOS](https://support.apple.com/en-za/guide/voiceover/welcome/mac)
-3. **JAWS (Job Access With Speech)** - Commercial [screen reader for Windows](https://www.freedomscientific.com/products/software/jaws/)
-4. **TalkBack** - Built into [Android devices](https://support.google.com/accessibility/android/answer/6283677?hl=en)
+1. **NVDA (NonVisual Desktop Access)** \- Free, open-source [screen reader for Windows](https://www.nvaccess.org/download/)
+2. **VoiceOver** \- Built into [macOS and iOS](https://support.apple.com/en-za/guide/voiceover/welcome/mac)
+3. **JAWS (Job Access With Speech)** \- Commercial [screen reader for Windows](https://www.freedomscientific.com/products/software/jaws/)
+4. **TalkBack** \- Built into [Android devices](https://support.google.com/accessibility/android/answer/6283677?hl=en)
 
 For WordPress development, testing with NVDA on Windows and VoiceOver on macOS will cover most use cases.
 
@@ -237,7 +237,7 @@ When testing blocks with screen readers, follow these steps:
 
 1. Browse to the page containing your block
 2. Start the screen reader
-3. Click in the browser address bar and press Enter to reload the page
+3. Refresh or reload the page
 4. Set the mouse aside and rely only on keyboard navigation
 5. Press Esc to ensure you're not in Forms/Focus Mode (for NVDA)
 
@@ -264,23 +264,23 @@ In addition to manual testing with screen readers, several automated tools can h
 
 #### WordPress Accessibility Testing Plugins
 
-1. **[WP Accessibility](https://wordpress.org/plugins/wp-accessibility/)** - Helps fix common accessibility issues in WordPress themes
+1. [**WP Accessibility**](https://wordpress.org/plugins/wp-accessibility/) \- Helps fix common accessibility issues in WordPress themes.
 
-2. **[Equalize Digital Accessibility Checker](https://wordpress.org/plugins/accessibility-checker/)** - Scans your WordPress content for accessibility issues whenever you save or publish
+2. [**Equalize Digital Accessibility Checker**](https://wordpress.org/plugins/accessibility-checker/) \- Scans your WordPress content for accessibility issues whenever you save or publish.
 
-3. **[Accessibility by UserWay](https://wordpress.org/plugins/userway-accessibility-widget/)** - Provides an accessibility widget that helps users customize their experience
+3. [**Accessibility by UserWay**](https://wordpress.org/plugins/userway-accessibility-widget/) \- Provides an accessibility widget that helps users customize their experience.
 
-4. **[WP Accessibility Helper](https://wordpress.org/plugins/wp-accessibility-helper/)** - Offers a toolbar with accessibility options for users
+4. [**WP Accessibility Helper**](https://wordpress.org/plugins/wp-accessibility-helper/) \- Offers a toolbar with accessibility options for users.
 
 #### Browser-Based Testing Tools
 
-1. **[WAVE (Web Accessibility Evaluation Tool)](https://wave.webaim.org/)** - Browser extension that evaluates web content for accessibility issues
+1. [**WAVE (Web Accessibility Evaluation Tool)**](https://wave.webaim.org/) \- Browser extension that evaluates web content for accessibility issues
 
-2. **[axe DevTools](https://www.deque.com/axe/devtools/)** - Browser extension that identifies accessibility defects
+2. [**axe DevTools**](https://www.deque.com/axe/devtools/) \- A browser extension that identifies accessibility defects
 
-3. **[Lighthouse](https://developer.chrome.com/docs/lighthouse/accessibility/scoring)** - Built into Chrome DevTools, includes accessibility audits
+3. [**Lighthouse**](https://developer.chrome.com/docs/lighthouse/accessibility/scoring) \- Built into Chrome DevTools, includes accessibility audits
 
-4. **[BrowserStack Accessibility Testing Tool](https://www.browserstack.com/docs/accessibility/overview/introduction)** - Allows testing with screen readers on real devices[7]
+4. [**BrowserStack Accessibility Testing Tool**](https://www.browserstack.com/docs/accessibility/overview/introduction) \- Allows testing with screen readers on real devices\[7\]
 
 Here's an example of how to integrate accessibility testing into your development workflow:
 
@@ -288,8 +288,8 @@ Here's an example of how to integrate accessibility testing into your developmen
 2. Perform manual testing with screen readers before releasing code
 3. Include accessibility testing in your continuous integration pipeline
 
-## Conclusion
+## Accessibility as a feature
 
-Accessibility is not an afterthought but an essential aspect of block development. By designing and developing blocks with accessibility in mind from the start, we create a more inclusive web experience for all users. Remember that accessibility benefits everyone, not just users with disabilities. Features like keyboard navigation and clear content structure improve usability for all users.
+Accessibility should not be an afterthought but an essential part of the block development process.
 
-When developing blocks, you have a responsibility to ensure your blocks meet WCAG accessibility standards. By understanding these standards, implementing accessible coding practices, and thoroughly testing your blocks, you create a more inclusive web experience for everyone.
+By designing and developing blocks with accessibility in mind, you create a more inclusive web experience for all users. Remember that accessibility benefits everyone, not just users with disabilities. Features like keyboard navigation and clear content structure improve usability for all users.  
