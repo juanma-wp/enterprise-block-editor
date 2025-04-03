@@ -1,250 +1,501 @@
-## Building Block Themes
+# Building Block Themes
 
-### Building and Extending Block Themes with Theme.json
+Block themes represent the future of WordPress site development, leveraging the full capability of blocks and the Block Editor to create highly customizable, flexible websites. 
 
-The introduction of the `theme.json` file in WordPress 5.8 revolutionized theme development by providing a centralized configuration mechanism for global styles and settings. This file is essential for creating and customizing block themes, as it allows developers to define typography, colors, layout options, and block-specific settings programmatically.
+Unlike traditional themes that rely heavily on PHP templates and custom CSS, block themes use HTML templates, block markup and a configuration file called `theme.json` to define their appearance and functionality. 
 
-#### Understanding Theme.json Structure
+Block themes also enable full site editing, allowing site admins to visually customize every aspect of their site directly through the editor interface. 
 
-The `theme.json` file is located in the root directory of a block theme. It consists of two primary sections: `settings` and `styles`. These sections can be defined globally (applying to the entire site) or specifically for individual blocks.
+This lesson explores the essential components of building effective block themes, including developer tooling to get started, configuring theme.json, creating custom templates and patterns, and finally extending functionality through child themes.
 
-Example of a basic `theme.json` file:
+## Create Block Theme
+
+Built and maintained by the WordPress project, the Create Block Theme plugin bridges the gap between visual editing in the Site Editor and generating theme files. 
+
+This official WordPress.org plugin simplifies block theme creation through database-to-filesystem translation, enabling developers to export editor customizations directly to theme files.
+
+### Core Features
+
+The Create Block Theme plugin offers several key features that streamline the theme development process:
+
+1. **Theme Creation Options**: Generate blank themes, child themes, or cloned versions of existing themes with one click.
+2. **Style Variation Development**: Create and export custom color palettes and typography sets as reusable style variations
+3. **Asset Management**: Automatically organizes images used in templates to an `assets` folder and ensures block markup compatibility
+4. **Translation Readiness**: Converts template and pattern strings to gettext functions for localization
+5. **Theme.json Inspection**: Provides read-only access to theme configuration files directly in the editor interface
+
+## Creating Your First Blank Block Theme
+
+### Step 1: Plugin Installation
+
+1. Navigate to **Plugins → Add New** in WordPress admin
+2. Search for "Create Block Theme"
+3. Install and activate the plugin[6][8]
+
+### Step 2: Access Creation Interface
+
+Access the plugin through either:
+- **Appearance → Create Block Theme** (traditional admin path)
+- **Wrench icon** in Site Editor toolbar (recommended workflow)[5][7]
+
+### Step 3: Generate Blank Theme
+1. Select **"Create Blank Theme"** from creation options
+2. Configure basic metadata:
+   ```json
+   {
+     "name": "Enterprise Starter",
+     "description": "Custom corporate theme",
+     "author": "Your Agency",
+     "version": "1.0"
+   }
+   ```
+3. Click **Create Theme** to generate files[4][8]
+
+The plugin creates this initial structure:
+```
+/enterprise-starter
+├── style.css
+├── theme.json
+├── templates/
+│   └── index.html
+└── parts/
+    └── header.html
+    └── footer.html
+```
+
+## Building and Extending Block Themes with theme.json
+
+Theme.json was introduced in WordPress 5.8 as a mechanism to configure the editor, providing finer-grained control and introducing a structured approach to managing styles for WordPress themes. This configuration file consolidates various APIs related to styles into a single point, creating a canonical way to define the settings and styles of the theme.
+
+### Understanding the Purpose of theme.json
+
+The theme.json file serves multiple essential functions in a block theme. 
+
+First, it replaces the proliferation of theme support flags with a standardized approach to configuring the editor. 
+
+Second, it provides a structured way to manage CSS, reducing specificity wars and the amount of CSS enqueued. 
+
+Finally, it enables more granular control over which customization options are available to users on a global or per-block basis.
+
+The file should be placed in the root directory of your theme, and as of WordPress 6.0, using the $schema property provides additional benefits:
 
 ```json
 {
-  "$schema": "https://schemas.wp.org/trunk/theme.json",
-  "version": 2,
-  "settings": {
-    "color": {
-      "palette": [
-        {
-          "slug": "primary",
-          "color": "#0073aa",
-          "name": "Primary"
-        },
-        {
-          "slug": "secondary",
-          "color": "#005177",
-          "name": "Secondary"
+    "$schema": "https://schemas.wp.org/trunk/theme.json",
+    "version": 2,
+    "settings": {
+        // Global settings defined here
+        "layout": {
+            "contentSize": "840px",
+            "wideSize": "1100px"
         }
-      ]
     },
-    "typography": {
-      "fontSizes": [
-        {
-          "slug": "small",
-          "size": 12,
-          "name": "Small"
-        },
-        {
-          "slug": "large",
-          "size": 36,
-          "name": "Large"
-        }
-      ]
+    "styles": {
+        // Global styles defined here
     }
-  },
-  "styles": {
-    "blocks": {
-      "core/heading": {
-        "typography": {
-          "fontSize": "36px"
-        }
-      }
-    }
-  }
 }
 ```
 
-This example demonstrates how to define global color palettes, typography settings, and block-specific styles. The `$schema` key provides inline documentation and auto-completion support in code editors.
+Adding the $schema reference provides autocomplete and inline documentation while working on your theme.json files[5]. You can also specify a particular WordPress version in the schema URL, such as `https://schemas.wp.org/wp/6.5/theme.json` for version-specific features.
 
-#### Extending Theme.json for Customization
+### Settings vs. Styles in theme.json
 
-You can use the `blocks` property within `theme.json` to apply granular control over specific blocks. For example, you can restrict customization options or enforce design consistency across your theme.
+Theme.json is organized into two primary sections: settings and styles.
 
-To disable text color customization globally but allow it for headings:
+#### Settings
+
+The settings section controls which options are available in the editor interface. You can define global settings that apply to all blocks or specify settings for individual block types:
 
 ```json
 {
-  "settings": {
-    "color": {
-      "custom": false
-    },
-    "blocks": {
-      "core/heading": {
+    "version": 2,
+    "settings": {
         "color": {
-          "custom": true
+            "palette": [
+                {
+                    "name": "Primary",
+                    "slug": "primary",
+                    "color": "#0073aa"
+                },
+                {
+                    "name": "Secondary",
+                    "slug": "secondary",
+                    "color": "#23282d"
+                }
+            ],
+            "gradients": [],
+            "custom": true,
+            "customGradient": true
+        },
+        "typography": {
+            "fontSizes": [
+                {
+                    "name": "Small",
+                    "slug": "small",
+                    "size": "13px"
+                },
+                {
+                    "name": "Medium",
+                    "slug": "medium",
+                    "size": "20px"
+                }
+            ],
+            "customFontSize": true
+        },
+        "blocks": {
+            "core/paragraph": {
+                "color": {
+                    "custom": false
+                }
+            }
         }
-      }
     }
-  }
 }
 ```
 
-This configuration ensures that only heading blocks can have custom text colors, maintaining design consistency elsewhere.
+This example defines a custom color palette and font sizes globally, but disables custom colors specifically for paragraph blocks. This level of granularity allows theme developers to provide a consistent design system while still offering appropriate flexibility.
 
-### Creating Custom Templates, Template Parts, and Patterns
+#### Styles
 
-Block themes enable developers to create custom templates, template parts, and patterns that streamline site design and editing.
+The styles section defines the default visual appearance of blocks in both the editor and front end:
 
-#### Custom Templates
+```json
+{
+    "version": 2,
+    "styles": {
+        "color": {
+            "background": "#ffffff",
+            "text": "#333333"
+        },
+        "typography": {
+            "fontSize": "16px",
+            "lineHeight": "1.6"
+        },
+        "blocks": {
+            "core/heading": {
+                "typography": {
+                    "fontWeight": "700"
+                }
+            }
+        }
+    }
+}
+```
 
-Templates define the structure of specific pages or post types. To create a custom template:
+This example sets global text and background colors, default font size and line height, with specific styling for heading blocks. The styles section works with CSS custom properties under the hood, making it efficient and reducing CSS specificity issues[2].
 
-1. Navigate to **Appearance → Editor → Templates** in the WordPress dashboard.
-2. Click the **+** icon to add a new template.
-3. Choose a template type (e.g., single post) or create a custom template.
-4. Design your layout using blocks such as headers, footers, and content areas.
+### Layout Configuration
 
-Example: A custom single post template might include a header block, content block, and footer block.
+One of the most important settings in theme.json is the layout configuration, which defines content width and alignment options:
 
-#### Template Parts
+```json
+{
+    "version": 2,
+    "settings": {
+        "layout": {
+            "contentSize": "840px",
+            "wideSize": "1100px"
+        }
+    }
+}
+```
 
-Template parts are reusable components like headers or footers. You can create custom template parts by:
+These settings define the default content width (contentSize) and the width for wide-aligned elements (wideSize). WordPress automatically handles full-width elements without requiring an additional setting[8].
 
-1. Selecting **Template Parts** in the Site Editor.
-2. Adding a new part (e.g., Header).
-3. Designing the part with blocks such as navigation menus or logos.
+## Creating Custom Templates, Template Parts, and Patterns
 
-Template parts can be used across multiple templates for consistency.
+Block themes use a combination of templates, template parts, and patterns to create the structure and reusable elements of a website. Understanding how these components work together is essential for effective block theme development.
 
-#### Block Patterns
+### Understanding Templates and Template Structure
 
-Block patterns are predefined layouts that users can insert into pages or posts. To register a custom block pattern:
+Templates are HTML files that define the layout of different pages in your WordPress site. In a block theme, templates use block markup instead of PHP template tags. At minimum, a block theme requires an `index.html` file inside a `templates` folder[8].
 
-Add the following code to your theme's `functions.php` file:
+For example, a basic `index.html` template might look like this:
+
+```html
+<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+
+<!-- wp:group {"tagName":"main","layout":{"type":"constrained"}} -->
+<main class="wp-block-group">
+   <!-- wp:query {"queryId":0,"query":{"perPage":10,"offset":0,"postType":"post","order":"desc","orderBy":"date","author":"","search":"","sticky":"","inherit":true}} -->
+   <div class="wp-block-query">
+      <!-- wp:post-template -->
+      <!-- wp:post-title {"isLink":true} /-->
+      <!-- wp:post-excerpt /-->
+      <!-- /wp:post-template -->
+
+      <!-- wp:query-pagination -->
+      <!-- wp:query-pagination-previous /-->
+      <!-- wp:query-pagination-numbers /-->
+      <!-- wp:query-pagination-next /-->
+      <!-- /wp:query-pagination -->
+   </div>
+   <!-- /wp:query -->
+</main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->
+```
+
+This template includes a header template part, a main content area with a query for displaying posts, and a footer template part. The comments within `` delimiters represent block markup, which WordPress uses to render blocks.
+
+### Creating Template Parts
+
+Template parts are reusable components that can be included in multiple templates. Common template parts include headers, footers, and sidebars. In a block theme, template parts are stored in the `parts` folder.
+
+For example, a basic `header.html` template part might look like:
+
+```html
+<!-- wp:group {"style":{"spacing":{"padding":{"top":"1rem","bottom":"1rem"}}},"layout":{"type":"constrained"}} -->
+<div class="wp-block-group" style="padding-top:1rem;padding-bottom:1rem">
+   <!-- wp:site-title {"textAlign":"center"} /-->
+
+   <!-- wp:navigation {"layout":{"type":"flex","justifyContent":"center"}} /-->
+</div>
+<!-- /wp:group -->
+```
+
+This creates a simple header with a centered site title and navigation menu.
+
+### Working with Block Patterns
+
+Block patterns are reusable block layouts that can be inserted into pages or posts. They provide a way to create complex designs without having to recreate them from scratch each time.
+
+There are two methods for registering block patterns in WordPress:
+
+1. By placing files with block markup in the `/patterns` folder in your theme
+2. By manually calling the `register_block_pattern()` function
+
+#### Using the Patterns Directory
+
+The simplest approach is to create HTML files in the `/patterns` directory. WordPress automatically registers these as patterns. For example, a file named `call-to-action.html` might contain:
+
+```html
+<!-- wp:group {"backgroundColor":"primary","textColor":"background","className":"cta-pattern"} -->
+<div class="wp-block-group cta-pattern has-background-color has-primary-background-color has-text-color has-background">
+   <!-- wp:heading {"textAlign":"center"} -->
+   <h2 class="has-text-align-center">Ready to Get Started?</h2>
+   <!-- /wp:heading -->
+
+   <!-- wp:paragraph {"align":"center"} -->
+   <p class="has-text-align-center">Join thousands of satisfied customers using our product</p>
+   <!-- /wp:paragraph -->
+
+   <!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
+   <div class="wp-block-buttons">
+      <!-- wp:button -->
+      <div class="wp-block-button"><a class="wp-block-button__link">Sign Up Now</a></div>
+      <!-- /wp:button -->
+   </div>
+   <!-- /wp:buttons -->
+</div>
+<!-- /wp:group -->
+
+```
+
+WordPress will automatically register this as a pattern titled "Call to Action" (based on the filename).
+
+#### Registering Patterns Programmatically
+
+Alternatively, you can register patterns using PHP in your theme's `functions.php` file:
 
 ```php
-add_action('init', 'register_custom_block_pattern');
+add_action( 'init', 'mytheme_register_block_patterns' );
 
-function register_custom_block_pattern() {
+function mytheme_register_block_patterns() {
     register_block_pattern(
-        'mytheme/hero-section',
+        'mytheme/cta-pattern',
         array(
-            'title'       => __('Hero Section', 'mytheme'),
-            'description' => __('A hero section with a heading and call-to-action button.', 'mytheme'),
-            'content'     => 'Welcome!Click Here'
+            'title'       => __( 'Call to Action', 'mytheme' ),
+            'description' => __( 'A call to action block with a heading, text, and a button', 'mytheme' ),
+            'categories'  => array( 'cta' ),
+            'keywords'    => array( 'call to action', 'cta', 'button' ),
+            'content'     => '<!-- wp:group {"backgroundColor":"primary","textColor":"background","className":"cta-pattern"} -->
+<div class="wp-block-group cta-pattern has-background-color has-primary-background-color has-text-color has-background">
+    <!-- wp:heading {"textAlign":"center"} -->
+    <h2 class="has-text-align-center">Ready to Get Started?</h2>
+    <!-- /wp:heading -->
+    
+    <!-- wp:paragraph {"align":"center"} -->
+    <p class="has-text-align-center">Join thousands of satisfied customers using our product</p>
+    <!-- /wp:paragraph -->
+    
+    <!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
+    <div class="wp-block-buttons">
+        <!-- wp:button -->
+        <div class="wp-block-button"><a class="wp-block-button__link">Sign Up Now</a></div>
+        <!-- /wp:button -->
+    </div>
+    <!-- /wp:buttons -->
+</div>
+<!-- /wp:group -->',
         )
     );
 }
+
 ```
 
-This registers a reusable hero section pattern that users can add via the block editor.
+This approach gives you more control over pattern properties like categories and keywords, which affect how patterns appear in the inserter[9].
 
-### Creating Child Themes
+### Creating Patterns with Core Blocks
 
-Child themes allow developers to extend parent themes without modifying their original files, ensuring updates do not overwrite customizations.
+Many developers find that using core blocks is the most efficient way to create custom patterns. This approach leverages existing functionality without requiring custom React development. A practical workflow might look like:
 
-#### Steps to Create a Child Theme for Block Themes
+1. Create the basic block structure with core blocks
+2. Wrap them in a Group block
+3. Give the Group a custom CSS class under the Advanced tab
+4. Lock everything inside the Group to prevent unwanted edits
+5. Register the result as a pattern
+6. Add CSS in theme.json or style.css to customize the appearance[6]
 
-1. **Create a Child Theme Directory**  
-   In `wp-content/themes/`, create a directory named `parenttheme-child`.
+This approach provides a good balance between design flexibility and development efficiency.
 
-2. **Add Required Files**
-    - Create a `style.css` file with the following content:
-      ```css
-      /*
-      Theme Name: ParentTheme Child
-      Template: parenttheme
-      */
-      ```
-    - Copy the parent theme's `theme.json` file into the child theme directory.
+## Creating Child Themes
 
-3. **Enqueue Parent Styles**  
-   Add this code to the child theme's `functions.php` file:
-   ```php
-   function enqueue_parent_styles() {
-       wp_enqueue_style('parent-style', get_template_directory_uri() . '/style.css');
-   }
-   add_action('wp_enqueue_scripts', 'enqueue_parent_styles');
-   ```
+Child themes provide a way to customize an existing theme while preserving your changes during theme updates. With the advent of block themes, the role of child themes has evolved, but they remain useful in specific scenarios.
 
-4. **Activate the Child Theme**  
-   Go to **Appearance → Themes** in the WordPress dashboard and activate your child theme.
+### When to Use a Block Child Theme
 
-#### Customizing Child Themes
+The need for child themes has diminished somewhat with block themes, as many customizations can now be made through the Site Editor interface. When you edit templates in the Site Editor, WordPress saves your changes to the database, protecting them from theme updates[4].
 
-You can modify the child theme's `theme.json` file to override or extend parent settings. For example, adding new color options:
+However, child themes are still necessary when:
 
-```json
-{
-  "$schema": "https://schemas.wp.org/trunk/theme.json",
-  "version": 2,
-  "settings": {
-    "color": {
-      "palette": [
-        {
-          "slug": "tertiary",
-          "color": "#ff6600",
-          "name": "Tertiary"
-        }
-      ]
-    }
-  }
-}
+1. You need to modify theme.json, HTML, CSS, PHP, or JavaScript files directly
+2. You want to remove specific settings or styles that cannot be changed through the WordPress interface
+3. You need to override parent theme templates with your custom versions[4][7]
+
+### Setting Up a Block Child Theme
+
+Creating a block child theme requires at minimum two files:
+
+1. `style.css` with the appropriate theme header
+2. `functions.php` to enqueue the parent theme's stylesheet
+
+#### The style.css File
+
+```css
+/*
+Theme Name: My Block Child Theme
+Template: twentytwentyfour
+Author: Your Name
+Description: A child theme of Twenty Twenty-Four
+Version: 1.0
+Requires at least: 6.0
+Tested up to: 6.5
+Requires PHP: 7.4
+License: GNU General Public License v2 or later
+License URI: http://www.gnu.org/licenses/gpl-2.0.html
+Text Domain: my-block-child
+*/
 ```
 
-Child themes offer flexibility while preserving parent functionality, making them ideal for advanced customizations.
+The `Template` line is critical as it identifies the parent theme's folder name.
 
----
+#### The functions.php File
 
-By mastering these techniques—leveraging `theme.json`, creating templates and patterns, and developing child themes—you can build robust block themes tailored for enterprise WordPress development.
+```php
+<!-- wp:template-part {"slug":"header","tagName":"header"} /-->
+
+<!-- wp:group {"tagName":"main","layout":{"type":"constrained"}} -->
+<main class="wp-block-group">
+    <!-- wp:cover {"url":"my-hero-image.jpg","isDark":false,"dimRatio":50} -->
+    <div class="wp-block-cover is-light">
+        <span aria-hidden="true" class="wp-block-cover__background has-background-dim"></span>
+        <img class="wp-block-cover__image-background" src="my-hero-image.jpg" alt="" />
+        <div class="wp-block-cover__inner-container">
+            <!-- wp:heading {"textAlign":"center","level":1,"style":{"typography":{"fontWeight":"700"}}} -->
+            <h1 class="has-text-align-center" style="font-weight:700">Welcome to Our Website</h1>
+            <!-- /wp:heading -->
+            
+            <!-- wp:buttons {"layout":{"type":"flex","justifyContent":"center"}} -->
+            <div class="wp-block-buttons">
+                <!-- wp:button -->
+                <div class="wp-block-button"><a class="wp-block-button__link">Learn More</a></div>
+                <!-- /wp:button -->
+            </div>
+            <!-- /wp:buttons -->
+        </div>
+    </div>
+    <!-- /wp:cover -->
+    
+    <!-- wp:columns -->
+    <div class="wp-block-columns">
+        <!-- wp:column -->
+        <div class="wp-block-column">
+            <!-- wp:heading {"level":3} -->
+            <h3>Our Services</h3>
+            <!-- /wp:heading -->
+            
+            <!-- wp:paragraph -->
+            <p>Learn about what we offer and how we can help your business grow.</p>
+            <!-- /wp:paragraph -->
+        </div>
+        <!-- /wp:column -->
+        
+        <!-- wp:column -->
+        <div class="wp-block-column">
+            <!-- wp:heading {"level":3} -->
+            <h3>About Us</h3>
+            <!-- /wp:heading -->
+            
+            <!-- wp:paragraph -->
+            <p>Discover our story and meet the team behind our success.</p>
+            <!-- /wp:paragraph -->
+        </div>
+        <!-- /wp:column -->
+        
+        <!-- wp:column -->
+        <div class="wp-block-column">
+            <!-- wp:heading {"level":3} -->
+            <h3>Contact</h3>
+            <!-- /wp:heading -->
+            
+            <!-- wp:paragraph -->
+            <p>Get in touch with us to discuss your project or ask questions.</p>
+            <!-- /wp:paragraph -->
+        </div>
+        <!-- /wp:column -->
+    </div>
+    <!-- /wp:columns -->
+</main>
+<!-- /wp:group -->
+
+<!-- wp:template-part {"slug":"footer","tagName":"footer"} /-->
+
+```
+
+This template creates a custom homepage with a hero section and a three-column content area while still using the header and footer from the parent theme.
+
+## Conclusion
+
+Building block themes represents a significant shift in WordPress theme development, placing greater emphasis on configuration over code and visual editing over template manipulation. The theme.json file provides unprecedented control over both settings and styles, enabling theme developers to create consistent design systems while still offering appropriate flexibility to users.
+
+Custom templates, template parts, and patterns form the building blocks of modern theme development, allowing for reusable components and efficient workflows. While the need for child themes has diminished somewhat with the advent of the Site Editor, they remain an essential tool for theme developers who need to make deeper customizations while preserving compatibility with parent theme updates.
+
+As block themes continue to evolve, mastering these fundamentals will ensure you can create sophisticated, flexible themes that take full advantage of WordPress's powerful block editor capabilities.
 
 Citations:
 [1] https://github.co
-[2] https://kinsta.com/blog/theme-json-blocks-property/
-[3] https://jetpack.com/resources/wordpress-theme-json/
-[4] https://gutenberg.10up.com/reference/Themes/theme-json/
-[5] https://jetpack.com/resources/wordpress-block-templates/
-[6] https://developer.wordpress.org/themes/features/block-patterns/
-[7] https://crocoblock.com/blog/wordpress-child-theme-foundations/
-[8] https://support.yithemes.com/hc/en-us/articles/215945088-Creating-a-WordPress-Child-Theme-Classic-and-Block
-[9] https://wpvip.com/blog/using-a-design-system-with-the-wordpress-block-editor-pt-1-theme-json/
-[10] https://learn.wordpress.org/lesson-plan/create-a-basic-child-theme-for-block-themes/
-[11] https://jetpack.com/resources/wordpress-block-themes/
-[12] https://fullsiteediting.com/lessons/theme-json-layout-and-spacing-options/
-[13] https://kinsta.com/blog/theme-json/
-[14] https://fullstackdigital.io/blog/styling-themes-and-blocks-with-the-wordpress-theme-json-file/
-[15] https://www.youtube.com/watch?v=n7zQdmXpPwI
-[16] https://learn.wordpress.org/tutorial/introduction-to-theme-json/
-[17] https://www.elmastudio.de/en/theme-json-for-wordpress-block-themes-explained/
-[18] https://fullsiteediting.com/lessons/creating-theme-json/
-[19] https://developer.wordpress.org/block-editor/how-to-guides/themes/global-settings-and-styles/
-[20] https://developer.wordpress.org/block-editor/reference-guides/theme-json-reference/
-[21] https://samhermes.com/posts/slowly-backing-away-from-theme-json/
-[22] https://www.youtube.com/watch?v=x7vrYmP6VTM
-[23] https://seahawkmedia.com/wordpress/theme-json-guide/
-[24] https://css-tricks.com/understanding-gutenberg-blocks-patterns-and-templates/
-[25] https://wordpress.org/documentation/article/template-part-block/
-[26] https://developer.wordpress.org/themes/patterns/
-[27] https://gutenberghub.com/how-to-create-a-template-part-in-wordpress-block-editor/
-[28] https://www.wpzoom.com/docs/the-difference-between-reusable-blocks-block-patterns-templates-template-parts/
-[29] https://www.reddit.com/r/ProWordPress/comments/1atyvp1/creating_slightly_customizable_bespoke_block/
-[30] https://maxiblocks.com/wordpress-block-themes-3/
-[31] https://www.youtube.com/watch?v=ljyRP3ozcnE
-[32] https://www.godaddy.com/resources/skills/wordpress-block-pattern-reusable-block-or-template-part
-[33] https://wordpress.com/support/template-part-block/
-[34] https://www.youtube.com/watch?v=hXq6pp7IvIE
-[35] https://developer.woocommerce.com/docs/how-to-set-up-and-use-a-child-theme/
-[36] https://www.linkedin.com/pulse/mini-guide-wordpress-child-themes-allie-nimmons-utquc
-[37] https://www.youtube.com/watch?v=m9A3HZ2cuZM
-[38] https://www.youtube.com/watch?v=VE_3wI65EIc
-[39] https://developer.wordpress.org/themes/advanced-topics/child-themes/
-[40] https://www.reddit.com/r/Wordpress/comments/144ecxs/how_to_create_a_child_theme_out_of_a_block_theme/
-[41] https://community.localwp.com/t/how-to-create-a-child-theme-for-a-block-theme/31894
-[42] https://fullsiteediting.com/lessons/creating-block-based-themes/
-[43] https://developer.wordpress.org/themes/global-settings-and-styles/settings/blocks/
-[44] https://torquemag.io/2023/06/modify-wordpress-block-themes/
-[45] https://www.pootlepress.com/2023/06/the-complete-newbies-guide-to-theme-json-in-wordpress/
-[46] https://gutenbergtimes.com/block-based-template-parts-for-classic-themes/
-[47] https://motopress.com/blog/wordpress-patterns-vs-template-parts/
-[48] https://developer.wordpress.org/themes/templates/template-parts/
-[49] https://fullsiteediting.com/lessons/templates-and-template-parts/
-[50] https://learn.wordpress.org/tutorial/using-block-template-parts-in-classic-themes/
-[51] https://www.wpbeginner.com/wp-themes/how-to-create-a-wordpress-child-theme-video/
-[52] https://wordpress.com/support/themes/child-themes/
-[53] https://www.godaddy.com/resources/skills/how-to-create-a-block-child-theme-in-wordpress
-[54] https://fullsiteediting.com/lessons/child-themes/
+[2] https://developer.wordpress.org/block-editor/how-to-guides/themes/global-settings-and-styles/
+[3] https://pressable.com/blog/creating-block-patterns-wordpress/
+[4] https://fullsiteediting.com/lessons/child-themes/
+[5] https://gutenberg.10up.com/reference/Themes/theme-json/
+[6] https://www.reddit.com/r/ProWordPress/comments/1agytp9/using_core_blocks_for_making_custom_block_patterns/
+[7] https://www.godaddy.com/resources/skills/how-to-create-a-block-child-theme-in-wordpress
+[8] https://fullsiteediting.com/lessons/creating-block-based-themes/
+[9] https://developer.wordpress.org/themes/features/block-patterns/
+[10] https://www.reddit.com/r/Wordpress/comments/1d96n9t/do_block_themes_require_a_child/
+[11] https://jetpack.com/resources/wordpress-theme-json/
+[12] https://learn.wordpress.org/tutorial/the-difference-between-reusable-blocks-block-patterns-templates-and-template-parts/
+[13] https://www.youtube.com/watch?v=m9A3HZ2cuZM
+[14] https://developer.wordpress.org/themes/global-settings-and-styles/
+[15] https://jetpack.com/resources/wordpress-block-patterns/
+[16] https://learn.wordpress.org/lesson-plan/create-a-basic-child-theme-for-block-themes/
+[17] https://kinsta.com/blog/theme-json/
+[18] https://maxiblocks.com/wordpress-block-templates/
+[19] https://developer.wordpress.org/themes/advanced-topics/child-themes/
+[20] https://fullsiteediting.com/lessons/creating-theme-json/
+[21] https://wordpress.stackexchange.com/questions/395528/can-you-use-block-patterns-in-block-templates-or-insert-them-programmatically
 
 ---
 Answer from Perplexity: pplx.ai/share
