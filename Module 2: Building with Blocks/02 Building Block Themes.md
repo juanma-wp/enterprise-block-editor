@@ -10,7 +10,7 @@ This lesson explores the essential components of building effective block themes
 
 ## Create Block Theme
 
-Built and maintained by the WordPress project, the Create Block Theme plugin bridges the gap between visual editing in the Site Editor and generating theme files. 
+Built and maintained by the various WordPress project contributors, the [Create Block Theme](https://wordpress.org/plugins/create-block-theme/) plugin bridges the gap between visual editing in the Site Editor and generating theme files. 
 
 This official WordPress.org plugin simplifies block theme creation through database-to-filesystem translation, enabling developers to export editor customizations directly to theme files.
 
@@ -24,79 +24,494 @@ The Create Block Theme plugin offers several key features that streamline the th
 4. **Translation Readiness**: Converts template and pattern strings to gettext functions for localization
 5. **Theme.json Inspection**: Provides read-only access to theme configuration files directly in the editor interface
 
-## Creating Your First Blank Block Theme
+### Creating Your First Blank Block Theme
 
-### Step 1: Plugin Installation
+With the plugin installed, either on a staging or local environment, you can create a blank block theme. 
 
-1. Navigate to **Plugins → Add New** in WordPress admin
-2. Search for "Create Block Theme"
-3. Install and activate the plugin[6][8]
+There are two ways to create a new block theme. 
 
-### Step 2: Access Creation Interface
+The first is from the WP Admin menu:
 
-Access the plugin through either:
-- **Appearance → Create Block Theme** (traditional admin path)
-- **Wrench icon** in Site Editor toolbar (recommended workflow)[5][7]
+- Navigate to **Appearance → Create Block Theme**, and then select the **Create a new Blank Theme** option.
+- Enter the theme name, and optional theme details like the description and author.
+- Click **Create and Activate Blank Theme**.
 
-### Step 3: Generate Blank Theme
-1. Select **"Create Blank Theme"** from creation options
-2. Configure basic metadata:
-   ```json
-   {
-     "name": "Enterprise Starter",
-     "description": "Custom corporate theme",
-     "author": "Your Agency",
-     "version": "1.0"
-   }
-   ```
-3. Click **Create Theme** to generate files[4][8]
+The new theme will be created and activated, and you will be redirected to the Site Editor to start editing the theme visually.
 
-The plugin creates this initial structure:
+Alternatively, you can create a new theme directly from the Site Editor
+
+- Click on the **Create Block Theme** (wrench) icon in the Site Editor toolbar and select **Create Blank Theme**.
+- Enter the theme name, and optional theme details like the description, author, and theme or author links.
+- Click **Create Blank Theme**.
+
+The new theme will be created and activated, and the Site Editor will open with the new theme loaded.
+
+## Core Concepts of Block Themes
+
+### theme.json
+
+Open the newly created theme in your code editor, and then edit the `theme.json` file in the root of the theme directory.
+
+```json
+{
+	"$schema": "https://schemas.wp.org/wp/6.8/theme.json",
+	"settings": {
+		"appearanceTools": true,
+		"layout": {
+			"contentSize": "620px",
+			"wideSize": "1000px"
+		},
+		"spacing": {
+			"units": [ "%", "px", "em", "rem", "vh", "vw" ]
+		},
+		"typography": {
+			"fontFamilies": [
+				{
+					"fontFamily": "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen-Sans, Ubuntu, Cantarell, 'Helvetica Neue', sans-serif",
+					"name": "System Font",
+					"slug": "system-font"
+				}
+			]
+		},
+		"useRootPaddingAwareAlignments": true
+	},
+	"templateParts": [
+		{
+			"area": "header",
+			"name": "header"
+		},
+		{
+			"area": "footer",
+			"name": "footer"
+		}
+	],
+	"version": 3
+}
 ```
-/enterprise-starter
-├── style.css
-├── theme.json
-├── templates/
-│   └── index.html
-└── parts/
-    └── header.html
-    └── footer.html
-```
-
-## Building and Extending Block Themes with theme.json
-
-Theme.json was introduced in WordPress 5.8 as a mechanism to configure the editor, providing finer-grained control and introducing a structured approach to managing styles for WordPress themes. This configuration file consolidates various APIs related to styles into a single point, creating a canonical way to define the settings and styles of the theme.
-
-### Understanding the Purpose of theme.json
 
 The theme.json file serves multiple essential functions in a block theme. 
 
-First, it replaces the proliferation of theme support flags with a standardized approach to configuring the editor. 
+First, it replaces the proliferation of theme support flags with a standardized approach to configuring the editor. In the past, theme developers had to use various theme support flags to enable or disable features like custom colors, font sizes, and layout options. Now these settings can be enabled or disabled in a single file, making it easier to manage and understand the theme's capabilities.
 
 Second, it provides a structured way to manage CSS, reducing specificity wars and the amount of CSS enqueued. 
 
 Finally, it enables more granular control over which customization options are available to users on a global or per-block basis.
 
-The file should be placed in the root directory of your theme, and as of WordPress 6.0, using the $schema property provides additional benefits:
+Notice that the theme.json includes a $schema property. Adding the `$schema` reference provides autocomplete and inline documentation while working on your `theme.json` files. 
 
-```json
+You can use the default schema at `https://schemas.wp.org/trunk/theme.json` or specify a particular WordPress version in the schema URL, such as `https://schemas.wp.org/wp/6.8/theme.json` for version-specific features.
+
+### Core theme.json
+
+By default, WordPress ships with and includes a core `theme.json` file that provides a set of default settings and styles. This file is located in the `wp-includes/theme.json` directory.
+
+```php
 {
-    "$schema": "https://schemas.wp.org/trunk/theme.json",
-    "version": 2,
-    "settings": {
-        // Global settings defined here
-        "layout": {
-            "contentSize": "840px",
-            "wideSize": "1100px"
-        }
-    },
-    "styles": {
-        // Global styles defined here
-    }
+	"$schema": "https://schemas.wp.org/trunk/theme.json",
+	"version": 3,
+	"settings": {
+		"appearanceTools": false,
+		"useRootPaddingAwareAlignments": false,
+		"border": {
+			"color": false,
+			"radius": false,
+			"style": false,
+			"width": false
+		},
+		"color": {
+			"background": true,
+			"button": true,
+			"caption": true,
+			"custom": true,
+			"customDuotone": true,
+			"customGradient": true,
+			"defaultDuotone": true,
+			"defaultGradients": true,
+			"defaultPalette": true,
+			"duotone": [
+				{
+					"name": "Dark grayscale",
+					"colors": [ "#000000", "#7f7f7f" ],
+					"slug": "dark-grayscale"
+				},
+				{
+					"name": "Grayscale",
+					"colors": [ "#000000", "#ffffff" ],
+					"slug": "grayscale"
+				},
+				{
+					"name": "Purple and yellow",
+					"colors": [ "#8c00b7", "#fcff41" ],
+					"slug": "purple-yellow"
+				},
+				{
+					"name": "Blue and red",
+					"colors": [ "#000097", "#ff4747" ],
+					"slug": "blue-red"
+				},
+				{
+					"name": "Midnight",
+					"colors": [ "#000000", "#00a5ff" ],
+					"slug": "midnight"
+				},
+				{
+					"name": "Magenta and yellow",
+					"colors": [ "#c7005a", "#fff278" ],
+					"slug": "magenta-yellow"
+				},
+				{
+					"name": "Purple and green",
+					"colors": [ "#a60072", "#67ff66" ],
+					"slug": "purple-green"
+				},
+				{
+					"name": "Blue and orange",
+					"colors": [ "#1900d8", "#ffa96b" ],
+					"slug": "blue-orange"
+				}
+			],
+			"gradients": [
+				{
+					"name": "Vivid cyan blue to vivid purple",
+					"gradient": "linear-gradient(135deg,rgba(6,147,227,1) 0%,rgb(155,81,224) 100%)",
+					"slug": "vivid-cyan-blue-to-vivid-purple"
+				},
+				{
+					"name": "Light green cyan to vivid green cyan",
+					"gradient": "linear-gradient(135deg,rgb(122,220,180) 0%,rgb(0,208,130) 100%)",
+					"slug": "light-green-cyan-to-vivid-green-cyan"
+				},
+				{
+					"name": "Luminous vivid amber to luminous vivid orange",
+					"gradient": "linear-gradient(135deg,rgba(252,185,0,1) 0%,rgba(255,105,0,1) 100%)",
+					"slug": "luminous-vivid-amber-to-luminous-vivid-orange"
+				},
+				{
+					"name": "Luminous vivid orange to vivid red",
+					"gradient": "linear-gradient(135deg,rgba(255,105,0,1) 0%,rgb(207,46,46) 100%)",
+					"slug": "luminous-vivid-orange-to-vivid-red"
+				},
+				{
+					"name": "Very light gray to cyan bluish gray",
+					"gradient": "linear-gradient(135deg,rgb(238,238,238) 0%,rgb(169,184,195) 100%)",
+					"slug": "very-light-gray-to-cyan-bluish-gray"
+				},
+				{
+					"name": "Cool to warm spectrum",
+					"gradient": "linear-gradient(135deg,rgb(74,234,220) 0%,rgb(151,120,209) 20%,rgb(207,42,186) 40%,rgb(238,44,130) 60%,rgb(251,105,98) 80%,rgb(254,248,76) 100%)",
+					"slug": "cool-to-warm-spectrum"
+				},
+				{
+					"name": "Blush light purple",
+					"gradient": "linear-gradient(135deg,rgb(255,206,236) 0%,rgb(152,150,240) 100%)",
+					"slug": "blush-light-purple"
+				},
+				{
+					"name": "Blush bordeaux",
+					"gradient": "linear-gradient(135deg,rgb(254,205,165) 0%,rgb(254,45,45) 50%,rgb(107,0,62) 100%)",
+					"slug": "blush-bordeaux"
+				},
+				{
+					"name": "Luminous dusk",
+					"gradient": "linear-gradient(135deg,rgb(255,203,112) 0%,rgb(199,81,192) 50%,rgb(65,88,208) 100%)",
+					"slug": "luminous-dusk"
+				},
+				{
+					"name": "Pale ocean",
+					"gradient": "linear-gradient(135deg,rgb(255,245,203) 0%,rgb(182,227,212) 50%,rgb(51,167,181) 100%)",
+					"slug": "pale-ocean"
+				},
+				{
+					"name": "Electric grass",
+					"gradient": "linear-gradient(135deg,rgb(202,248,128) 0%,rgb(113,206,126) 100%)",
+					"slug": "electric-grass"
+				},
+				{
+					"name": "Midnight",
+					"gradient": "linear-gradient(135deg,rgb(2,3,129) 0%,rgb(40,116,252) 100%)",
+					"slug": "midnight"
+				}
+			],
+			"heading": true,
+			"link": false,
+			"palette": [
+				{
+					"name": "Black",
+					"slug": "black",
+					"color": "#000000"
+				},
+				{
+					"name": "Cyan bluish gray",
+					"slug": "cyan-bluish-gray",
+					"color": "#abb8c3"
+				},
+				{
+					"name": "White",
+					"slug": "white",
+					"color": "#ffffff"
+				},
+				{
+					"name": "Pale pink",
+					"slug": "pale-pink",
+					"color": "#f78da7"
+				},
+				{
+					"name": "Vivid red",
+					"slug": "vivid-red",
+					"color": "#cf2e2e"
+				},
+				{
+					"name": "Luminous vivid orange",
+					"slug": "luminous-vivid-orange",
+					"color": "#ff6900"
+				},
+				{
+					"name": "Luminous vivid amber",
+					"slug": "luminous-vivid-amber",
+					"color": "#fcb900"
+				},
+				{
+					"name": "Light green cyan",
+					"slug": "light-green-cyan",
+					"color": "#7bdcb5"
+				},
+				{
+					"name": "Vivid green cyan",
+					"slug": "vivid-green-cyan",
+					"color": "#00d084"
+				},
+				{
+					"name": "Pale cyan blue",
+					"slug": "pale-cyan-blue",
+					"color": "#8ed1fc"
+				},
+				{
+					"name": "Vivid cyan blue",
+					"slug": "vivid-cyan-blue",
+					"color": "#0693e3"
+				},
+				{
+					"name": "Vivid purple",
+					"slug": "vivid-purple",
+					"color": "#9b51e0"
+				}
+			],
+			"text": true
+		},
+		"dimensions": {
+			"defaultAspectRatios": true,
+			"aspectRatios": [
+				{
+					"name": "Square - 1:1",
+					"slug": "square",
+					"ratio": "1"
+				},
+				{
+					"name": "Standard - 4:3",
+					"slug": "4-3",
+					"ratio": "4/3"
+				},
+				{
+					"name": "Portrait - 3:4",
+					"slug": "3-4",
+					"ratio": "3/4"
+				},
+				{
+					"name": "Classic - 3:2",
+					"slug": "3-2",
+					"ratio": "3/2"
+				},
+				{
+					"name": "Classic Portrait - 2:3",
+					"slug": "2-3",
+					"ratio": "2/3"
+				},
+				{
+					"name": "Wide - 16:9",
+					"slug": "16-9",
+					"ratio": "16/9"
+				},
+				{
+					"name": "Tall - 9:16",
+					"slug": "9-16",
+					"ratio": "9/16"
+				}
+			]
+		},
+		"shadow": {
+			"defaultPresets": true,
+			"presets": [
+				{
+					"name": "Natural",
+					"slug": "natural",
+					"shadow": "6px 6px 9px rgba(0, 0, 0, 0.2)"
+				},
+				{
+					"name": "Deep",
+					"slug": "deep",
+					"shadow": "12px 12px 50px rgba(0, 0, 0, 0.4)"
+				},
+				{
+					"name": "Sharp",
+					"slug": "sharp",
+					"shadow": "6px 6px 0px rgba(0, 0, 0, 0.2)"
+				},
+				{
+					"name": "Outlined",
+					"slug": "outlined",
+					"shadow": "6px 6px 0px -3px rgba(255, 255, 255, 1), 6px 6px rgba(0, 0, 0, 1)"
+				},
+				{
+					"name": "Crisp",
+					"slug": "crisp",
+					"shadow": "6px 6px 0px rgba(0, 0, 0, 1)"
+				}
+			]
+		},
+		"spacing": {
+			"blockGap": null,
+			"margin": false,
+			"padding": false,
+			"customSpacingSize": true,
+			"defaultSpacingSizes": true,
+			"units": [ "px", "em", "rem", "vh", "vw", "%" ],
+			"spacingScale": {
+				"operator": "*",
+				"increment": 1.5,
+				"steps": 7,
+				"mediumStep": 1.5,
+				"unit": "rem"
+			}
+		},
+		"typography": {
+			"customFontSize": true,
+			"defaultFontSizes": true,
+			"dropCap": true,
+			"fontSizes": [
+				{
+					"name": "Small",
+					"slug": "small",
+					"size": "13px"
+				},
+				{
+					"name": "Medium",
+					"slug": "medium",
+					"size": "20px"
+				},
+				{
+					"name": "Large",
+					"slug": "large",
+					"size": "36px"
+				},
+				{
+					"name": "Extra Large",
+					"slug": "x-large",
+					"size": "42px"
+				}
+			],
+			"fontStyle": true,
+			"fontWeight": true,
+			"letterSpacing": true,
+			"lineHeight": false,
+			"textAlign": true,
+			"textDecoration": true,
+			"textTransform": true,
+			"writingMode": false
+		},
+		"blocks": {
+			"core/button": {
+				"border": {
+					"radius": true
+				}
+			},
+			"core/image": {
+				"lightbox": {
+					"allowEditing": true
+				}
+			},
+			"core/pullquote": {
+				"border": {
+					"color": true,
+					"radius": true,
+					"style": true,
+					"width": true
+				}
+			}
+		}
+	},
+	"styles": {
+		"blocks": {
+			"core/button": {
+				"variations": {
+					"outline": {
+						"border": {
+							"width": "2px",
+							"style": "solid",
+							"color": "currentColor"
+						},
+						"color": {
+							"text": "currentColor",
+							"gradient": "transparent none"
+						},
+						"spacing": {
+							"padding": {
+								"top": "0.667em",
+								"right": "1.33em",
+								"bottom": "0.667em",
+								"left": "1.33em"
+							}
+						}
+					}
+				}
+			},
+			"core/site-logo": {
+				"variations": {
+					"rounded": {
+						"border": {
+							"radius": "9999px"
+						}
+					}
+				}
+			}
+		},
+		"elements": {
+			"button": {
+				"color": {
+					"text": "#fff",
+					"background": "#32373c"
+				},
+				"spacing": {
+					"padding": "calc(0.667em + 2px) calc(1.333em + 2px)"
+				},
+				"typography": {
+					"fontSize": "inherit",
+					"fontFamily": "inherit",
+					"lineHeight": "inherit",
+					"textDecoration": "none"
+				},
+				"border": {
+					"width": "0"
+				}
+			},
+			"link": {
+				"typography": {
+					"textDecoration": "underline"
+				}
+			}
+		},
+		"spacing": {
+			"blockGap": "24px",
+			"padding": {
+				"top": "0px",
+				"right": "0px",
+				"bottom": "0px",
+				"left": "0px"
+			}
+		}
+	}
 }
-```
 
-Adding the $schema reference provides autocomplete and inline documentation while working on your theme.json files[5]. You can also specify a particular WordPress version in the schema URL, such as `https://schemas.wp.org/wp/6.5/theme.json` for version-specific features.
+```
 
 ### Settings vs. Styles in theme.json
 
