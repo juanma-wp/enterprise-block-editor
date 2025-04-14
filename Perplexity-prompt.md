@@ -1,7 +1,5 @@
 You are creating content for training software developers on Enterprise WordPress software development for a course titled Advanced Block Editor (Gutenberg)
 
-All the content can be found in markdown files in this public GitHub repository: https://github.com/jonathanbossenger/enterprise-block-editor
-
 The course curriculum can be found here: http://raw.githubusercontent.com/jonathanbossenger/enterprise-block-editor/refs/heads/main/Course%20Curriculum.md
 
 Provide informative and fact-based content for a technical audience.
@@ -18,11 +16,10 @@ Use US English.
 
 Do not add horizontal rules.
 
-You are creating lessons for Module 2: Building with Blocks
+You are creating lessons for Module 12: Block Development for Enterprise Requirements
 
-Create a new lesson, Building Block Themes
+Create a new lesson, Multisite Considerations
 
 It should cover the following three high level topics
-* Building and extending block themes with theme.json
-* Creating custom templates, template parts, and patterns
-* Creating child themes
+* Global vs. Site-Specific Blocks
+* Customizing block permissions based on user roles across sites
