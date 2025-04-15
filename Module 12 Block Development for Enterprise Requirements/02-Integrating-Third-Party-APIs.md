@@ -25,11 +25,11 @@ export default function Edit() {
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
-    useEffect(() =&gt; {
-        const fetchData = async () =&gt; {
+    useEffect(() => {
+        const fetchData = async () => {
             try {
                 // Using WordPress's apiFetch for consistent handling
-                const response = await apiFetch({ 
+                const response = await apiFetch({
                     path: '/custom-namespace/v1/external-data',
                 });
                 setData(response);
@@ -53,7 +53,7 @@ export default function Edit() {
     }
 
     return (
-        <div>
+        <div className="api-data-block">
             <h3>{data.title}</h3>
             <p>{data.description}</p>
         </div>
@@ -80,8 +80,19 @@ However, client-side fetching introduces challenges:
 The server-side approach employs PHP to fetch data and then passes it to the block:
 
 ```php
- array(
-            'Authorization' =&gt; 'Bearer ' . get_option( 'api_secret_key' ),
+<?php
+/**
+ * Server-side rendering for the API data block.
+ *
+ * @param array $attributes The block attributes.
+ * @return string The block HTML.
+ */
+function my_custom_api_block_render_callback( $attributes ) {
+    // Fetch data from external API
+    $api_url = 'https://api.example.com/data';
+    $response = wp_remote_get( $api_url, array(
+        'headers' => array(
+            'Authorization' => 'Bearer ' . get_option( 'api_secret_key' ),
         ),
     ) );
 
@@ -97,7 +108,7 @@ The server-side approach employs PHP to fetch data and then passes it to the blo
     }
 
     // Build the block HTML
-    $output = '<div>';
+    $output = '<div class="api-data-block">';
     $output .= '<h3>' . esc_html( $data['title'] ) . '</h3>';
     $output .= '<p>' . esc_html( $data['description'] ) . '</p>';
     $output .= '</div>';
@@ -110,13 +121,13 @@ You would register this block with:
 
 ```php
 register_block_type( 'my-plugin/api-data', array(
-    'attributes'      =&gt; array(
-        'apiEndpoint' =&gt; array(
-            'type' =&gt; 'string',
-            'default' =&gt; 'default-endpoint',
+    'attributes'      => array(
+        'apiEndpoint' => array(
+            'type' => 'string',
+            'default' => 'default-endpoint',
         ),
     ),
-    'render_callback' =&gt; 'my_custom_api_block_render_callback',
+    'render_callback' => 'my_custom_api_block_render_callback',
 ) );
 ```
 
@@ -135,6 +146,7 @@ For an optimal enterprise solution, you'll often want to show API data both in t
 
 ```javascript
 // Block registration
+// Block registration
 registerBlockType('my-plugin/api-data-block', {
     title: 'External API Data',
     icon: 'database',
@@ -150,7 +162,7 @@ registerBlockType('my-plugin/api-data-block', {
         }
     },
     edit: Edit,
-    save: () =&gt; null // Using server-side rendering
+    save: () => null // Using server-side rendering
 });
 
 // Edit component with data fetching
@@ -158,33 +170,33 @@ function Edit({ attributes, setAttributes }) {
     const { endpoint, cachedData } = attributes;
     const [data, setData] = useState(cachedData);
     const [isLoading, setIsLoading] = useState(Object.keys(cachedData).length === 0);
-    
-    useEffect(() =&gt; {
+
+    useEffect(() => {
         if (isLoading) {
             wp.apiFetch({
                 path: `/my-plugin/v1/proxy-api?endpoint=${endpoint}`
-            }).then(response =&gt; {
+            }).then(response => {
                 setData(response);
                 // Cache the data in block attributes
                 setAttributes({ cachedData: response });
                 setIsLoading(false);
-            }).catch(error =&gt; {
+            }).catch(error => {
                 console.error('Error fetching API data:', error);
                 setIsLoading(false);
             });
         }
     }, [endpoint, isLoading]);
-    
+
     // Editor representation
     return (
-        <div>
+        <div className="api-data-block editor-view">
             {isLoading ? (
                 <p>Loading API data...</p>
             ) : (
-                &lt;&gt;
+                <>
                     <h3>{data.title}</h3>
                     <p>{data.description}</p>
-                
+                </>
             )}
         </div>
     );
@@ -197,9 +209,9 @@ This approach creates a custom REST API endpoint in WordPress to proxy requests 
 // Register custom REST API endpoint to proxy external API requests
 add_action('rest_api_init', function () {
     register_rest_route('my-plugin/v1', '/proxy-api', array(
-        'methods' =&gt; 'GET',
-        'callback' =&gt; 'my_plugin_proxy_api_request',
-        'permission_callback' =&gt; function() {
+        'methods' => 'GET',
+        'callback' => 'my_plugin_proxy_api_request',
+        'permission_callback' => function() {
             return current_user_can('edit_posts');
         }
     ));
@@ -212,12 +224,12 @@ add_action('rest_api_init', function () {
  * @return WP_REST_Response|WP_Error Response object or error.
  */
 function my_plugin_proxy_api_request($request) {
-    $endpoint = $request-&gt;get_param('endpoint');
+    $endpoint = $request->get_param('endpoint');
     $api_url = 'https://api.example.com/' . $endpoint;
     
     $response = wp_remote_get($api_url, array(
-        'headers' =&gt; array(
-            'Authorization' =&gt; 'Bearer ' . get_option('api_secret_key'),
+        'headers' => array(
+            'Authorization' => 'Bearer ' . get_option('api_secret_key'),
         ),
     ));
     
@@ -244,18 +256,18 @@ function Edit({ attributes, setAttributes }) {
         error: null,
         lastUpdated: null
     });
-    
-    useEffect(() =&gt; {
+
+    useEffect(() => {
         fetchData();
     }, []);
-    
-    const fetchData = async () =&gt; {
+
+    const fetchData = async () => {
         setStatus({ ...status, loading: true });
         try {
             const response = await wp.apiFetch({
                 path: '/my-plugin/v1/external-data'
             });
-            
+
             setData(response);
             setStatus({
                 loading: false,
@@ -274,44 +286,45 @@ function Edit({ attributes, setAttributes }) {
             });
         }
     };
-    
+
     // Display different UI based on status
     if (status.loading) {
         return (
-            <div>
-                &lt;Spinner /&gt;
+            <div className="api-block-loading">
+                <Spinner />
                 <p>Fetching latest data...</p>
             </div>
         );
     }
-    
+
     if (status.error) {
         return (
-            <div>
+            <div className="api-block-error">
                 <h3>Error: {status.error.code}</h3>
                 <p>{status.error.message}</p>
-                &lt;button onClick={fetchData}&gt;Retry&lt;/button&gt;
-                {status.lastUpdated &amp;&amp; (
-                    <p>
+                <button onClick={fetchData}>Retry</button>
+                {status.lastUpdated && (
+                    <p className="data-timestamp">
                         Showing data from: {status.lastUpdated.toLocaleString()}
                     </p>
                 )}
             </div>
         );
     }
-    
+
     return (
-        <div>
-            <div>
-                &lt;button onClick={fetchData}&gt;Refresh Data&lt;/button&gt;
+        <div className="api-data-block">
+            <div className="block-controls">
+                <button onClick={fetchData}>Refresh Data</button>
                 <span>Last updated: {status.lastUpdated.toLocaleString()}</span>
             </div>
-            <div>
+            <div className="block-content">
                 {/* Render your data here */}
             </div>
         </div>
     );
 }
+
 ```
 
 
@@ -343,6 +356,7 @@ function get_external_api_data($endpoint) {
     
     return $data;
 }
+
 ```
 
 2. **Implement caching reset on content updates**:
@@ -353,6 +367,7 @@ add_action('save_post', function($post_id) {
         delete_transient('api_data_specific_cache');
     }
 });
+
 ```
 
 3. **Use batch requests**: If you're making multiple API calls, consider using batch requests when the API supports them to reduce HTTP overhead.
@@ -375,10 +390,11 @@ $username = 'api_user';
 $password = 'api_password';
 
 $response = wp_remote_get($api_url, array(
-    'headers' =&gt; array(
-        'Authorization' =&gt; 'Basic ' . base64_encode("$username:$password"),
+    'headers' => array(
+        'Authorization' => 'Basic ' . base64_encode("$username:$password"),
     ),
 ));
+
 ```
 
 While straightforward, this method is less secure since credentials must be stored and transmitted with each request[^4].
@@ -392,10 +408,11 @@ $api_url = 'https://api.example.com/data';
 $api_key = get_option('my_plugin_api_key');
 
 $response = wp_remote_get($api_url, array(
-    'headers' =&gt; array(
-        'X-API-Key' =&gt; $api_key,
+    'headers' => array(
+        'X-API-Key' => $api_key,
     ),
 ));
+
 ```
 
 This method is relatively simple but still requires secure storage and transmission of the API key[^4].
@@ -410,10 +427,11 @@ $api_url = 'https://api.example.com/data';
 $token = get_option('my_plugin_jwt_token');
 
 $response = wp_remote_get($api_url, array(
-    'headers' =&gt; array(
-        'Authorization' =&gt; 'Bearer ' . $token,
+    'headers' => array(
+        'Authorization' => 'Bearer ' . $token,
     ),
 ));
+
 ```
 
 JWT authentication provides enhanced security through signed tokens and can include expiration times and other security features[^4].
@@ -442,12 +460,12 @@ function get_oauth_access_token() {
     $password = get_option('oauth_password');
     
     $response = wp_remote_post($oauth_url, array(
-        'body' =&gt; array(
-            'grant_type' =&gt; 'password',
-            'client_id' =&gt; $client_id,
-            'client_secret' =&gt; $client_secret,
-            'username' =&gt; $username,
-            'password' =&gt; $password,
+        'body' => array(
+            'grant_type' => 'password',
+            'client_id' => $client_id,
+            'client_secret' => $client_secret,
+            'username' => $username,
+            'password' => $password,
         ),
     ));
     
@@ -479,13 +497,14 @@ function make_authenticated_request($endpoint) {
     $api_url = 'https://api.example.com/' . $endpoint;
     
     $response = wp_remote_get($api_url, array(
-        'headers' =&gt; array(
-            'Authorization' =&gt; 'Bearer ' . $token,
+        'headers' => array(
+            'Authorization' => 'Bearer ' . $token,
         ),
     ));
     
     return $response;
 }
+
 ```
 
 OAuth 2.0 supports multiple grant types, with Password Grant and Client Credentials being most common for server-to-server communication in enterprise applications[^4][^8].
@@ -507,11 +526,12 @@ define('MY_CLIENT_SECRET', 'your-client-secret');
 // In your plugin
 function get_api_credentials() {
     return array(
-        'api_key' =&gt; defined('MY_API_KEY') ? MY_API_KEY : '',
-        'client_id' =&gt; defined('MY_CLIENT_ID') ? MY_CLIENT_ID : '',
-        'client_secret' =&gt; defined('MY_CLIENT_SECRET') ? MY_CLIENT_SECRET : '',
+        'api_key' => defined('MY_API_KEY') ? MY_API_KEY : '',
+        'client_id' => defined('MY_CLIENT_ID') ? MY_CLIENT_ID : '',
+        'client_secret' => defined('MY_CLIENT_SECRET') ? MY_CLIENT_SECRET : '',
     );
 }
+
 ```
 
 This approach keeps credentials out of the database and version control systems.
@@ -588,8 +608,8 @@ function make_wp_api_request($endpoint) {
     $app_password = 'XXXX XXXX XXXX XXXX';
     
     $response = wp_remote_get('https://example.com/wp-json/' . $endpoint, array(
-        'headers' =&gt; array(
-            'Authorization' =&gt; 'Basic ' . base64_encode("$username:$app_password"),
+        'headers' => array(
+            'Authorization' => 'Basic ' . base64_encode("$username:$app_password"),
         ),
     ));
     
@@ -610,9 +630,9 @@ For security, implement authentication logic on the server side:
 // Register REST API endpoint to proxy authenticated requests
 add_action('rest_api_init', function () {
     register_rest_route('my-plugin/v1', '/proxy-api', array(
-        'methods' =&gt; 'GET',
-        'callback' =&gt; 'my_plugin_proxy_authenticated_api',
-        'permission_callback' =&gt; function() {
+        'methods' => 'GET',
+        'callback' => 'my_plugin_proxy_authenticated_api',
+        'permission_callback' => function() {
             return current_user_can('edit_posts');
         }
     ));
@@ -625,7 +645,7 @@ add_action('rest_api_init', function () {
  * @return WP_REST_Response|WP_Error Response object or error.
  */
 function my_plugin_proxy_authenticated_api($request) {
-    $endpoint = $request-&gt;get_param('endpoint');
+    $endpoint = $request->get_param('endpoint');
     
     // Get OAuth token
     $token = get_oauth_access_token();
@@ -637,15 +657,15 @@ function my_plugin_proxy_authenticated_api($request) {
     // Make authenticated request
     $api_url = 'https://api.example.com/' . $endpoint;
     $response = wp_remote_get($api_url, array(
-        'headers' =&gt; array(
-            'Authorization' =&gt; 'Bearer ' . $token,
+        'headers' => array(
+            'Authorization' => 'Bearer ' . $token,
         ),
     ));
     
     if (is_wp_error($response)) {
         return new WP_Error(
             'api_error',
-            'Failed to fetch data: ' . $response-&gt;get_error_message()
+            'Failed to fetch data: ' . $response->get_error_message()
         );
     }
     
@@ -662,15 +682,15 @@ In your block's Edit component, use the proxy endpoint:
 function Edit({ attributes, setAttributes }) {
     const [data, setData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
-    
-    useEffect(() =&gt; {
-        const fetchData = async () =&gt; {
+
+    useEffect(() => {
+        const fetchData = async () => {
             try {
                 // Using WordPress internal apiFetch to handle authentication
                 const response = await wp.apiFetch({
                     path: '/my-plugin/v1/proxy-api?endpoint=data/customer-metrics',
                 });
-                
+
                 setData(response);
                 setIsLoading(false);
             } catch (error) {
@@ -678,10 +698,10 @@ function Edit({ attributes, setAttributes }) {
                 setIsLoading(false);
             }
         };
-        
+
         fetchData();
     }, []);
-    
+
     // Render block UI
 }
 ```
