@@ -22,7 +22,7 @@ Headless WordPress implementations separate content storage (back-end) from pres
 
 ### Editorial Workflow Preservation
 
-The Block Editor remains fully operational in headless configurations, maintaining content teams' existing workflows while enabling developers to map blocks to React components. This dual advantage preserves editorial familiarity while allowing front-end engineers to implement complex interactive features using modern JavaScript frameworks. Media organizations particularly benefit from maintaining WordPress's media library management while rendering content through performant static site generators.
+The Block Editor remains fully operational in headless configurations, maintaining content teams' existing workflows. This dual advantage preserves editorial familiarity while allowing front-end engineers to implement complex interactive features using modern JavaScript frameworks. Media organizations particularly benefit from maintaining WordPress's media library management while rendering content through performant static site generators.
 
 ### Enterprise Scalability Considerations
 
@@ -38,30 +38,32 @@ While headless architectures improve front-end performance, they introduce deplo
 
 WordPress's native REST API provides immediate integration capabilities through standardized endpoints like `/wp-json/wp/v2/posts`. 
 
-However, for enterprise use cases, custom end points can be implemented to ensure an optimized response structures:
+However, for enterprise use cases, custom end points can be implemented to ensure an optimized response structures. For example, if all that's needed is a specific product's technical specs, you could register a custom REST API endpoint just for that data:
 
 ```php
-// Register custom REST field for enterprise product data
+// Register custom REST field for specific product's technical specs
 add_action( 'rest_api_init', 'get_product_specifications' );
 function get_product_specifications() {
-    register_rest_field('product', 'specifications', array(
-        'get_callback' => function($post_arr) {
-            return get_post_meta($post_arr['id'], 'technical_specs', true);
-        },
+    register_rest_field( 'product', 'specifications', array(
+        'get_callback' => 'fetch_project_specifications',
         'schema' => array(
-            'description' => 'Technical specifications for enterprise products',
+            'description' => 'Technical specifications for products',
             'type' => 'object'
         )
     ));
 }
-
+function fetch_project_specifications( $request ){
+    return get_post_meta( $request['product_id'], 'technical_specs', true );
+}
 ```
 
-This approach enables straightforward integration but risks over-fetching data in complex content models. Performance benchmarks show REST payloads averaging 23-28% larger than equivalent GraphQL queries for nested content[^3][^7].
+This approach enables straightforward integration but risks over-fetching data in complex content models. 
+
+Performance benchmarks show REST payloads averaging 23-28% larger than equivalent GraphQL queries for nested content.
 
 ### GraphQL Query Optimization
 
-Implementing WPGraphQL with persisted queries addresses REST limitations for complex applications. An enterprise e-commerce platform reduced data transfer volume by 62% after migrating to GraphQL:
+Implementing WPGraphQL with persisted queries addresses REST limitations for complex applications. One enterprise e-commerce platform reduced data transfer volume by 62% after migrating to GraphQL:
 
 ```graphql
 query ProductPage($id: ID!) {
@@ -83,7 +85,7 @@ query ProductPage($id: ID!) {
 }
 ```
 
-Combine with Apollo Client caching strategies for optimal performance:
+This can be combine with Apollo Client caching strategies for optimal performance:
 
 ```javascript
 const client = new ApolloClient({
@@ -103,11 +105,20 @@ const client = new ApolloClient({
 });
 ```
 
-GraphQL implementations require careful schema design to prevent abusive queries, with enterprises implementing query cost analysis and depth limiting[^3][^8].
+GraphQL implementations require careful schema design to prevent abusive queries, with enterprises implementing query cost analysis and depth limiting.
 
-## Gutenberg Block Data Serialization Strategies
+## Fetching block data via the REST API or GraphQL
 
 ### REST API Block Processing
+
+By default, the post (or page) content is returned in a REST API response as HTML content ready to be rendered in the browser.
+
+```json
+"content": {
+  "rendered": "\n<p>Welcome to WordPress. This is your first post. Edit or delete it, then start writing!</p>\n",
+  "protected": false
+},
+```
 
 Enable block data in REST responses through the `wp_rest_api_block_parser` filter:
 
