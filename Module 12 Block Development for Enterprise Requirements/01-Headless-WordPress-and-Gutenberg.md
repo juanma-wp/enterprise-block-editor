@@ -124,37 +124,97 @@ GraphQL implementations require careful schema design to prevent abusive queries
 
 ## Fetching block data via the REST API or GraphQL
 
-### GraphQL Block Typing System
+Block data for any WordPress post or custom post type is stored as block markup in the posts table. 
 
-Extend WPGraphQL with custom block types using the `wp-graphql-gutenberg` plugin:
+When you fetch that data via the REST API or GraphQL, the block markup is converted to HTML, ready to be rendered on the front end.
 
-```php
-add_action('graphql_register_types', function() {
-    register_graphql_field('CoreParagraphBlockAttributes', 'cssClass', [
-        'type' =&gt; 'String',
-        'resolve' =&gt; function($block) {
-            return $block-&gt;attributes['className'] ?? '';
-        }
-    ]);
-});
+Sample REST API JSON response:
+
+```json
+{
+    "id": 100,
+    "title": {
+        "rendered": "Test post with blocks"
+    },
+    "content": {
+        "rendered": "\n<h2 class=\"wp-block-heading\">Header</h2>\n\n\n\n<figure class=\"wp-block-image size-full\"><img loading=\"lazy\" decoding=\"async\" width=\"309\" height=\"475\" src=\"https://example.test/wp-content/uploads/2025/01/30659.jpg\" alt=\"\" class=\"wp-image-22\" srcset=\"https://example.test/wp-content/uploads/2025/01/30659.jpg 309w, https://example.test/wp-content/uploads/2025/01/30659-195x300.jpg 195w\" sizes=\"auto, (max-width: 309px) 100vw, 309px\" /></figure>\n\n\n\n<p>The content of the post</p>\n",
+        "protected": false
+    },
+    "author": 1,
+    "categories": [
+        1
+    ],
+    "tags": []
+}
 ```
 
-Enables typed queries:
+Sample WPGraphQL JSON response:
 
-```graphql
-query PostBlocks($id: ID!) {
-  post(id: $id) {
-    blocks {
-      ... on CoreParagraphBlock {
-        attributes {
-          content
-          cssClass
+```json
+{
+  "data": {
+    "post": {
+      "title": "Test post with blocks",
+      "content": "\n<h2 class=\"wp-block-heading\">Header</h2>\n\n\n\n<figure class=\"wp-block-image size-full\"><img loading=\"lazy\" decoding=\"async\" width=\"309\" height=\"475\" src=\"https://example.test/wp-content/uploads/2025/01/30659.jpg\" alt=\"\" class=\"wp-image-22\" srcset=\"https://example.test/wp-content/uploads/2025/01/30659.jpg 309w, https://example.test/wp-content/uploads/2025/01/30659-195x300.jpg 195w\" sizes=\"auto, (max-width: 309px) 100vw, 309px\" /></figure>\n\n\n\n<p>The content of the post</p>\n",
+      "date": "2025-04-16T12:01:50",
+      "author": {
+        "node": {
+          "name": "admin"
         }
+      },
+      "categories": {
+        "nodes": [
+          {
+            "name": "Books"
+          }
+        ]
+      },
+      "tags": {
+        "nodes": []
       }
     }
   }
 }
 ```
 
-Enterprises should implement block registry validation to maintain API consistency across environments, with one SaaS provider documenting 92% reduction in front-end errors after implementing schema checks.
+This can be problematic if your headless WordPress application needs to render the block content differently, or needs to access the block attributes directly.
+
+Fortunately, WordPress VIP has a solution for this, the [VIP Block Data API](https://github.com/Automattic/vip-block-data-api) plugin.
+
+For REST API implementations, this plugin adds a new endpoint to the REST API, `/wp-json/vip-block-data-api/v1/posts/<post_id>/blocks`, which returns the block content of a specific post, but in a structured JSON format.
+
+```json
+{
+    "blocks": [
+        {
+            "name": "core/heading",
+            "attributes": {
+                "content": "Header",
+                "level": 2
+            }
+        },
+        {
+            "name": "core/image",
+            "attributes": {
+                "alt": "",
+                "id": 22,
+                "linkDestination": "none",
+                "sizeSlug": "full",
+                "url": "https://learn.test/wp-content/uploads/2025/01/30659.jpg",
+                "width": 309,
+                "height": 475
+            }
+        },
+        {
+            "name": "core/paragraph",
+            "attributes": {
+                "content": "The content of the post",
+                "dropCap": false
+            }
+        }
+    ]
+}
+```
+
+It also works with any custom post type, you only need to pass in the post ID of the post type.
 

@@ -537,6 +537,8 @@ function get_api_credentials() {
 
 This approach keeps credentials out of the database and version control systems.
 
+VIP systems support [environment variables](https://docs.wpvip.com/infrastructure/environments/manage-environment-variables/), which can be set in the server configuration or deployment pipeline. This is a best practice for sensitive data management.
+
 #### 2. Encrypted Options
 
 If you need to store credentials in the database, encrypt them:
