@@ -1,8 +1,6 @@
-<img src="https://r2cdn.perplexity.ai/pplx-full-logo-primary-dark%402x.png" class="logo" width="120"/>
-
 # Integrating Third-Party APIs
 
-In enterprise WordPress development, the ability to integrate third-party APIs into custom Gutenberg blocks represents a powerful way to extend functionality, improve user experiences, and connect your WordPress applications with external services and data sources. This lesson explores the technical aspects of consuming external APIs within the Block Editor framework, addressing both the front-end and back-end rendering challenges, as well as implementing robust authentication strategies essential for enterprise applications.
+In enterprise WordPress development, the ability to integrate third-party APIs in custom Gutenberg blocks is a powerful way to extend block functionality, improve user experiences, and connect your WordPress applications with external services and data sources. This lesson explores the technical aspects of consuming external APIs within the Block Editor framework, addressing both the front-end and back-end rendering challenges, as well as implementing robust authentication strategies essential for enterprise applications.
 
 ## Fetching and Displaying External Data in Blocks
 
@@ -14,13 +12,14 @@ When integrating external APIs into Gutenberg blocks, developers must decide whe
 
 #### Client-Side Approach
 
-The client-side approach leverages JavaScript within the Block Editor environment to fetch and render external data:
+The client-side approach leverages JavaScript within the Block Editor environment to fetch and render external data, using the `api-fetch` package:
 
 ```javascript
 import { useEffect, useState } from '@wordpress/element';
 import apiFetch from '@wordpress/api-fetch';
 
-export default function Edit() {
+export default function Edit( attributes ) {
+    const apiSecretKey = attributes.apiSecretKey;
     const [data, setData] = useState(null);
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -29,8 +28,12 @@ export default function Edit() {
         const fetchData = async () => {
             try {
                 // Using WordPress's apiFetch for consistent handling
+                // passing an Authorization header
                 const response = await apiFetch({
                     path: '/custom-namespace/v1/external-data',
+                    headers : {
+                        Authorization: 'Bearer ' + apiSecretKey
+                    }
                 });
                 setData(response);
                 setIsLoading(false);
@@ -74,10 +77,9 @@ However, client-side fetching introduces challenges:
 - Managing API rate limits when multiple editors are active
 - Performance impact on the editing experience
 
-
 #### Server-Side Approach
 
-The server-side approach employs PHP to fetch data and then passes it to the block:
+The server-side approach employs PHP to fetch data and then passes it to the block, using the WordPress HTTP API:
 
 ```php
 <?php
@@ -138,14 +140,13 @@ The server-side approach offers:
 - Reduced JavaScript payload in the editor
 - Ability to process and transform data before rendering
 
-The trade-off is that the Block Editor doesn't display actual API data until the page is rendered, limiting the visual editing experience[^7].
+The trade-off is that the Block Editor doesn't display actual API data until the page is rendered, limiting the visual editing experience.
 
 ### Rendering External API Data in Both Environments
 
 For an optimal enterprise solution, you'll often want to show API data both in the editor (back-end) and on the published page (front-end). This requires a hybrid approach:
 
 ```javascript
-// Block registration
 // Block registration
 registerBlockType('my-plugin/api-data-block', {
     title: 'External API Data',
