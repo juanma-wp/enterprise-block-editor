@@ -17,6 +17,10 @@
   * What to consider before reaching for custom blocks
   * Introduce block patterns, block templates, and block variations
   * How to decide which fits the needs of the project
+* **2.2: Building Block Themes**
+  * Building and extending block themes with theme.json
+  * Creating custom templates, template parts, and patterns
+  * Creating child themes
 * **2.2: Block Patterns**
   * Understanding block patterns
   * Creating and registering custom patterns
@@ -192,23 +196,19 @@
   * Implementing ESLint and Prettier for maintaining code standards
   * Advanced Git workflows for managing block development in large teams
 
-### Module 12: Integration with Enterprise Systems
+### Module 12: Block Development for Enterprise Requirements
 
 * **12.1: Headless WordPress and Gutenberg**
   * Benefits and challenges of a headless setup
   * Decoupling the front-end from WordPress using the REST API or GraphQL
-  * Fetching Gutenberg block data via the REST API
-  * Handling Block Attributes in Headless
+  * Fetching Gutenberg block data via the REST API or GraphQL
+  * Handling Block Attributes in a Headless environment
 * **12.2: Integrating Third-Party APIs**
   * Fetching and displaying external data in blocks
   * Authentication strategies
-* **12.3: Building Full-Site Editing Features**
-  * Building and extending block themes with theme.json
-  * Creating template parts and custom templates
-* **12.4: Multisite and Multilingual Considerations**
+* **12.4: Multisite Considerations**
   * Global vs. Site-Specific Blocks
   * Customizing block permissions based on user roles across sites
-  * Compatibility with plugins like WPML for block translation
 
 ### Module 13: Roadmap and Case Studies
 
