@@ -329,5 +329,100 @@ const { state } = store("myPlugin", {
 });
 ```
 
+## Using the iAPI on core and third-party blocks
+
+The Interactivity API can be used to enhance both core WordPress blocks and third-party blocks. This section explores how to implement interactive features on existing blocks using the HTML API to add directives and custom JavaScript to handle the interactive behavior.
+
+### Adding Interactivity to Core Blocks
+
+To add interactivity to core blocks, we need to:
+
+1. Use the [HTML API](https://make.wordpress.org/core/2023/03/07/introducing-the-html-api-in-wordpress-6-2/) to add directives to the block's markup
+2. Create a custom store with the logic referenced in those directives
+
+Here's a complete example of adding play/stop functionality to a core button block:
+
+```php
+// render.php
+function render_block_core_button($block_content, $block) {
+    // Only modify blocks with specific class
+    if (!isset($block['attrs']['className']) ||
+        !str_contains($block['attrs']['className'], 'interactive-block--button-play')) {
+        return $block_content;
+    }
+
+    $processor = new WP_HTML_Tag_Processor($block_content);
+
+    // Find the first tag (button)
+    if ($processor->next_tag()) {
+        // Add click handler
+        $processor->set_attribute('data-wp-on--click', 'actions.playOrStop');
+    }
+
+    // Find the link tag inside the button
+    if ($processor->next_tag(['tag_name' => 'a'])) {
+        // Add dynamic text
+        $processor->set_attribute('data-wp-text', 'context.buttonText');
+    }
+
+    return $processor->get_updated_html();
+}
+add_filter('render_block_core/button', 'render_block_core_button', 10, 2);
+```
+
+The corresponding JavaScript implementation that handles the interactive behavior:
+
+```javascript
+// view.js
+import { store, getContext, getElement } from "@wordpress/interactivity";
+
+store("elementary/media-text-interactive", {
+  actions: {
+    /**
+     * Update the video play state.
+     *
+     * @return {void}
+     */
+    playOrStop() {
+      const context = getContext();
+      context.isPlaying = !context.isPlaying;
+      context.buttonText = context.isPlaying ? "Stop" : "Play";
+    },
+  },
+  callbacks: {
+    /**
+     * Play the video.
+     *
+     * @return {void}
+     */
+    playOrStopVideo() {
+      const context = getContext();
+      const { ref } = getElement();
+      const video = ref.querySelector("video");
+
+      if (video && context.isPlaying) {
+        video.play();
+      } else if (video) {
+        video.pause();
+      }
+    },
+  },
+});
+```
+
+> [!NOTE]
+> Check out [iapi-core-blocks-inner-blocks](https://github.com/Automattic/wpvip-learn-enterprise-block-editor/tree/trunk/examples/iapi-core-blocks-inner-blocks) (and its [live demo](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/Automattic/wpvip-learn-enterprise-block-editor/refs/heads/trunk/examples/iapi-core-blocks-inner-blocks/_playground/blueprint.json)) to see the full implementation of the example above.
+
+### Best Practices
+
+When extending existing blocks with the Interactivity API:
+
+1. **Use HTML API for Safe Modifications**: The HTML API provides a reliable way to modify HTML markup and add directives.
+2. **Conditional Processing**: Only modify blocks that meet specific criteria (e.g., have certain classes).
+3. **Tag-Specific Processing**: Use `next_tag()` with parameters to target specific elements.
+4. **Nested Element Handling**: Process parent and child elements separately.
+5. **Namespace Your Store**: Use a unique namespace to avoid conflicts with other plugins or themes.
+6. **Preserve Original Functionality**: Ensure your interactive enhancements don't break the block's original features.
+
 > [!TIP]
-> The Interactivity API uses Preact internally, allowing you to inspect frontend elements with [Preact Devtools](https://chromewebstore.google.com/detail/preact-developer-tools/ilcajpmogmhpliinlbcdebhbcanbghmd?hl=en). To enable this, set the `SCRIPT_DEBUG` PHP constant to true.
+> The Interactivity API uses Preact internally, allowing you to inspect frontend elements with [Preact Devtools](https://chromewebstore.google.com/detail/preact-developer-tools/ilcajpmogmhpliinlbcdebhbcanbghmd?hl=en). To enable this, set the `SCRIPT_DEBUG` PHP constant to true
