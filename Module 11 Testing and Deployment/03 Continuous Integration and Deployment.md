@@ -1,8 +1,43 @@
 ## Continuous Integration and Deployment for Gutenberg Block Development
 
-In modern enterprise WordPress development, delivering robust and maintainable block-based features using the Block Editor (Gutenberg) demands automation, consistency, and repeatability. Implementing CI/CD (Continuous Integration and Continuous Deployment) pipelines is a critical practice that ensures code quality, minimizes human error, and enables seamless deployments across development, staging, and production environments.
+In modern enterprise WordPress development, delivering robust and maintainable block-based features using the Block Editor (Gutenberg) demands automation, consistency, and repeatability. This lesson explores how to implement effective CI/CD (Continuous Integration and Continuous Deployment) pipelines specifically tailored for Gutenberg block development.
 
-This lesson explores practical strategies for setting up and managing CI/CD pipelines specifically tailored for Gutenberg block development. It highlights how automation can enhance team collaboration, enforce version control standards, and accelerate the delivery of high-quality blocks in enterprise-grade WordPress environments.
+### Understanding CI/CD in Gutenberg Development
+
+Continuous Integration (CI) and Continuous Deployment (CD) form the backbone of modern software development practices. In the context of Gutenberg block development, these practices ensure:
+
+- Automated testing and validation of code changes
+- Consistent build processes across environments
+- Reliable deployment of block assets
+- Version control and traceability
+- Team collaboration and code quality standards
+
+### Key Components of a Gutenberg CI/CD Pipeline
+
+A well-structured CI/CD pipeline for Gutenberg development typically includes:
+
+1. **Code Quality Assurance**
+
+   - JavaScript and PHP linting
+   - Static code analysis
+   - Automated testing (unit, integration, end-to-end)
+
+2. **Build and Asset Management**
+
+   - JavaScript and CSS compilation
+   - Asset optimization and minification
+   - Versioning and cache busting
+
+3. **Deployment Automation**
+
+   - Environment-specific configurations
+   - Automated deployment workflows
+   - Rollback capabilities
+
+4. **Monitoring and Maintenance**
+   - Performance tracking
+   - Error logging
+   - Security scanning
 
 ## Setting up CI/CD pipelines for Gutenberg development
 
@@ -18,36 +53,49 @@ In enterprise WordPress environments, CI/CD pipelines for Gutenberg development 
 
 Implementing CI/CD in Gutenberg development improves collaboration, minimizes deployment risks, and supports Agile delivery practices.
 
-### GitHub Actions
+### Implementing GitHub Actions for Gutenberg Development
 
-To set up a CI/CD pipeline for Gutenberg blocks, you will typically use tools such as GitHub Actions, GitLab CI, CircleCI, or Bitbucket Pipelines. This section focuses on GitHub Actions, but the concepts are transferable to other platforms.
+GitHub Actions provides a powerful platform for automating your Gutenberg block development workflow. Let's explore how to set up and configure GitHub Actions for your project.
 
-[GitHub Actions](https://docs.github.com/en/actions) is a powerful continuous integration and continuous delivery (CI/CD) platform that enables you to automate your build, test, and deployment pipeline. It allows you to create [custom workflows](https://docs.github.com/en/actions/using-workflows) directly in your GitHub repository, where each workflow is defined by a [YAML file](https://docs.github.com/en/actions/using-workflows/workflow-syntax-for-github-actions) that specifies the sequence of jobs and steps to execute. GitHub Actions provides a rich ecosystem of [pre-built actions](https://github.com/marketplace?type=actions) that can be combined to create sophisticated automation workflows, while also supporting [custom actions](https://docs.github.com/en/actions/creating-actions) for specialized tasks. This flexibility makes it an ideal choice for automating Gutenberg block development workflows, from code quality checks to deployment processes.
+#### Basic Workflow Configuration
 
-**Example: GitHub Actions Workflow for Gutenberg Blocks**
+A typical GitHub Actions workflow for Gutenberg blocks includes:
 
-To trigger the workflows defined under `jobs` when the specified `on` events occur, place a `.yml` file with the following content in the repository's `.github/workflows` directory.
+1. **Trigger Configuration**
+
+   - Push to main branch
+   - Pull request events
+   - Manual triggers for specific environments
+
+2. **Environment Setup**
+
+   - Node.js configuration
+   - PHP environment
+   - Required dependencies
+
+3. **Build and Test Process**
+   - Code quality checks
+   - Automated testing
+   - Asset compilation
+
+Here's a practical example of a GitHub Actions workflow:
 
 ```yaml
-name: CI/CD Pipeline
+name: Gutenberg Block CI/CD
 
 on:
   push:
-    branches:
-      - main
+    branches: [main]
   pull_request:
-    branches:
-      - main
+    branches: [main]
 
 jobs:
-  build:
+  quality-assurance:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v3
+      - uses: actions/checkout@v3
 
-      - name: Set Up Node.js
+      - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
           node-version: "18"
@@ -55,54 +103,54 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
-      - name: Lint JavaScript
+      - name: Run Linting
         run: npm run lint:js
 
-      - name: Build Block Assets
+      - name: Run Tests
+        run: npm test
+
+  build:
+    needs: quality-assurance
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "18"
+
+      - name: Build Assets
         run: npm run build
 
-      - name: Upload Artifact
+      - name: Upload Build Artifacts
         uses: actions/upload-artifact@v3
         with:
           name: block-assets
           path: build/
 ```
 
-The GitHub Action (CI/CD pipeline) above runs automatically on pushes to main or pull requests targeting main, and do the following things:
+### Local Development Workflow with Git Hooks
 
-- Verifies the code can build successfully
-- Checks code quality with linters
-- Creates production-ready assets
-- Makes those assets available for deployment
-
-This workflow could be extended by adding PHP code checks (`phpcs`), PHPUnit tests, or integration with deployment tools.
-
-> [!NOTE]
-> Take a look at [this CI workflow configuration](https://github.com/Automattic/wpvip-learn-enterprise-block-editor/blob/trunk/.github/workflows/ci.yml) and [its latest run results](https://github.com/Automattic/wpvip-learn-enterprise-block-editor/actions/workflows/ci.yml).
-
-### Git Hooks and Husky Integration
-
-While CI/CD pipelines run on remote servers, Git hooks provide a way to enforce code quality and run automated checks locally before code is pushed to the repository. [Husky](https://typicode.github.io/husky/) is a modern tool that makes it easy to manage Git hooks in your Gutenberg block development workflow.
+While CI/CD pipelines handle remote automation, local development workflows are equally important. Git hooks, particularly when managed through Husky, provide a way to enforce code quality standards before code reaches the repository.
 
 #### Setting Up Husky for Gutenberg Development
 
-To integrate Husky into your project:
-
-1. Install Husky and its dependencies:
+1. **Installation and Configuration**
 
 ```bash
+# Install Husky and its dependencies
 npm install husky --save-dev
 npm pkg set scripts.prepare="husky install"
 npm run prepare
-```
 
-2. Install and configure commitlint for commit message validation:
-
-```bash
+# Install commitlint for commit message validation
 npm install --save-dev @commitlint/cli @commitlint/config-conventional
 ```
 
-Create a `commitlint.config.js` file in your project root:
+2. **Commit Message Standards**
+
+Create a `commitlint.config.js` file to enforce commit message conventions:
 
 ```javascript
 module.exports = {
@@ -117,60 +165,42 @@ module.exports = {
 };
 ```
 
-3. Create a pre-commit hook to run linting and tests:
+3. **Pre-commit Hooks**
+
+Set up hooks to run essential checks before commits:
 
 ```bash
+# Create pre-commit hook
 npx husky add .husky/pre-commit "npm run lint:js && npm test"
-```
 
-4. Create a commit-msg hook to enforce commit message conventions:
-
-```bash
+# Create commit-msg hook
 npx husky add .husky/commit-msg 'npx --no -- commitlint --edit "$1"'
 ```
 
-### Example Husky Configuration
+#### Best Practices for Local Development
 
-A typical Husky configuration for Gutenberg block development might include:
+1. **Code Quality Checks**
 
-```json
-{
-  "husky": {
-    "hooks": {
-      "pre-commit": "npm run lint:js && npm test",
-      "commit-msg": "commitlint -E HUSKY_GIT_PARAMS",
-      "pre-push": "npm run build"
-    }
-  }
-}
-```
+   - Run linting on staged files only
+   - Execute unit tests before commits
+   - Validate code formatting
 
-#### Husky Configuration and Best Practices
+2. **Commit Message Standards**
 
-Husky enhances Gutenberg block development through several key features and practices:
+   - Follow conventional commit format
+   - Include clear, descriptive messages
+   - Reference issue numbers when applicable
 
-1. **Early Error Detection**
+3. **Performance Optimization**
 
-   - Run linting and tests locally before pushing code
-   - Catch issues early in the development process
-   - Keep hooks lightweight and focused on essential checks
+   - Use caching for repeated operations
+   - Run checks in parallel when possible
+   - Minimize hook execution time
 
-2. **Workflow Consistency**
-
-   - Automate code quality checks across the team
-   - Enforce commit message conventions
-   - Document hook requirements and provide clear error messages
-
-3. **Tool Integration**
-
-   - Seamlessly works with ESLint, Prettier, and testing frameworks
-   - Supports custom scripts and commands
-   - Optimize check execution order and use caching where appropriate
-
-4. **Performance Optimization**
-   - Run checks only on staged files
-   - Minimize impact on development workflow
-   - Consider parallel execution for independent tasks
+4. **Team Collaboration**
+   - Document hook requirements
+   - Provide clear error messages
+   - Share configuration across team
 
 ## Automating Block Deployment and Versioning in Enterprise Environments
 
@@ -200,14 +230,38 @@ Enterprise WordPress deployments typically involve:
    - Git tags and branches
    - Backward compatibility considerations
 
-### Implementing Automated Deployment
+### Deployment Strategies for Gutenberg Blocks
 
-#### 1. Setting Up Deployment Workflows
+Enterprise WordPress environments require robust deployment strategies to ensure reliable and consistent delivery of Gutenberg blocks. This section covers essential deployment practices and configurations.
 
-Create a GitHub Actions workflow that handles deployment across environments:
+#### Multi-Environment Deployment
+
+1. **Environment Configuration**
+
+```php
+add_action('init', function() {
+    $env = getenv('WP_ENV') ?: 'development';
+
+    switch ($env) {
+        case 'production':
+            define('BLOCK_ASSETS_URL', 'https://cdn.example.com/blocks/');
+            define('BLOCK_DEBUG', false);
+            break;
+        case 'staging':
+            define('BLOCK_ASSETS_URL', 'https://staging.example.com/blocks/');
+            define('BLOCK_DEBUG', true);
+            break;
+        default:
+            define('BLOCK_ASSETS_URL', plugins_url('build/', __FILE__));
+            define('BLOCK_DEBUG', true);
+    }
+});
+```
+
+2. **Deployment Workflow**
 
 ```yaml
-name: Deploy Block Assets
+name: Deploy Gutenberg Blocks
 
 on:
   push:
@@ -252,35 +306,34 @@ jobs:
           source: "build/*"
           target: "/var/www/html/wp-content/plugins/my-block/"
           strip_components: 1
+
+      - name: Clear Cache
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            wp cache flush
+            wp rewrite flush
 ```
 
-#### 2. Environment-Specific Configurations
+The workflow above is an automated deployment system for Gutenberg blocks that:
 
-Create environment-specific configurations using WordPress hooks:
+- When to Run
+  - Automatically when code is pushed to main branch
+  - Can also be manually triggered with a choice of environment (staging or production)
+- What it Does
+  - Gets the latest code
+  - Sets up Node.js
+  - Installs dependencies
+  - Builds the block assets
+  - Deploys the files to the WordPress site
+  - Clears the site's cache
 
-```php
-add_action('init', function() {
-    $env = getenv('WP_ENV') ?: 'development';
+#### Version Management
 
-    // Load environment-specific configurations
-    switch ($env) {
-        case 'production':
-            define('BLOCK_ASSETS_URL', 'https://cdn.example.com/blocks/');
-            break;
-        case 'staging':
-            define('BLOCK_ASSETS_URL', 'https://staging.example.com/blocks/');
-            break;
-        default:
-            define('BLOCK_ASSETS_URL', plugins_url('build/', __FILE__));
-    }
-});
-```
-
-### Versioning Strategies
-
-#### 1. Semantic Versioning Implementation
-
-Implement semantic versioning in your block's `block.json`:
+Implement [semantic versioning](https://semver.org/) in your block's `block.json`:
 
 ```json
 {
@@ -298,13 +351,7 @@ Implement semantic versioning in your block's `block.json`:
 }
 ```
 
-#### 2. Automated Version Bumping
-
-<!-- npm version -->
-<!-- utilities like semantic_version -->
-<!-- [Conventional Commits specification](https://www.conventionalcommits.org/en/v1.0.0/) can be handy to automate version bumping and Changelogs -->
-
-Create a workflow for automated version management:
+The version update can be automated with a workflow:
 
 ```yaml
 name: Version Management
@@ -322,14 +369,12 @@ jobs:
 
       - name: Bump version
         run: |
-          # Update block.json version
           VERSION=$(npm version patch --no-git-tag-version)
           sed -i "s/\"version\": \".*\"/\"version\": \"${VERSION#v}\"/" block.json
-
-          # Generate changelog
           conventional-changelog -p angular -i CHANGELOG.md -s
 
-          # Commit changes
+      - name: Commit changes
+        run: |
           git config --global user.name 'GitHub Action'
           git config --global user.email 'action@github.com'
           git add block.json CHANGELOG.md
@@ -337,111 +382,80 @@ jobs:
           git push
 ```
 
-### Best Practices for Enterprise Deployment
+The workflow above automates version updates for Gutenberg blocks. When new code is pushed to the main branch, it:
+
+- Automatically Updates Version Numbers
+  - Increments the version number (like going from 1.2.3 to 1.2.4)
+  - Updates the version in the block's configuration file
+- Maintains Documentation
+  - Automatically updates the changelog
+  - Records what changed in each version
+- Saves Everything Back
+  - Commits the version changes
+  - Pushes updates to the repository
+
+#### Deployment Best Practices
 
 1. **Security Considerations**
 
    - Use environment-specific secrets
    - Implement proper access controls
-   - Encrypt sensitive data
    - Regular security audits
+   - Encrypt sensitive data
 
 2. **Performance Optimization**
 
-   - Asset minification and compression
+   - Asset minification
    - CDN integration
    - Cache management
    - Load testing
 
-3. **Monitoring and Rollback**
+3. **Monitoring and Maintenance**
 
-   - Implement health checks
-   - Set up monitoring alerts
-   - Create rollback procedures
-   - Maintain deployment logs
+   - Health checks
+   - Performance monitoring
+   - Error tracking
+   - Deployment logs
 
-4. **Compliance and Documentation**
-   - Maintain deployment documentation
-   - Track changes in changelog
-   - Document environment configurations
-   - Follow enterprise security policies
-
-### Example: Complete Deployment Pipeline
-
-```yaml
-name: Complete Block Deployment
-
-on:
-  push:
-    branches: [main]
-  workflow_dispatch:
-    inputs:
-      environment:
-        description: "Target environment"
-        required: true
-        default: "staging"
-        type: choice
-        options:
-          - staging
-          - production
-
-jobs:
-  test:
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-      - run: npm ci
-      - run: npm test
-
-  build:
-    needs: test
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-      - run: npm ci
-      - run: npm run build
-      - uses: actions/upload-artifact@v3
-        with:
-          name: block-assets
-          path: build/
-
-  deploy:
-    needs: build
-    runs-on: ubuntu-latest
-    environment: ${{ github.event.inputs.environment || 'staging' }}
-    steps:
-      - uses: actions/download-artifact@v3
-        with:
-          name: block-assets
-          path: build/
-
-      - name: Deploy to WordPress
-        uses: appleboy/scp-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.SSH_KEY }}
-          source: "build/*"
-          target: "/var/www/html/wp-content/plugins/my-block/"
-          strip_components: 1
-
-      - name: Clear Cache
-        uses: appleboy/ssh-action@master
-        with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USERNAME }}
-          key: ${{ secrets.SSH_KEY }}
-          script: |
-            wp cache flush
-            wp rewrite flush
-```
-
-This comprehensive approach to block deployment and versioning ensures that your enterprise WordPress environment maintains high standards of quality, security, and reliability while enabling efficient development workflows.
+4. **Documentation and Compliance**
+   - Deployment procedures
+   - Environment configurations
+   - Security policies
+   - Change management
 
 ## Conclusion
 
-By the end of this lesson, you should be able to explain how CI/CD practices enhance Gutenberg block development workflows in enterprise WordPress contexts. You've seen how to construct a CI/CD pipeline to automate testing, asset building, versioning, and deployment. Additionally, you should now be capable of modifying existing pipelines to support automated block deployment across different environments.
+Implementing effective CI/CD practices is essential for successful Gutenberg block development in enterprise WordPress environments. This lesson has covered:
 
-As your projects grow in complexity, refining your CI/CD processes becomes even more critical to maintaining quality and delivery velocity.
+1. **Core CI/CD Concepts**
+
+   - Understanding the importance of automation
+   - Setting up robust pipelines
+   - Managing code quality and testing
+
+2. **Development Workflow**
+
+   - Local development with Git hooks
+   - Automated testing and validation
+   - Version control and collaboration
+
+3. **Deployment Strategies**
+
+   - Multi-environment deployment
+   - Asset management
+   - Version control and release management
+
+4. **Best Practices**
+   - Security considerations
+   - Performance optimization
+   - Monitoring and maintenance
+   - Documentation and compliance
+
+By implementing these practices, your team can:
+
+- Deliver high-quality Gutenberg blocks consistently
+- Maintain code standards across the project
+- Streamline the development and deployment process
+- Ensure reliable and secure deployments
+
+Remember that CI/CD is an evolving practice. Regularly review and update your processes to incorporate new tools, techniques, and best practices as they emerge in the WordPress and Gutenberg ecosystem.

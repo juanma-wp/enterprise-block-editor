@@ -49,7 +49,7 @@ To do that we can leverage the following WordPress core methods:
 > [!NOTE]
 > The code of the `block.json` being tested with the code below is available [here](https://github.com/Automattic/wpvip-learn-enterprise-block-editor/blob/trunk/examples/copyright-date-block-with-tests/src/block.json)
 
-**File: `test/unit/block-registration.test.js`**
+[**File: `test/unit/block-registration.test.js`**](https://github.com/Automattic/wpvip-learn-enterprise-block-editor/blob/trunk/examples/copyright-date-block-with-tests/test/unit/block-registration.test.js)
 
 ```js
 import {
@@ -80,55 +80,19 @@ describe("Block Registration", () => {
     expect(block.attributes.showStartingYear).toBeUndefined();
     expect(block.attributes.startingYear).toBeUndefined();
   });
-
-  it("should handle all valid attributes", () => {
-    const attributes = {
-      fallbackCurrentYear: "2024",
-      showStartingYear: true,
-      startingYear: "2020",
-    };
-    const block = createBlock(
-      "create-block/copyright-date-block-with-tests",
-      attributes
-    );
-    expect(block.attributes.fallbackCurrentYear).toBe("2024");
-    expect(block.attributes.showStartingYear).toBe(true);
-    expect(block.attributes.startingYear).toBe("2020");
-  });
-
-  it("should have correct block supports configuration", () => {
-    const { supports } = blockJson;
-
-    expect(supports.color.background).toBe(false);
-    expect(supports.color.text).toBe(true);
-    expect(supports.html).toBe(false);
-    expect(supports.typography.fontSize).toBe(true);
-  });
 });
 ```
 
-The test suite above focuses on teting three main aspects:
+The test above is focused on testing **Block Registration Setup**:
 
-1. **Block Registration Setup**
+- Before each test, it registers the block using `registerBlockType`
+- After each test, it cleans up by unregistering the block with `unregisterBlockType`.
+- The block is identified by the name `create-block/copyright-date-block-with-tests`
 
-   - Before each test, it registers the block using `registerBlockType`
-   - After each test, it cleans up by unregistering the block with `unregisterBlockType`.
-   - The block is identified by the name `create-block/copyright-date-block-with-tests`
+But more tests can be added for the block's attributes and the block's support configuration.
 
-2. **Block Attributes Testing**
-
-   - Tests that a block can be created with default attributes (all undefined)
-   - Tests that a block can be created with all valid attributes:
-     - `fallbackCurrentYear` (string)
-     - `showStartingYear` (boolean)
-     - `startingYear` (string)
-
-3. **Block Supports Configuration**
-   - Verifies the block's support configuration:
-     - No background color support
-     - Text color support enabled
-     - HTML support disabled
-     - Font size support enabled
+> [!NOTE]
+> The full code to test `copyright-date-block` block's registration can be found [here](https://github.com/Automattic/wpvip-learn-enterprise-block-editor/blob/trunk/examples/copyright-date-block-with-tests/test/unit/block-registration.test.js)
 
 ### Testing the Edit Component
 
@@ -186,72 +150,10 @@ describe("Edit Component", () => {
     render(<Edit {...mockEditProps} />);
     expect(screen.getByText(/© 2024/i)).toBeInTheDocument();
   });
-
-  describe("Settings Panel", () => {
-    it("renders settings panel", () => {
-      render(<Edit {...mockEditProps} />);
-      expect(screen.getByTestId("panel-body")).toHaveAttribute(
-        "data-title",
-        "Settings"
-      );
-    });
-
-    it("toggles show starting year setting", async () => {
-      const user = userEvent.setup();
-      render(<Edit {...mockEditProps} />);
-      const toggle = screen.getByLabelText("Show starting year");
-      await user.click(toggle);
-      expect(mockEditProps.setAttributes).toHaveBeenCalledWith({
-        showStartingYear: true,
-      });
-    });
-
-    it("shows starting year input when toggle is enabled", () => {
-      const propsWithStartingYear = {
-        ...mockEditProps,
-        attributes: { ...mockEditProps.attributes, showStartingYear: true },
-      };
-      render(<Edit {...propsWithStartingYear} />);
-      expect(screen.getByLabelText("Starting year")).toBeInTheDocument();
-    });
-
-    it("updates starting year when input changes", async () => {
-      const setAttributes = jest.fn();
-      const propsWithStartingYear = {
-        ...mockEditProps,
-        attributes: { ...mockEditProps.attributes, showStartingYear: true },
-        setAttributes,
-      };
-      render(<Edit {...propsWithStartingYear} />);
-      const input = screen.getByLabelText("Starting year");
-      fireEvent.change(input, { target: { value: "2020" } });
-      expect(setAttributes).toHaveBeenCalledWith({ startingYear: "2020" });
-    });
-  });
-
-  describe("Display Logic", () => {
-    it("displays year range when starting year is set", () => {
-      const propsWithRange = {
-        ...mockEditProps,
-        attributes: {
-          ...mockEditProps.attributes,
-          showStartingYear: true,
-          startingYear: "2020",
-        },
-      };
-      render(<Edit {...propsWithRange} />);
-      expect(screen.getByText(/© 2020–2024/i)).toBeInTheDocument();
-    });
-
-    it("displays only current year when starting year is not set", () => {
-      render(<Edit {...mockEditProps} />);
-      expect(screen.getByText(/© 2024/i)).toBeInTheDocument();
-    });
-  });
 });
 ```
 
-The test suite above focuses on testing four main aspects:
+The test suite above focuses on the following:
 
 1. **Component Setup**
 
@@ -264,16 +166,10 @@ The test suite above focuses on testing four main aspects:
    - Verifies the component matches a snapshot
    - Confirms the default display shows the current year (© 2024)
 
-3. **Settings Panel Tests**
+But more tests can be added to check the Settings Panel and the Display Logic.
 
-   - Verifies the settings panel renders correctly
-   - Tests the "Show starting year" toggle functionality
-   - Tests the starting year input field appears when toggle is enabled
-   - Verifies that changing the starting year input updates the attributes
-
-4. **Display Logic Tests**
-   - Tests the year range display (e.g., "© 2020–2024") when a starting year is set
-   - Verifies that only the current year is shown when no starting year is set
+> [!NOTE]
+> The full code to test `copyright-date-block` edit's component can be found [here](https://github.com/Automattic/wpvip-learn-enterprise-block-editor/blob/trunk/examples/copyright-date-block-with-tests/test/unit/edit-component.test.js)
 
 #### Snapshots
 
@@ -415,42 +311,10 @@ describe.only("Save Component", () => {
     const { container } = render(<Save attributes={testAttributes} />);
     expect(container.textContent).toBe("© 2024");
   });
-
-  it("displays only current year when startingYear is not provided", () => {
-    const testAttributes = {
-      fallbackCurrentYear: "2024",
-      showStartingYear: true,
-      startingYear: null,
-    };
-    const { container } = render(<Save attributes={testAttributes} />);
-    expect(container.textContent).toBe("© 2024");
-  });
-
-  it("displays year range when both showStartingYear and startingYear are provided", () => {
-    const testAttributes = {
-      fallbackCurrentYear: "2024",
-      showStartingYear: true,
-      startingYear: "2020",
-    };
-    const { container } = render(<Save attributes={testAttributes} />);
-    expect(container.textContent).toBe("© 2020–2024");
-  });
-
-  it("applies correct block props", () => {
-    const testAttributes = {
-      fallbackCurrentYear: "2023",
-      showStartingYear: false,
-      startingYear: "",
-    };
-    const { container } = render(<Save attributes={testAttributes} />);
-    const paragraph = container.querySelector("p");
-    expect(paragraph).toBeTruthy();
-    expect(paragraph).toHaveClass("wp-block-copyright-date");
-  });
 });
 ```
 
-This test suite above focuses on five main scenarios for how the markup of the `copyright-date-block` should be returned.
+This test suite above covers a few scenarios for how the markup of the `copyright-date-block` should be returned.
 
 1. **Empty State Handling**
 
@@ -463,16 +327,10 @@ This test suite above focuses on five main scenarios for how the markup of the `
      - `showStartingYear` is false, even if `startingYear` is provided
      - `startingYear` is not provided, even if `showStartingYear` is true
 
-3. **Year Range Display**
+But more scenarios can be covered like Year Range Display and Block Styling.
 
-   - Tests that a year range is shown (e.g., "© 2020–2024") when:
-     - Both `showStartingYear` and `startingYear` are provided
-     - This is the full copyright range display
-
-4. **Block Styling**
-   - Tests that the correct CSS classes are applied
-   - Verifies the block has the proper WordPress block class (`wp-block-copyright-date`)
-   - Ensures the content is wrapped in a paragraph tag
+> [!NOTE]
+> The full code to test `copyright-date-block` save's component can be found [here](https://github.com/Automattic/wpvip-learn-enterprise-block-editor/blob/trunk/examples/copyright-date-block-with-tests/test/unit/save-component.test.js)
 
 The tests use [React Testing Library](https://testing-library.com/docs/react-testing-library/intro/) to verify both the content and structure of the saved output, ensuring the block will display correctly on the front end of the WordPress site.
 
@@ -679,73 +537,6 @@ test.describe("Copyright Date Block Editor Test Suite", () => {
     );
     expect(postContent).toContain(currentYear);
   });
-
-  test("should add starting year to the copyright block and verify it's saved", async ({
-    admin,
-    editor,
-    page,
-  }) => {
-    const startingYear = "2020";
-    await setupPostWithStartingYearCopyrightBlock(
-      { admin, editor, page },
-      startingYear
-    );
-    const currentYear = new Date().getFullYear().toString();
-    const editorIframe = page.frameLocator('iframe[name="editor-canvas"]');
-    const blockInIframe = editorIframe.locator(
-      '[data-type="create-block/copyright-date-block-with-tests"]'
-    );
-
-    await expect(blockInIframe).toBeVisible();
-    await expect(blockInIframe).toContainText(
-      `© ${startingYear}–${currentYear}`
-    );
-    await expect(page.locator(".components-snackbar")).toContainText(
-      "Draft saved",
-      {
-        message: "Post should be saved successfully",
-      }
-    );
-
-    const postContent = await editor.getEditedPostContent();
-    expect(postContent).toContain(
-      "<!-- wp:create-block/copyright-date-block-with-tests"
-    );
-    expect(postContent).toContain(`"startingYear":"${startingYear}"`);
-    expect(postContent).toContain('"showStartingYear":true');
-  });
-
-  test("should toggle off starting year and verify only current year is displayed", async ({
-    admin,
-    editor,
-    page,
-  }) => {
-    const startingYear = "2020";
-    await setupPostWithStartingYearCopyrightBlock(
-      { admin, editor, page },
-      startingYear
-    );
-    const editorIframe = page.frameLocator('iframe[name="editor-canvas"]');
-    const copyrightBlock = editorIframe.locator(
-      '[data-type="create-block/copyright-date-block-with-tests"]'
-    );
-
-    await expect(copyrightBlock).toBeVisible();
-    await editor.selectBlocks(copyrightBlock);
-    await page.waitForTimeout(300);
-    await editor.openDocumentSettingsSidebar();
-
-    const showStartingYearToggle = page.locator(
-      '.components-toggle-control label:has-text("Show starting year")'
-    );
-    await expect(showStartingYearToggle).toBeVisible();
-    await showStartingYearToggle.click();
-
-    const currentYear = new Date().getFullYear().toString();
-    await page.waitForTimeout(300);
-    await expect(copyrightBlock).toContainText(`© ${currentYear}`);
-    await expect(copyrightBlock).not.toContainText(startingYear);
-  });
 });
 ```
 
@@ -759,7 +550,7 @@ Let's break down the main components and test cases of the test above:
 
 **Test Suite Structure**:
 
-- The test suite contains 4 main test cases:
+- The test suite contains a few test cases:
 
 _Basic Block Insertion Test_
 
@@ -782,34 +573,14 @@ test("should display the current year in the block by default");
 - Checks both the visual display and the saved post content
 - Ensures the post saves successfully
 
-_Starting Year Test_
+More tests can be added to check things such as:
 
-```javascript
-test("should add starting year to the copyright block and verify it's saved");
-```
-
-- Creates a post with a copyright block that includes a starting year (2020)
-- Verifies the block shows a year range (e.g., "© 2020–2024")
-- Checks the saved post content includes the starting year attribute
-- Verifies the `showStartingYear` setting is saved correctly
-
-_Starting Year Toggle Test_
-
-```javascript
-test(
-  "should toggle off starting year and verify only current year is displayed"
-);
-```
-
-- Creates a post with a starting year enabled
-- Selects the block and opens the settings sidebar
-- Toggles off the "Show starting year" option
-- Verifies only the current year is displayed
-- Ensures the starting year is no longer visible
+- should add starting year to the copyright block and verify it's saved
+- should toggle off starting year and verify only current year is displayed
 
 As the Block Editor is displayed as an iFrame in the Post Editor (`page.frameLocator('iframe[name="editor-canvas"]')`) we need to locate the block inside the iFrame
 
-**Key Testing Patterns:**
+Some Key Testing Patterns for a block's E2E tests in the block editor:
 
 - Uses iframe handling for the editor canvas
 - Implements proper waiting mechanisms for UI updates
@@ -817,13 +588,8 @@ As the Block Editor is displayed as an iFrame in the Post Editor (`page.frameLoc
 - Tests both block insertion and configuration
 - Includes save state verification
 
-**Technical Details:**
-
-- Uses Playwright's test framework
-- Handles WordPress admin interface
-- Manages editor iframe interactions
-- Implements proper async/await patterns
-- Includes error handling and timeout management
+> [!NOTE]
+> The full code to test `copyright-date-block` blocks's behaviour in the block editor can be found [here](https://github.com/Automattic/wpvip-learn-enterprise-block-editor/blob/trunk/examples/copyright-date-block-with-tests/test/e2e/editor.spec.js)
 
 ### Testing Block's rendering in the Frontend
 
@@ -861,100 +627,10 @@ test.describe("Copyright Date Block Frontend Test Suite", () => {
       timeout: 10000,
     });
   });
-
-  test("should display copyright block with starting year and current year on the frontend", async ({
-    admin,
-    editor,
-    page,
-  }) => {
-    const startingYear = "2020";
-    await setupPostWithStartingYearCopyrightBlock(
-      { admin, editor, page },
-      startingYear
-    );
-    await editor.publishPost();
-    await navigateToPostFrontend({ page, test });
-
-    const copyrightBlock = page.locator(
-      ".wp-block-create-block-copyright-date-block-with-tests"
-    );
-    await expect(copyrightBlock).toBeVisible({ timeout: 30000 });
-
-    const currentYear = new Date().getFullYear().toString();
-    await expect(copyrightBlock).toContainText(
-      `© ${startingYear}–${currentYear}`,
-      { timeout: 10000 }
-    );
-  });
-
-  test("should verify dynamic rendering shows current year even when post was published in a different year", async ({
-    admin,
-    editor,
-    page,
-  }) => {
-    await setupPostWithCopyrightBlock({ admin, editor, page });
-
-    const editorIframe = page.frameLocator('iframe[name="editor-canvas"]');
-    await page.waitForTimeout(1000);
-    const copyrightBlockEditor = editorIframe.locator(
-      '[data-type="create-block/copyright-date-block-with-tests"]'
-    );
-    await expect(copyrightBlockEditor).toBeVisible({ timeout: 15000 });
-    const initialContent = await copyrightBlockEditor.textContent();
-
-    await editor.publishPost();
-    await navigateToPostFrontend({ page, test });
-
-    const copyrightBlock = page.locator(
-      ".wp-block-create-block-copyright-date-block-with-tests"
-    );
-    await expect(copyrightBlock).toBeVisible({ timeout: 30000 });
-
-    const currentYear = new Date().getFullYear().toString();
-    await expect(copyrightBlock).toContainText(`© ${currentYear}`, {
-      timeout: 10000,
-    });
-    const content = await copyrightBlock.textContent();
-    expect(content).toBe(initialContent);
-  });
-
-  test("should respect typography settings on the frontend", async ({
-    admin,
-    editor,
-    page,
-  }) => {
-    await setupPostWithCopyrightBlock({ admin, editor, page });
-
-    const editorIframe = page.frameLocator('iframe[name="editor-canvas"]');
-    const copyrightBlock = editorIframe.locator(
-      '[data-type="create-block/copyright-date-block-with-tests"]'
-    );
-    await expect(copyrightBlock).toBeVisible({ timeout: 15000 });
-    await editor.selectBlocks(copyrightBlock);
-    await page.waitForTimeout(500);
-
-    await editor.openDocumentSettingsSidebar();
-    await page.getByRole("tab", { name: "Styles" }).click();
-    await page.getByRole("button", { name: "Text" }).click();
-    await page.getByRole("option", { name: "Accent 3" }).click();
-    await page.getByRole("radio", { name: "Large", exact: true }).click();
-
-    await editor.publishPost();
-    await navigateToPostFrontend({ page, test });
-
-    const frontendCopyrightBlock = page.locator(
-      ".wp-block-create-block-copyright-date-block-with-tests"
-    );
-    await expect(frontendCopyrightBlock).toBeVisible();
-    await expect(frontendCopyrightBlock).toHaveClass(/has-accent-3-color/);
-    await expect(frontendCopyrightBlock).toHaveClass(/has-large-font-size/, {
-      timeout: 10000,
-    });
-  });
 });
 ```
 
-The test suite above focuses on 4 main test cases:
+The test suite above cover a simple test case:
 
 **Basic Frontend Display Test**:
 
@@ -971,52 +647,13 @@ test(
 - Checks that it displays the current year correctly (e.g., "© 2024")
 - Uses direct page locators (not iframe) since it's testing the frontend
 
-**Starting Year Frontend Test**:
+More tests can be added to check things such as:
 
-```javascript
-test(
-  "should display copyright block with starting year and current year on the frontend"
-);
-```
+- should display copyright block with starting year and current year on the frontend
+- should verify dynamic rendering shows current year even when post was published in a different year
+- should respect typography settings on the frontend
 
-- Creates a post with a copyright block that includes a starting year (2020)
-- Publishes the post
-- Navigates to the frontend
-- Verifies the block shows both years in the correct format (e.g., "© 2020–2024")
-- Uses longer timeouts (30s) to account for frontend loading
-
-**Dynamic Year Update Test**:
-
-```javascript
-test(
-  "should verify dynamic rendering shows current year even when post was published in a different year"
-);
-```
-
-- Tests the dynamic nature of the copyright year
-- Creates and publishes a post with the block
-- Captures the initial content
-- Verifies that the frontend always shows the current year
-- Ensures the block updates dynamically without needing to republish
-- Tests the render.php functionality
-
-**Typography Settings Test**:
-
-```javascript
-test("should respect typography settings on the frontend");
-```
-
-- Creates a post with the copyright block
-- Configures block settings in the editor:
-  - Sets text color to "Accent 3"
-  - Sets font size to "Large"
-- Publishes the post
-- Navigates to the frontend
-- Verifies the styling is correctly applied:
-  - Checks for the correct color class (`has-accent-3-color`)
-  - Checks for the correct font size class (`has-large-font-size`)
-
-Key Technical Aspects:
+Some Key Testing Patterns for a block's E2E tests in the frontend:
 
 - Uses `@wordpress/e2e-test-utils-playwright` for testing
 - Implements proper navigation between admin and frontend
@@ -1026,13 +663,8 @@ Key Technical Aspects:
 - Verifies dynamic content updates
 - Includes proper error handling and waiting mechanisms
 
-This test suite ensures that the copyright block:
-
-- Displays correctly on the frontend
-- Shows the correct year(s)
-- Updates dynamically
-- Maintains styling settings
-- Works properly after publishing
+> [!NOTE]
+> The full code to test `copyright-date-block` blocks's behaviour in the frontend can be found [here](https://github.com/Automattic/wpvip-learn-enterprise-block-editor/blob/trunk/examples/copyright-date-block-with-tests/test/e2e/frontend.spec.js)
 
 ---
 
