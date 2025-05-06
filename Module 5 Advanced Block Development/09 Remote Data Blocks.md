@@ -75,224 +75,140 @@ The process combines the Block Bindings API with the Remote Data Blocks fetching
 8.  **Block Attribute Population:** The Block Bindings API fills the bound block attribute (e.g., `content`, `url`) with the correct piece of data.
 9.  **Dynamic Rendering:** The block shows its final HTML using the dynamically filled attribute.
 
-## Practical Applications and Code Examples
+## Example: Registering a Custom Query via PHP for Dynamic Plugin Data
 
-Let's look at practical examples, connecting the ideas to the underlying Block Bindings feature.
-
-### Example 1: Displaying Data from a Public JSON API (UI Configuration)
-
-This example uses the public CoinGecko API to fetch and display the current price of Bitcoin in USD. The base URL for this API is `https://api.coingecko.com/`. See the [HTTP Tutorial](https://remotedatablocks.com/docs/tutorials/http/) for more general details on HTTP integrations.
-
-_Note: Public APIs can change. Ensure the endpoint used here is still active or adapt the example to a different public API if needed._
-
-1.  **Configure Data Source (UI):**
-
-    - Go to `Settings` > `Remote Data Blocks`.
-    - Add a new `HTTP` Data Source named `CoinGecko API`. Leave authentication blank.
-
-2.  **Configure Query (UI):**
-
-    - Go to `Settings` > `Remote Data Blocks` > `Queries`.
-    - Add a new Query named `Bitcoin Price USD`.
-    - Select the `CoinGecko API` Data Source.
-    - Set `HTTP Method` to `GET`, `Path` to `/api/v3/simple/price?ids=bitcoin&vs_currencies=usd`.
-    - Define the **Schema**: Examine the JSON data returned (`{"bitcoin":{"usd":94140}}`). Map the fields you need:
-      - `btc_price_usd` (maps to `bitcoin.usd` in the JSON)
-    - Set a Cache TTL (e.g., `300` seconds for 5 minutes, as crypto prices change often).
-
-3.  **Configure Remote Data Block (UI):**
-
-    - Go to `Settings` > `Remote Data Blocks` > `Blocks`.
-    - Add a block named `Bitcoin Price Display`, linked to the `Bitcoin Price USD` Query.
-
-4.  **Use in Editor (Block Binding):**
-    - Add the "Bitcoin Price Display" block to a post or page.
-    - Inside it, add a Paragraph block.
-    - Select the Paragraph block. Use the standard Block Bindings UI in the sidebar.
-    - Choose the `Bitcoin Price USD` source (representing the Query).
-    - Type "Current BTC Price: $" and then bind the remaining `content` attribute to the `btc_price_usd` field.
-
-This block now displays the current Bitcoin price in USD, fetched from the CoinGecko API.
-
-### Example 2: Registering a Custom Query via PHP for Dynamic Plugin Data
-
-While the UI configuration is powerful, sometimes you need more control or want to create reusable, parameterized queries via code. This example demonstrates registering a custom PHP Query that fetches data for _any_ plugin from the WordPress.org Plugin API, based on a `plugin_slug` parameter passed to it. This Query can then be used with Block Bindings.
-
-Assume you have already configured an `HTTP` Data Source named `WordPress.org Plugin API` pointing to `https://api.wordpress.org/` (as described conceptually in Example 1).
+This example demonstrates registering a custom PHP Query that fetches data for _any_ plugin from the WordPress.org Plugin API, based on a `plugin_slug` parameter passed to it. This Query can then be used with Block Bindings.
 
 ```php
-<?php
-/**
- * Example showing registration of a custom Remote Data Blocks Query
- * to fetch WordPress.org plugin data dynamically by slug.
- */
 
-namespace MyTheme\RemoteData;
+namespace RemoteDataBlocks\Example\WpOrgPlugin;
 
-use Automattic\Remote_Data_Blocks\Query\HTTP_Query;
-use Automattic\Remote_Data_Blocks\Registry\Query as Query_Registry;
-use WP_Error;
+use RemoteDataBlocks\Config\DataSource\HttpDataSource;
+use RemoteDataBlocks\Config\Query\HttpQuery;
+
 
 /**
- * Custom Query class for fetching specific plugin data from the WordPress.org API.
- */
-class WpOrg_Plugin_Query extends HTTP_Query {
-
-    /**
-     * Unique name (slug) for this query. Used internally.
-     *
-     * @var string
-     */
-    protected $name = 'mytheme-wporg-plugin-info';
-
-    /**
-     * Name shown in the UI when selecting a source for binding.
-     *
-     * @var string
-     */
-    protected $title = 'Plugin Info by Slug (WP.org)';
-
-    /**
-     * ID of the Data Source to use (must be set up in WP Admin).
-     * Assumes an HTTP source named 'wporg-plugin-api' pointing to https://api.wordpress.org/.
-     *
-     * @var string
-     */
-    protected $data_source_id = 'wporg-plugin-api'; // Adjust if your Data Source name is different.
-
-    /**
-     * Define the format of the data returned by this query.
-     * Crucial for making fields available in the Block Bindings UI.
-     *
-     * @return array Schema definition.
-     */
-    public function get_schema(): array {
-        // Based on the structure from https://api.wordpress.org/plugins/info/1.0/{slug}.json
-        return [
-            'type'       => 'object',
-            'properties' => [
-                'name'              => [
-                    'type'        => 'string',
-                    'description' => 'Plugin Name',
-                ],
-                'slug'              => [
-                    'type'        => 'string',
-                    'description' => 'Plugin Slug',
-                ],
-                'version'           => [
-                    'type'        => 'string',
-                    'description' => 'Current Version',
-                ],
-                'author'            => [
-                    'type'        => 'string',
-                    'description' => 'Plugin Author Info (HTML string)',
-                ],
-                'rating'            => [
-                    'type'        => 'number',
-                    'description' => 'Average Rating (out of 100)',
-                ],
-                'num_ratings'       => [
-                    'type'        => 'integer',
-                    'description' => 'Number of Ratings',
-                ],
-                'downloaded'        => [
-                    'type'        => 'integer',
-                    'description' => 'Download Count',
-                ],
-                'last_updated'      => [
-                    'type'        => 'string',
-                    'description' => 'Last Updated Timestamp (YYYY-MM-DD HH:MM:SS)',
-                    'format'      => 'date-time',
-                ],
-                'short_description' => [
-                    'type'        => 'string',
-                    'description' => 'Short Description',
-                ],
-                // Add other fields as needed, like 'homepage', 'requires', 'tested', etc.
-            ],
-        ];
-    }
-
-    /**
-     * Modify the request arguments before fetching data.
-     * Dynamically builds the API path using the 'plugin_slug' parameter.
-     *
-     * @param array $request_args Default request details.
-     * @param array $query_params Parameters passed to the query (expecting 'plugin_slug').
-     * @return array|WP_Error Modified request details or WP_Error if slug is missing.
-     */
-    protected function get_request_args( array $request_args, array $query_params = [] ) {
-        if ( empty( $query_params['plugin_slug'] ) ) {
-            // If no slug is provided, we cannot make a valid request.
-            // Returning an error prevents the HTTP call.
-            return new WP_Error(
-                'missing_plugin_slug',
-                __( 'Plugin slug is required.', 'my-theme' )
-            );
-        }
-
-        $plugin_slug = sanitize_key( $query_params['plugin_slug'] );
-
-        // Dynamically set the API path.
-        $request_args['path'] = '/plugins/info/1.0/' . $plugin_slug . '.json';
-
-        $request_args['method'] = 'GET';
-
-        // The parent method merges defaults, etc.
-        return parent::get_request_args( $request_args, $query_params );
-    }
-
-    /**
-     * Process the response data after getting it.
-     * (Optional: Could be used for cleanup or further transformation if needed).
-     *
-     * @param mixed $data Raw data from the HTTP response.
-     * @param array $query_params Parameters passed to the query.
-     * @return mixed Processed data matching the schema.
-     */
-    protected function process_response( $data, array $query_params = [] ) {
-        $processed_data = parent::process_response( $data, $query_params );
-
-        // Example: Maybe strip HTML from author string if needed for certain bindings.
-        // if ( isset( $processed_data['author'] ) ) {
-        //  $processed_data['author_clean'] = wp_strip_all_tags( $processed_data['author'] );
-        // }
-
-        // Ensure data generally matches the schema.
-        // Note: If the API returns an error (e.g., slug not found), $processed_data might
-        // contain error details or be null, depending on HTTP_Query handling.
-
-        return $processed_data; // This data becomes available for block binding.
-    }
-}
-
-/**
- * Register the custom WP.org Plugin Query with the Remote Data Blocks registry.
+ * Registers a custom block to retrieve plugin information from WordPress.org.
  *
- * @param Query_Registry $registry The Query Registry instance.
+ * @return void
+ * @uses register_remote_data_block() Function provided by the Remote Data Blocks plugin.
  */
-function register_wporg_plugin_query( Query_Registry $registry ) {
-    $registry->register( new WpOrg_Plugin_Query() );
-}
-add_action( 'remote_data_blocks_query_registry_init', __NAMESPACE__ . '\register_wporg_plugin_query' );
+function register_wporg_plugin_block(): void {
+	$plugin_data_source = HttpDataSource::from_array(
+		[
 
+			'__version'       => 1,
+			'display_name'    => 'WordPress.org Plugins',
+			'endpoint'        => 'https://api.wordpress.org',
+			'request_headers' => [
+				'Accept' => 'application/json',
+			],
+
+		]
+	);
+
+	$get_plugin_query = HttpQuery::from_array(
+		[
+			'data_source'   => $plugin_data_source,
+			'endpoint'      => function ( array $input_variables ) use ( $plugin_data_source ): string {
+				return sprintf(
+					'%s/plugins/info/1.0/%s.json',
+					$plugin_data_source->get_endpoint(),
+					$input_variables['plugin_slug'] ?? ''
+				);
+			},
+			'input_schema'  => [
+				'plugin_slug' => [
+					'name' => 'Plugin Slug',
+					'type' => 'string',
+				],
+			],
+			'output_schema' => [
+				'is_collection' => false,
+				'path'          => '$',
+				'type'          => [
+					'name'              => [
+						'name' => 'Plugin Name',
+						'path' => '$.name',
+						'type' => 'string',
+					],
+					'slug'              => [
+						'name' => 'Plugin Slug',
+						'path' => '$.slug',
+						'type' => 'string',
+					],
+					'version'           => [
+						'name' => 'Current Version',
+						'path' => '$.version',
+						'type' => 'string',
+					],
+					'author'            => [
+						'name' => 'Plugin Author',
+						'path' => '$.author',
+						'type' => 'string',
+					],
+					'rating'            => [
+						'name' => 'Average Rating',
+						'path' => '$.rating',
+						'type' => 'number',
+					],
+					'num_ratings'       => [
+						'name' => 'Number of Ratings',
+						'path' => '$.num_ratings',
+						'type' => 'integer',
+					],
+					'downloaded'        => [
+						'name' => 'Download Count',
+						'path' => '$.downloaded',
+						'type' => 'integer',
+					],
+					'last_updated'      => [
+						'name' => 'Last Updated',
+						'path' => '$.last_updated',
+						'type' => 'string',
+					],
+					'short_description' => [
+						'name' => 'Short Description',
+						'path' => '$.short_description',
+						'type' => 'string',
+					],
+				],
+			],
+		]
+	);
+
+	register_remote_data_block(
+		[
+			'title'        => 'WP.org Plugin Info',
+			'render_query' => [
+				'query' => $get_plugin_query,
+			],
+			'patterns'     => [
+				[
+					'html'  => file_get_contents( __DIR__ . '/pattern-dotorg-plugin.html' ),
+					'title' => 'Pattern Simple',
+				],
+			],
+
+		]
+	);
+}
+add_action( 'init', __NAMESPACE__ . '\\register_wporg_plugin_block' );
 ```
 
-**Explanation:**
+The code above creates a WordPress plugin that fetches plugin information from WordPress.org using Remote Data Blocks. It:
 
-1.  **Class Definition:** We create `WpOrg_Plugin_Query` extending `HTTP_Query`.
-2.  **Properties:** `$name` and `$title` are set for identification. `$data_source_id` links to the pre-configured `wporg-plugin-api` Data Source.
-3.  **`get_schema()`:** Defines the expected data structure based on the WP.org Plugin API's response. Fields defined here (`name`, `version`, `short_description`, etc.) become available options when binding block attributes using this query as the source.
-4.  **`get_request_args()`:** This is the key dynamic part. It checks if a `plugin_slug` was passed in `$query_params`. If not, it returns a `WP_Error` to prevent the API call. If present, it sanitizes the slug and dynamically constructs the API path (e.g., `/plugins/info/1.0/jetpack.json`).
-5.  **`process_response()`:** Allows optional transformation of the data after fetching (e.g., stripping HTML). In this case, it mostly passes the data through.
-6.  **Registration:** We hook into `remote_data_blocks_query_registry_init` and use the registry's `register` method to make our `WpOrg_Plugin_Query` available system-wide.
+1. Creates a data source pointing to `api.wordpress.org`
+2. Creates a query that:
+   - Accepts a plugin slug as input
+   - Fetches data from WordPress.org's API
+   - Returns fields like name, version, author, ratings, etc.
+3. Registers a new block type called "WP.org Plugin Info" with a pattern template
 
-**How to Use This Custom Query:**
+The block can be used in the WordPress editor to display dynamic plugin information by simply providing a plugin slug.
 
-After adding this PHP code (e.g., in your theme's `functions.php` or a custom plugin):
-
-1.  You could create a specific Remote Data Block via the UI (like `Plugin Info by Slug`) that uses this `Plugin Info by Slug (WP.org)` Query and exposes the `plugin_slug` parameter as an Inspector Control (Text field in the sidebar), similar to the dynamic UI example description.
-2.  Alternatively, developers could use this Query programmatically within custom blocks or other integrations, passing the `plugin_slug` dynamically based on other factors (e.g., a URL parameter, another block's attribute).
+> [!NOTE]
+> Check out a [live demo](https://playground.wordpress.net/?blueprint-url=https://raw.githubusercontent.com/Automattic/wpvip-learn-enterprise-block-editor/refs/heads/trunk/examples/remote-data-blocks-custom-query/_playground/blueprint.json) of this example and the [complete code](https://github.com/Automattic/wpvip-learn-enterprise-block-editor/tree/trunk/examples/remote-data-blocks-custom-query) of the Remote Data Block example above.
 
 ## Extending Remote Data Blocks for Custom Solutions
 
